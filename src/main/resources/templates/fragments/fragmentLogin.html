@@ -1,0 +1,26 @@
+<div xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="login (path)" >
+    <div th:if="${param.error}">
+        Invalid username and password.
+    </div>
+    <div th:if="${param.logout}">
+        You have been logged out.
+    </div>
+    <form th:action="${path}" method="post">
+        <div class="form-group">
+            <label class="col-sm-2 col-form-label"> Логин : </label>
+            <div class="col-sm-6">
+                <input class="form-control" type="text" name="username" placeholder="Login"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 col-form-label"> Пароль : </label>
+            <div class="col-sm-6">
+                <input class="form-control" type="password" name="password" placeholder="Password"/>
+            </div>
+            <div class="col-sm-6">
+                <input class="float-right btn btn-info mt-2" type="submit" value="Войти"/>
+            </div>
+        </div>
+
+    </form>
+</div>

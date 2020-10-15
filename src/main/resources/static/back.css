@@ -1,0 +1,11 @@
+.gradient {
+    /*background: linear-gradient(to top left, #d2f6fc, white);*/
+    background: #e2f7fa;
+    background: linear-gradient(to right, #e2f7fa, #eaeeee, #e2f7fa);
+}
+
+.gradient-nav {
+    background: #0a2a40;
+    /*background: linear-gradient(to top, #15496d 20%, #0a2a40 50%, #15496d 80%);*/
+    background: linear-gradient(to top, #1d5174 20%, #0c314c 50%, #1d5174 80%);
+}

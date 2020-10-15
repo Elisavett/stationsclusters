@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/back.css">
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+    <title>Расчет</title>
+</head>
+<header>
+    <div th:replace="fragments/navbar :: navbar (${'resolve'})"></div>
+</header>
+<body class="gradient">
+<!-- Обработка ошибок -->
+<div th:if="${error}">
+    <div class="container">
+        <div class="row p-3">
+            <div class="col-12">
+                <div class="toast shadow-lg" id='toast1' data-autohide="false">
+                    <div class="toast-header bg-danger p-2">
+                        <strong class="mr-auto text-light">Ошибка <span th:text="${error}"></span></strong>
+                        <button type="button" class="mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#toast1').toast({
+            animation: true,
+            autohide: true,
+            delay: 4000
+        })
+        $('.toast').toast('show');
+    </script>
+</div>
+
+
+<div class="container mt-2">
+    <div>
+        <form th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form">
+            <div class="form-group row">
+                <label for="corr" class="col-sm-4 col-form-label">Задайте величину корреляции (от 0 до 1) :
+                </label>
+                <div class="col-sm-1">
+                    <input class="form-control" type="text" name="corr" onkeyup="checkParams()" autocomplete="off"
+                           id="corr">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="corr" class="col-sm-4 col-form-label">Размер окна :
+                </label>
+                <div class="col-sm-2">
+                    <input class="form-control" type="text" name="windowLeft" onkeyup="checkParams()" autocomplete="off"
+                           id="windowLeft">
+                </div>
+                <div class="col-sm-2">
+                    <input class="form-control" type="text" name="windowRight" onkeyup="checkParams()" autocomplete="off"
+                           id="windowRight">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="corr" class="col-sm-4 col-form-label">Погрешность вычислений :
+                </label>
+                <div class="col-sm-2">
+                    <input class="form-control" type="text" name="sigma" onkeyup="checkParams()" autocomplete="off"
+                           id="sigma">
+                </div>
+            </div>
+            <div class="form-group row" style="max-width: 1070px;">
+                <div class="col-sm-5 ml-3">
+                    <input type="file" class="custom-file-input" name="fileTemp" accept="text/plain"
+                           onchange="checkParams()" autocomplete="off" id="fileTemp">
+                    <label class="custom-file-label" data-browse="Загрузить" for="fileTemp">Добавьте txt файл с температурами</label>
+                </div>
+            </div>
+            <div class="form-group row" style="max-width: 1070px;">
+                <div class="col-sm-5 ml-3">
+                    <input type="file" class="custom-file-input" name="fileCoordinates" accept="text/plain"
+                           onchange="checkParams()" autocomplete="off" id="fileCoordinates">
+                    <label class="custom-file-label" data-browse="Загрузить" for="fileCoordinates">Добавьте txt файл с координатами</label>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <button class="float-right btn btn-info" type="submit" id="submit" disabled>Рассчитать</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    //стиль закрузки файла
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+    //проверка
+    function checkParams() {
+        var corr = $('#corr').val();
+        if (corr.length != 0 && fileTemp.value != 0 && fileCoordinates.value != 0) {
+            $('#submit').removeAttr('disabled');
+        } else {
+            $('#submit').attr('disabled', 'disabled');
+        }
+    }
+</script>
+</body>
+</html>

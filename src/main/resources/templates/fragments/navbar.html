@@ -1,0 +1,66 @@
+<div  th:fragment="navbar (path)" xmlns:th="http://www.w3.org/1999/xhtml">
+    <link rel="stylesheet" th:href="@{/back.css}">
+    <nav class="navbar navbar-expand-lg navbar-dark gradient-nav" style="background-color: #dcdede;">
+        <div class="container">
+            <!--<a class="navbar-brand" href="/">Главная</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>-->
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <!--<li class="nav-item">
+                        <a class="nav-link" th:href="@{/forum}">Форум</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/article}">Статьи</a>
+                    </li>-->
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/resolve}">Расчет</a>
+                    </li>
+                    <li th:if="${path == 'map'}" class="nav-item">
+                        <a class="nav-link" data-toggle="modal" data-target="#modal-1">Изменить маркер</a>
+                    </li>
+                </ul>
+                <!-- <div th:with="know = ${session['SPRING_SECURITY_CONTEXT']}">
+                     <div th:if="${know}">
+                         <div th:with="user = ${know.authentication.principal}">
+                             <ul class="navbar-nav mr-auto">
+                                 <li class="nav-item">
+                                     <a class="nav-link" th:href="@{'/user/' + ${user.Id}}"><span
+                                             th:text="${user.username}"></span></a>
+                                 </li>
+                                 <li>
+                                     &lt;!&ndash;Выйти&ndash;&gt;
+                                     <div>
+                                         <form th:action="@{/logout}" method="post">
+                                             <input class="btn btn-info" type="submit"
+                                                    value="Выйти"/>
+                                         </form>
+                                     </div>
+                                 </li>
+                                 <div th:if="${user.isAdmin()}">
+                                     <li class="nav-item">
+                                         <a class="nav-link text-danger" th:href="@{/admin}">Панель администратора</a>
+                                     </li>
+                                 </div>
+                             </ul>
+                         </div>
+                     </div>
+                     <div th:unless="${know}">
+                         <ul class="navbar-nav mr-auto">
+                             <li class="nav-item">
+                                 <a class="btn btn-info"
+                                    th:href="@{/registration}">Регистрация</a>
+                             </li>
+                             <li class="nav-item">
+                                 <a class="btn btn-info mx-2" th:href="@{/login}">Войти</a>
+                             </li>
+                         </ul>
+                     </div>
+                 </div>-->
+             </div>
+        </div>
+    </nav>
+</div>
