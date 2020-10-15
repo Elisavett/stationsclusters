@@ -41,11 +41,6 @@ public class MapAllocationController {
         return "resolve";
     }
 
-    @GetMapping("/")
-    public String index() {
-        return "resolve";
-    }
-
     @GetMapping("/map")
     public String map() {
         return "map";
