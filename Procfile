@@ -1,1 +1,1 @@
-web:    java $JAVA_OPTS -jar out\artifacts\hellospring_jar --port $PORT target/*.war
+web:    java $JAVA_OPTS -jar target/hellospring-0.0.1-SNAPSHOT.jar

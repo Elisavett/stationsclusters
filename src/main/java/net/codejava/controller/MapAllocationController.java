@@ -36,6 +36,10 @@ public class MapAllocationController {
     @Value("${upload.resolve}")
     private String uploadPath;
 
+    @GetMapping("/")
+    public String index() {
+        return "resolve";
+    }
     @GetMapping("/resolve")
     public String resolve() {
         return "resolve";
