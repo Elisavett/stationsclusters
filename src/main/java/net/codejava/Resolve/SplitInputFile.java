@@ -2,11 +2,9 @@ package net.codejava.Resolve;
 
 import net.codejava.Resolve.Model.ArrayData;
 import net.codejava.Resolve.Model.Temp;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,12 +17,12 @@ public class SplitInputFile {
     /**
      * Разделяет полученный файл по строчкам и помещает каждую строку в новый файл в переданный путь
      *
-     * @param file          Входной файл
      * @throws IOException если файл не существует, это каталог, а не обычный файл, или по какой-либо другой причине не может быть открыт для чтения.
      */
-    public static ArrayData ReadFromFileSplitting(File file) throws IOException {
+    public static ArrayData ReadFromFileSplitting(MultipartFile fileTemp) throws IOException {
         ArrayList<ArrayList<Double>> finalTemp = new ArrayList<ArrayList<Double>>();
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        InputStream is = fileTemp.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         String line;
         List<String> lines = new ArrayList<String>();
         while ((line = reader.readLine()) != null) {

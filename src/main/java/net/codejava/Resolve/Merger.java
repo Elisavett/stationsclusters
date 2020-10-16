@@ -157,10 +157,9 @@ import com.google.gson.GsonBuilder;
 import net.codejava.Resolve.Model.Group;
 import net.codejava.Resolve.Model.GroupAndCoordinates;
 import net.codejava.Resolve.Model.GroupLine;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -175,7 +174,7 @@ import java.util.concurrent.Future;
  */
 public class Merger {
     private static final Gson GSON = new GsonBuilder().create();
-    String pathCoordinates;
+    MultipartFile Coordinates;
     ArrayList<GroupLine> groupList = new ArrayList<>();
     TreeSet<GroupLine> sortGroupLine;
     double[][] coordinatesSourceTXT;
@@ -183,8 +182,8 @@ public class Merger {
     int stationCount;
     List<Future<Group>> arrayGroup;
 
-    public Merger(int stationCount, String pathCoordinates, List<Future<Group>> arrayGroup) {
-        this.pathCoordinates = pathCoordinates;
+    public Merger(int stationCount, MultipartFile fileCoordinates, List<Future<Group>> arrayGroup) {
+        this.Coordinates = fileCoordinates;
         this.stationCount = stationCount;
         this.arrayGroup = arrayGroup;
     }
@@ -228,9 +227,13 @@ public class Merger {
 
     public void loadCoordinates() throws IOException {
         //Получаю координаты каждой станции и записываю в coordinatesSourceTXT
-        FileReader fr1 = new FileReader(pathCoordinates);
-        BufferedReader fr = new BufferedReader(fr1);
+        //FileReader fr1 = new FileReader(pathCoordinates);
+        String line;
+        InputStream is = Coordinates.getInputStream();
+        BufferedReader fr = new BufferedReader(new InputStreamReader(is));
         Scanner scan = new Scanner(fr);
+
+
 
         String[] arrRetval;
         String retval;

@@ -1,9 +1,9 @@
 package net.codejava.Resolve;
 
 import net.codejava.Resolve.Model.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class Start {
-    public static ArrayList<String> run(String path, String Temp, String Coord, double coefficientCorr, double window_left, double window_right, double sigma) throws IOException, ClassNotFoundException, InterruptedException, ExecutionException {
+    public static ArrayList<String> run(MultipartFile fileTemp, MultipartFile fileCoord, double coefficientCorr, double window_left, double window_right, double sigma) throws IOException, ClassNotFoundException, InterruptedException, ExecutionException {
         //long start = System.currentTimeMillis();
 
         //получаем количество процессоров
@@ -20,8 +20,8 @@ public class Start {
         //создаем пул на количество процессоров
         ExecutorService executorService = Executors.newFixedThreadPool(processors);
 
-        File file = new File(path + Temp); // файл с температурами
-        String pathCoordinates = path + Coord;//Путь до координат
+        //File file = new File(fileTemp); // файл с температурами
+        //String pathCoordinates = path + Coord;//Путь до координат
 
         ArrayData arrayTemp = new ArrayData();
         List<Future<Phase>> arrayPhase;
@@ -30,7 +30,28 @@ public class Start {
         List<Future<Corr>> arrayCorr;
 
         // загружаем все температуры из файла и разбиваем на файлы для каждой станции
-        arrayTemp = SplitInputFile.ReadFromFileSplitting(file);
+
+        arrayTemp = SplitInputFile.ReadFromFileSplitting(fileTemp);
+        /*BufferedReader br;
+        try {
+
+            String line;
+            InputStream is = fileTemp.getInputStream();
+            br = new BufferedReader(new InputStreamReader(is));
+
+            while ((line = br.readLine()) != null) {
+                String[] splitedLine = line.split("\\s+");
+                double[] data = new double[splitedLine.length - 1];
+                for(int i =1; i<splitedLine.length - 1; i++)
+                {
+                    data[i] = Double.parseDouble(splitedLine[i]);
+                }
+                arrayTemp.add(data);
+            }
+
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }*/
 
 
         //блок вычисления фазы
@@ -38,7 +59,7 @@ public class Start {
         List<PhaseCalculation> phaseCalculationTasks = new ArrayList<>();
         int stationCount = arrayTemp.size();//количество станций
         for (int i = 0; i < stationCount; i++) {
-            Temp temp = (Temp) arrayTemp.getData(i);
+            Temp temp = (Temp)arrayTemp.getData(i);
             PhaseCalculation phaseCalculation = new PhaseCalculation(temp, window_left, window_right);
             phaseCalculationTasks.add(phaseCalculation);
         }
@@ -84,7 +105,7 @@ public class Start {
 
 
         // объединяю станции в группы, дописываю координаты
-        Merger merger = new Merger(stationCount, pathCoordinates, arrayGroup);
+        Merger merger = new Merger(stationCount, fileCoord, arrayGroup);
         ArrayList<String> groupAndCoordinates = merger.run();
 
 //        System.out.println(System.currentTimeMillis() - start);

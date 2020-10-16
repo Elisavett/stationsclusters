@@ -7,10 +7,7 @@ package net.codejava.controller;
 
 import com.google.gson.Gson;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -67,7 +64,7 @@ public class MapAllocationController {
         double window_right = Double.parseDouble(windowRight.replace(',', '.'));
         double err = Double.parseDouble(sigma.replace(',', '.'));
 
-        String name = fileTemp.getOriginalFilename();
+       /* String name = fileTemp.getOriginalFilename();
 
         String usernamePath = "user" + "/";
 
@@ -98,11 +95,12 @@ public class MapAllocationController {
             }
         } else {
             System.out.println("файл пустой");
-        }
+        }*/
+
 
         ArrayList<String> json = new ArrayList<>();
         try {
-            json = Start.run(userPath, uniqueNameTemp, uniqueNameCoord, correlation, window_left, window_right, err);
+            json = Start.run(fileTemp, fileCoordinates, correlation, window_left, window_right, err);
         } catch (IOException | ClassNotFoundException e) {
             return "resolve";
         } catch (NumberFormatException e) {
@@ -114,11 +112,11 @@ public class MapAllocationController {
         }
 
         //Сериализую json файл
-        try {
+        /*try {
             Serialize.serialize(userPath + uniqueNameJson, json);
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         model.addAttribute("json", json);
         return "map";
     }
