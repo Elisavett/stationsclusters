@@ -221,6 +221,12 @@ public class Merger {
             if (groupList.get(i).getGroup().size() > 5) {
                 sortGroupLine.add(groupList.get(i));
             }
+            else
+            {
+                groupList.get(i).lessThenFive();
+                sortGroupLine.add(groupList.get(i));
+            }
+
         }
 
     }
@@ -268,7 +274,8 @@ public class Merger {
                         coordinatesSourceTXT[j][0],
                         coordinatesSourceTXT[j][1],
                         coordinatesSourceTXT[j][2],
-                        numberGroup);
+                        numberGroup,
+                        gr.islessThenFive());
                 String jsonData = GSON.toJson(groupAndCoordinates);
                 json.add(jsonData);
             }

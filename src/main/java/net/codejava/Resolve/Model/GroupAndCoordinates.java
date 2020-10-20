@@ -9,12 +9,14 @@ public class GroupAndCoordinates {
     private double long_ ;
     private double number_station;
     private double number_group;
+    boolean isLessThenFive;
 
-    public GroupAndCoordinates(double lat, double long_, double number_station, double number_group) {
+    public GroupAndCoordinates(double lat, double long_, double number_station, double number_group, boolean isLessThen5) {
         this.lat = lat;
         this.long_ = long_;
         this.number_station = number_station;
         this.number_group = number_group;
+        this.isLessThenFive = isLessThen5;
     }
 
     public double getLat() {

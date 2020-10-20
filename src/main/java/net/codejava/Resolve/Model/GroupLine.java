@@ -5,6 +5,9 @@ import java.util.stream.IntStream;
 
 public class GroupLine implements Comparable<GroupLine> {
     private int[] group;
+    private boolean isLess5 = false;
+
+
     public GroupLine(int[] group){
         this.group=group;
     }
@@ -16,6 +19,14 @@ public class GroupLine implements Comparable<GroupLine> {
             al.add(group[i]);
         }
         return al;
+    }
+    public boolean islessThenFive()
+    {
+        return isLess5;
+    }
+    public void lessThenFive()
+    {
+        isLess5 = true;
     }
 
     public void setGroup(int[] group) {
