@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class Start {
-    public static ArrayList<String> run(MultipartFile fileTemp, MultipartFile fileCoord, double coefficientCorr, double window_left, double window_right, double sigma) throws IOException, ClassNotFoundException, InterruptedException, ExecutionException {
+    public static ArrayList<String> run(ArrayData arrayTemp, MultipartFile fileCoord, double coefficientCorr, double window_left, double window_right, double sigma) throws IOException, ClassNotFoundException, InterruptedException, ExecutionException {
         //long start = System.currentTimeMillis();
 
         //получаем количество процессоров
@@ -23,15 +23,12 @@ public class Start {
         //File file = new File(fileTemp); // файл с температурами
         //String pathCoordinates = path + Coord;//Путь до координат
 
-        ArrayData arrayTemp = new ArrayData();
         List<Future<Phase>> arrayPhase;
         ArrayData arrayTypicalPath = new ArrayData();
         List<Future<Group>> arrayGroup;
         List<Future<Corr>> arrayCorr;
 
-        // загружаем все температуры из файла и разбиваем на файлы для каждой станции
 
-        arrayTemp = SplitInputFile.ReadFromFileSplitting(fileTemp);
         /*BufferedReader br;
         try {
 

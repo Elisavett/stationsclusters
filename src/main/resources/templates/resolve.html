@@ -2,12 +2,10 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="../static/back.css">
     <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
@@ -15,6 +13,36 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
+    <style>
+        #additional,#additional2,#additional3{
+            color: blue;
+        }
+        #additional:hover,
+        #additional2:hover,
+        #additional3:hover{
+            color: royalblue;
+            text-decoration: underline;
+        }
+        .optional{
+            border: 1px solid #f4fdff;
+            background-color: #f4fdff;
+            border-radius: 8px;
+            padding-left: 15px;
+            margin: 10px 10px 20px 10px;
+            padding-top: 15px;
+        }
+        .dataClass,.windowClass{
+            border: 1px solid #ffffff;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding-left: 15px;
+            margin: 10px 10px 20px 10px;
+            padding-top: 15px;
+        }
+        form{
+            padding: 0 12% 0 12%;
+        }
+    </style>
     <title>Расчет</title>
 </head>
 <header>
@@ -48,59 +76,139 @@
 </div>
 
 
-<div class="container mt-2">
+<div class="container mt-2" >
     <div>
-        <form th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form">
+        <form th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form" >
+
             <div class="form-group row">
-                <label for="corr" class="col-sm-4 col-form-label">Задайте величину корреляции (от 0 до 1) :
+                <label for="corr" class="col-sm-12 col-form-label">Все вещественные значения вводятся ч/з запятую!!!</label>
+            </div>
+                <div class="form-group row">
+                 <label for="corr" class="col-sm-5 col-form-label">Коэффициент корреляции (от 0 до 1):
                 </label>
-                <div class="col-sm-1">
+                <div class="col-sm-2">
                     <input class="form-control" type="text" name="corr" onkeyup="checkParams()" autocomplete="off"
                            id="corr" value="0,8">
                 </div>
             </div>
-            <div class="form-group row">
-                <label for="corr" class="col-sm-4 col-form-label">Размер окна :
-                </label>
-                <div class="col-sm-2">
-                    <input class="form-control" type="text" name="windowLeft" onkeyup="checkParams()" autocomplete="off"
-                           id="windowLeft" value="34">
-                </div>
-                <div class="col-sm-2">
-                    <input class="form-control" type="text" name="windowRight" onkeyup="checkParams()" autocomplete="off"
-                           id="windowRight" value="66">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="corr" class="col-sm-4 col-form-label">Погрешность вычислений :
-                </label>
-                <div class="col-sm-2">
-                    <input class="form-control" type="text" name="sigma" onkeyup="checkParams()" autocomplete="off"
-                           id="sigma" value="0,0001">
-                </div>
-            </div>
+
+
             <div class="form-group row" style="max-width: 1070px;">
-                <div class="col-sm-5 ml-3">
+                <label for="corr" class="col-sm-5 col-form-label">Файл температур:
+                </label>
+                <div class="col-sm-6" style="margin-left: 2%">
                     <input type="file" class="custom-file-input" name="fileTemp" accept="text/plain"
                            onchange="checkParams()" autocomplete="off" id="fileTemp">
                     <label class="custom-file-label" data-browse="Загрузить" for="fileTemp">Добавьте txt файл с температурами</label>
                 </div>
             </div>
             <div class="form-group row" style="max-width: 1070px;">
-                <div class="col-sm-5 ml-3">
+                <label for="corr" class="col-sm-5 col-form-label">Файл координат:
+                </label>
+                <div class="col-sm-6" style="margin-left: 2%">
                     <input type="file" class="custom-file-input" name="fileCoordinates" accept="text/plain"
                            onchange="checkParams()" autocomplete="off" id="fileCoordinates">
                     <label class="custom-file-label" data-browse="Загрузить" for="fileCoordinates">Добавьте txt файл с координатами</label>
                 </div>
             </div>
-            <div class="col-sm-5">
-                <button class="float-right btn btn-info" type="submit" id="submit" disabled>Рассчитать</button>
+            <div id="optionsAdder" class="form-group row">
+                <div class="col-sm-5">
+                    <a id="additional">Дополнительные опции</a>
+                </div>
+            </div>
+            <div hidden="true" class="optional">
+
+                <div class="form-group row">
+                    <label for="corr" class="col-sm-5 col-form-label">Погрешность вычислений :
+                    </label>
+                    <div class="col-sm-2">
+                        <input class="form-control" type="text" name="sigma" onkeyup="checkParams()" autocomplete="off"
+                               id="sigma" value="0,0001">
+                    </div>
+                </div>
+                <div id="dataTypes" class="form-group row">
+                    <div class="col-sm-5">
+                        <a id="additional2">Указать вид данных</a> /
+                                <a id="additional3">Указать окно</a>
+                        </div>
+                    </div>
+                <div hidden="true" class="dataClass">
+                    <div class="form-group row">
+                        <label for="corr" class="col-sm-12 col-form-label">Вид данных:
+                        </label>
+                        <div class="col-sm-12">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" checked type="radio" name="dataType" id="avrgMonth" value="12">
+                                <label class="form-check-label" for="avrgMonth">Среднемесячные</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="dataType" id="avrgDay" value="365">
+                                <label class="form-check-label" for="avrgDay">Среднесуточные</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div hidden="true" class="windowClass">
+                    <div class="form-group row">
+                        <label for="corr" class="col-sm-5 col-form-label">Размер окна :
+                        </label>
+                        <div class="col-sm-2">
+                            <input class="form-control" type="text" name="windowLeft" onkeyup="checkParams()" autocomplete="off"
+                                   id="windowLeft" value="0">
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="form-control" type="text" name="windowRight" onkeyup="checkParams()" autocomplete="off"
+                                   id="windowRight" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2" style="padding: 0">
+                <button class="btn btn-outline-secondary btn-block" type="submit" id="submit" disabled>Рассчитать</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
+    $('#optionsAdder').click(function() {
+        if($('.optional').attr("hidden"))
+        {
+            $(".optional").attr("hidden",false);
+        }
+        else{
+            $(".optional").attr("hidden",true);
+        }
+    });
+    $('#additional2').click(function() {
+        if($('.dataClass').attr("hidden"))
+        {
+            $(".dataClass").attr("hidden",false);
+            $("#windowLeft").attr("value",0);
+            $("#windowRight").attr("value",0);
+            $('input[name="dataType"][value="12"]').prop('checked', true)
+        }
+        else{
+            $(".dataClass").attr("hidden",true);
+        }
+        $(".windowClass").attr("hidden",true);
+    });
+    $('#additional3').click(function() {
+        if($('.windowClass').attr("hidden"))
+        {
+            $(".windowClass").attr("hidden",false);
+            $("#windowLeft").attr("value",34);
+            $("#windowRight").attr("value",66);
+            $('input[name="dataType"]').prop('checked', false);
+
+        }
+        else{
+            $(".windowClass").attr("hidden",true);
+        }
+        $(".dataClass").attr("hidden",true);
+    });
+
     //стиль закрузки файла
     $(".custom-file-input").on("change", function () {
         var fileName = $(this).val().split("\\").pop();
@@ -116,6 +224,7 @@
             $('#submit').attr('disabled', 'disabled');
         }
     }
+
 </script>
 </body>
 </html>

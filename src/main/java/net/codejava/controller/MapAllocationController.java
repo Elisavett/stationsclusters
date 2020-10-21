@@ -14,7 +14,9 @@ import java.util.concurrent.ExecutionException;
 
 import com.google.gson.GsonBuilder;
 import net.codejava.Resolve.FileManager;
+import net.codejava.Resolve.Model.ArrayData;
 import net.codejava.Resolve.Serialize;
+import net.codejava.Resolve.SplitInputFile;
 import net.codejava.Resolve.Start;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -35,7 +37,7 @@ public class MapAllocationController {
 
     @GetMapping("/")
     public String index() {
-        return "resolve";
+        return "index";
     }
     @GetMapping("/resolve")
     public String resolve() {
@@ -57,50 +59,22 @@ public class MapAllocationController {
                       @RequestParam String corr,
                       @RequestParam String windowLeft,
                       @RequestParam String  windowRight,
-                      @RequestParam String sigma) {
+                      @RequestParam String sigma,
+                      @RequestParam String dataType) throws IOException {
 
         double correlation = Double.parseDouble(corr.replace(',', '.'));
         double window_left = Double.parseDouble(windowLeft.replace(',', '.'));
         double window_right = Double.parseDouble(windowRight.replace(',', '.'));
+        ArrayData arrayTemp = SplitInputFile.ReadFromFileSplitting(fileTemp);
+        if(window_left==0 && window_right==0){
+            window_left = arrayTemp.size()*0.85/Integer.parseInt(dataType);
+            window_right = arrayTemp.size()*1.15/Integer.parseInt(dataType);
+        }
         double err = Double.parseDouble(sigma.replace(',', '.'));
-
-       /* String name = fileTemp.getOriginalFilename();
-
-        String usernamePath = "user" + "/";
-
-        //String usernamePath = "/" + user.getUsername() + "/";
-        String userPath = uploadPath + "/" + usernamePath;//путь до папки пользователя
-        String uuid = UUID.randomUUID().toString();
-        String uniqueNameTemp = uuid + "Temp.txt";
-        String uniqueNameCoord = uuid + "Koord.txt";
-        String uniqueNameJson = uuid + "json";
-        //создаю папки если они не созданы
-        FileManager.createFolder(uploadPath);
-        FileManager.createFolder(userPath);
-
-        if (!fileTemp.isEmpty() & !fileCoordinates.isEmpty()) {
-            try {
-                byte[] bytesTemp = fileTemp.getBytes();
-                byte[] bytesCoordinates = fileCoordinates.getBytes();
-                BufferedOutputStream streamTemp =
-                        new BufferedOutputStream(new FileOutputStream(new File(userPath + uniqueNameTemp)));
-                BufferedOutputStream streamCoordinates =
-                        new BufferedOutputStream(new FileOutputStream(new File(userPath + uniqueNameCoord)));
-                streamTemp.write(bytesTemp);
-                streamCoordinates.write(bytesCoordinates);
-                streamTemp.close();
-                streamCoordinates.close();
-            } catch (Exception e) {
-                System.out.println("не удалось загрузить " + e.getMessage());
-            }
-        } else {
-            System.out.println("файл пустой");
-        }*/
-
 
         ArrayList<String> json = new ArrayList<>();
         try {
-            json = Start.run(fileTemp, fileCoordinates, correlation, window_left, window_right, err);
+            json = Start.run(arrayTemp, fileCoordinates, correlation, window_left, window_right, err);
         } catch (IOException | ClassNotFoundException e) {
             return "resolve";
         } catch (NumberFormatException e) {
@@ -111,12 +85,6 @@ public class MapAllocationController {
             e.printStackTrace();
         }
 
-        //Сериализую json файл
-        /*try {
-            Serialize.serialize(userPath + uniqueNameJson, json);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         model.addAttribute("json", json);
         return "map";
     }
