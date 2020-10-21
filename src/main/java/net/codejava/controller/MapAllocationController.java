@@ -60,7 +60,7 @@ public class MapAllocationController {
                       @RequestParam String windowLeft,
                       @RequestParam String  windowRight,
                       @RequestParam String sigma,
-                      @RequestParam String dataType) throws IOException {
+                      @RequestParam(value = "dataType", required = false) String dataType) throws IOException {
 
         double correlation = Double.parseDouble(corr.replace(',', '.'));
         double window_left = Double.parseDouble(windowLeft.replace(',', '.'));
