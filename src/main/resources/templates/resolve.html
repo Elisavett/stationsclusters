@@ -81,34 +81,38 @@
         <form th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form" >
 
             <div class="form-group row">
-                <label for="corr" class="col-sm-12 col-form-label">Все вещественные значения вводятся ч/з запятую!!!</label>
+                <label for="corr" class="col-sm-12 col-form-label">Все вещественные значения вводятся ч/з точку!!!</label>
             </div>
                 <div class="form-group row">
                  <label for="corr" class="col-sm-5 col-form-label">Коэффициент корреляции (от 0 до 1):
                 </label>
                 <div class="col-sm-2">
                     <input class="form-control" type="text" name="corr" onkeyup="checkParams()" autocomplete="off"
-                           id="corr" value="0,8">
+                           id="corr" th:attr="value=${corr}">
                 </div>
             </div>
 
-
             <div class="form-group row" style="max-width: 1070px;">
-                <label for="corr" class="col-sm-5 col-form-label">Файл температур:
+                <label ></label>
+                <label th:text="'Файл температур:&nbsp;&nbsp;&nbsp;' + (${tempers}?${tempers}:'')" for="corr" class="col-sm-5 col-form-label">
                 </label>
                 <div class="col-sm-6" style="margin-left: 2%">
-                    <input type="file" class="custom-file-input" name="fileTemp" accept="text/plain"
-                           onchange="checkParams()" autocomplete="off" id="fileTemp">
-                    <label class="custom-file-label" data-browse="Загрузить" for="fileTemp">Добавьте txt файл с температурами</label>
+
+                    <input  type="file" class="custom-file-input" name="fileTemp" accept="text/plain"
+                           onchange="checkParams()" autocomplete="off" id="fileTemp"  th:attr="value=${tempers}">
+                    <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл с температурами')" class="custom-file-label" data-browse="Загрузить" for="fileTemp"></label>
                 </div>
             </div>
+            <input type="hidden" id="temps" th:attr="value=${tempers}">
+            <input type="hidden" id="coords" th:attr="value=${coords}">
+            <input type="hidden" id="dataType" th:attr="value=${dataType}">
             <div class="form-group row" style="max-width: 1070px;">
-                <label for="corr" class="col-sm-5 col-form-label">Файл координат:
+                <label th:text="'Файл координат:&nbsp;&nbsp;&nbsp;' + (${coords}?${coords}:'')" for="corr" class="col-sm-5 col-form-label">
                 </label>
                 <div class="col-sm-6" style="margin-left: 2%">
-                    <input type="file" class="custom-file-input" name="fileCoordinates" accept="text/plain"
-                           onchange="checkParams()" autocomplete="off" id="fileCoordinates">
-                    <label class="custom-file-label" data-browse="Загрузить" for="fileCoordinates">Добавьте txt файл с координатами</label>
+                    <input  type="file" class="custom-file-input" name="fileCoordinates" accept="text/plain"
+                           onchange="checkParams()" autocomplete="off" id="fileCoordinates" th:attr="value=${coords}">
+                    <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл с координатами')" class="custom-file-label" data-browse="Загрузить" for="fileCoordinates"></label>
                 </div>
             </div>
             <div id="optionsAdder" class="form-group row">
@@ -123,7 +127,7 @@
                     </label>
                     <div class="col-sm-2">
                         <input class="form-control" type="text" name="sigma" onkeyup="checkParams()" autocomplete="off"
-                               id="sigma" value="0,0001">
+                               id="sigma" th:attr="value=${sigma}">
                     </div>
                 </div>
                 <div id="dataTypes" class="form-group row">
@@ -155,11 +159,11 @@
                         </label>
                         <div class="col-sm-2">
                             <input class="form-control" type="text" name="windowLeft" onkeyup="checkParams()" autocomplete="off"
-                                   id="windowLeft" value="0">
+                                   id="windowLeft" th:attr="value=${wleft}">
                         </div>
                         <div class="col-sm-2">
                             <input class="form-control" type="text" name="windowRight" onkeyup="checkParams()" autocomplete="off"
-                                   id="windowRight" value="0">
+                                   id="windowRight" th:attr="value=${wRight}">
                         </div>
                     </div>
                 </div>
@@ -172,6 +176,12 @@
 </div>
 
 <script>
+    window.onload = function (){
+        checkParams();
+        var type = $('#dataType').val();
+        if(type!=null) $('input[name="dataType"][value='+type+']').prop('checked', true);
+
+    }
     $('#optionsAdder').click(function() {
         if($('.optional').attr("hidden"))
         {
@@ -198,8 +208,8 @@
         if($('.windowClass').attr("hidden"))
         {
             $(".windowClass").attr("hidden",false);
-            $("#windowLeft").attr("value",34);
-            $("#windowRight").attr("value",66);
+            $("#windowLeft").attr("value", $('#windowLeft').val());
+            $("#windowRight").attr("value", $('#windowRight').val());
             $('input[name="dataType"]').prop('checked', false);
 
         }
@@ -218,7 +228,23 @@
     //проверка
     function checkParams() {
         var corr = $('#corr').val();
-        if (corr.length != 0 && fileTemp.value != 0 && fileCoordinates.value != 0) {
+        var temps = $('#temps').val();
+        var coords = $('#coords').val();
+
+/*        if(corr !== 0)
+        {
+            alert(corr);
+            if(temps !== "" || fileTemp.value != 0)
+            {
+                alert(fileTemp.value + " " + temps);
+                if(fileCoordinates.value != 0 || coords !== null)
+                {
+                    alert(fileCoordinates.value  + " " + coords);
+                }
+            }
+        }
+        alert(temps + "...." + coords + ".." + corr + "...." + fileTemp.value + ".." + fileCoordinates.value)*/
+        if (corr !== 0 && (fileTemp.value != 0 || temps !== "") && (fileCoordinates.value != 0 || coords !== "")) {
             $('#submit').removeAttr('disabled');
         } else {
             $('#submit').attr('disabled', 'disabled');

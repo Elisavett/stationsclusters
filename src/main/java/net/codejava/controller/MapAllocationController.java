@@ -15,6 +15,9 @@ import java.util.concurrent.ExecutionException;
 import com.google.gson.GsonBuilder;
 import net.codejava.Resolve.FileManager;
 import net.codejava.Resolve.Model.ArrayData;
+import net.codejava.Resolve.Model.Data;
+import net.codejava.Resolve.Model.ResolveForm;
+import net.codejava.Resolve.Model.Temp;
 import net.codejava.Resolve.Serialize;
 import net.codejava.Resolve.SplitInputFile;
 import net.codejava.Resolve.Start;
@@ -40,7 +43,25 @@ public class MapAllocationController {
         return "index";
     }
     @GetMapping("/resolve")
-    public String resolve() {
+    public String resolve(Model model) {
+        if(ResolveForm.corr != 0)
+        {
+            model.addAttribute("tempers", ResolveForm.tempFileName);
+            model.addAttribute("coords", ResolveForm.coordFileName);
+            model.addAttribute("sigma", ResolveForm.sigma);
+            model.addAttribute("wleft", ResolveForm.windowLeft);
+            model.addAttribute("wRight", ResolveForm.windowRight);
+            model.addAttribute("corr", ResolveForm.corr);
+            model.addAttribute("dataType", ResolveForm.dataType);
+        }
+        else{
+/*            model.addAttribute("tempers", );
+            model.addAttribute("coords", null);*/
+            model.addAttribute("sigma", "0.0001");
+            model.addAttribute("wleft", 0);
+            model.addAttribute("wRight", 0);
+            model.addAttribute("corr", "0.8");
+        }
         return "resolve";
     }
 
@@ -54,27 +75,42 @@ public class MapAllocationController {
 
     @PostMapping("/map")
     public String map(Model model,
-                      @RequestParam("fileTemp") MultipartFile fileTemp,
-                      @RequestParam("fileCoordinates") MultipartFile fileCoordinates,
+                      @RequestParam(value = "fileTemp", required = false) MultipartFile fileTemp,
+                      @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,
                       @RequestParam String corr,
                       @RequestParam String windowLeft,
                       @RequestParam String  windowRight,
                       @RequestParam String sigma,
                       @RequestParam(value = "dataType", required = false) String dataType) throws IOException {
 
-        double correlation = Double.parseDouble(corr.replace(',', '.'));
-        double window_left = Double.parseDouble(windowLeft.replace(',', '.'));
-        double window_right = Double.parseDouble(windowRight.replace(',', '.'));
-        ArrayData arrayTemp = SplitInputFile.ReadFromFileSplitting(fileTemp);
-        if(window_left==0 && window_right==0){
-            window_left = arrayTemp.size()*0.85/Integer.parseInt(dataType);
-            window_right = arrayTemp.size()*1.15/Integer.parseInt(dataType);
+        ResolveForm.corr = Double.parseDouble(corr);
+        ResolveForm.sigma = Double.parseDouble(sigma);
+        ResolveForm.windowLeft = Double.parseDouble(windowLeft);
+        ResolveForm.windowRight = Double.parseDouble(windowRight);
+
+
+        if(!fileTemp.getOriginalFilename().equals("")) {
+            ResolveForm.TempData = new double[(int)fileTemp.getSize()][];
+            ResolveForm.TempData = SplitInputFile.ReadFromFileSplitting(fileTemp);
+            ResolveForm.tempFileName = fileTemp.getOriginalFilename();
         }
-        double err = Double.parseDouble(sigma.replace(',', '.'));
+        if(!fileCoordinates.getOriginalFilename().equals("")){
+            ResolveForm.coordData = new double[(int)fileCoordinates.getSize()][];
+            ResolveForm.coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates);
+            ResolveForm.coordFileName = fileCoordinates.getOriginalFilename();
+        }
+
+        if(ResolveForm.windowLeft==0 && ResolveForm.windowRight==0){
+            ResolveForm.dataType = Integer.parseInt(dataType);
+            ResolveForm.windowLeft = ResolveForm.TempData.length*0.80/ResolveForm.dataType;
+            ResolveForm.windowRight = ResolveForm.TempData.length*1.20/ResolveForm.dataType;
+
+        }
 
         ArrayList<String> json = new ArrayList<>();
         try {
-            json = Start.run(arrayTemp, fileCoordinates, correlation, window_left, window_right, err);
+            Start start = new Start();
+            json = start.run();
         } catch (IOException | ClassNotFoundException e) {
             return "resolve";
         } catch (NumberFormatException e) {

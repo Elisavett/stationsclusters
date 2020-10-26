@@ -19,7 +19,7 @@ public class SplitInputFile {
      *
      * @throws IOException если файл не существует, это каталог, а не обычный файл, или по какой-либо другой причине не может быть открыт для чтения.
      */
-    public static ArrayData ReadFromFileSplitting(MultipartFile fileTemp) throws IOException {
+    public static double[][] ReadFromFileSplitting(MultipartFile fileTemp) throws IOException {
         ArrayList<ArrayList<Double>> finalTemp = new ArrayList<ArrayList<Double>>();
         InputStream is = fileTemp.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -43,15 +43,13 @@ public class SplitInputFile {
             flag = true;
             counter = 0;
         }
-
-        ArrayData arrayTemp = new ArrayData();
+        double[][] arrayTemp = new double[finalTemp.size()][];
         for (int k = 0; k < finalTemp.size(); k++) {
             double[] tempArr = new double[finalTemp.get(k).size()];
             for (int i = 0; i < finalTemp.get(k).size(); i++) {
                 tempArr[i] = finalTemp.get(k).get(i);
             }
-            Temp temp = new Temp(tempArr);
-            arrayTemp.addData(temp);
+            arrayTemp[k] = tempArr;
         }
         return arrayTemp;
     }

@@ -6,15 +6,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class Start {
-    public static ArrayList<String> run(ArrayData arrayTemp, MultipartFile fileCoord, double coefficientCorr, double window_left, double window_right, double sigma) throws IOException, ClassNotFoundException, InterruptedException, ExecutionException {
+    public ArrayList<String> run() throws IOException, ClassNotFoundException, InterruptedException, ExecutionException {
         //long start = System.currentTimeMillis();
-
+        //System.out.println("Start");
         //получаем количество процессоров
         int processors = Runtime.getRuntime().availableProcessors();
         //создаем пул на количество процессоров
@@ -29,43 +30,24 @@ public class Start {
         List<Future<Corr>> arrayCorr;
 
 
-        /*BufferedReader br;
-        try {
-
-            String line;
-            InputStream is = fileTemp.getInputStream();
-            br = new BufferedReader(new InputStreamReader(is));
-
-            while ((line = br.readLine()) != null) {
-                String[] splitedLine = line.split("\\s+");
-                double[] data = new double[splitedLine.length - 1];
-                for(int i =1; i<splitedLine.length - 1; i++)
-                {
-                    data[i] = Double.parseDouble(splitedLine[i]);
-                }
-                arrayTemp.add(data);
-            }
-
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }*/
-
-
         //блок вычисления фазы
         //создаем лист задач
         List<PhaseCalculation> phaseCalculationTasks = new ArrayList<>();
-        int stationCount = arrayTemp.size();//количество станций
+        int stationCount = ResolveForm.TempData.length;//количество станций
         for (int i = 0; i < stationCount; i++) {
-            Temp temp = (Temp)arrayTemp.getData(i);
-            PhaseCalculation phaseCalculation = new PhaseCalculation(temp, window_left, window_right);
+            double[] temp = ResolveForm.TempData[i].clone();
+            PhaseCalculation phaseCalculation = new PhaseCalculation(temp, ResolveForm.windowLeft, ResolveForm.windowRight);
             phaseCalculationTasks.add(phaseCalculation);
         }
         //выполняем все задачи. главный поток ждет
         arrayPhase = executorService.invokeAll(phaseCalculationTasks);
+/*        System.out.println("Phases");
+        System.out.println(arrayPhase.size());*/
 
         int count = 0;
         boolean check;
         do {
+            //System.out.println("Cicle");
             //блок вычисления таблицы корреляции
             // создаем лист задач
             List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
@@ -75,12 +57,13 @@ public class Start {
             }
             //выполняем все задачи. главный поток ждет
             arrayCorr = executorService.invokeAll(corrThreadTasks);
-
+            //System.out.println("Corelation");
 
             //блок выделения групп
-            GroupAllocation allocationThread = new GroupAllocation(stationCount, coefficientCorr, arrayCorr, executorService);
+            GroupAllocation allocationThread = new GroupAllocation(stationCount, ResolveForm.corr, arrayCorr, executorService);
             arrayGroup = allocationThread.run();
 
+            //System.out.println("Groups");
             //блок вычисления типовых фаз
             arrayTypicalPath.clear();
             for (int i = 0; i < stationCount; i++) {
@@ -89,9 +72,10 @@ public class Start {
                 TypicalPhase typicalPhase = typical.run();
                 arrayTypicalPath.addData(typicalPhase);
             }
+            //System.out.println("Typicals");
 
             //блок проверки конца алгоритма
-            EndChecking checkMethod = new EndChecking(sigma, stationCount, arrayPhase, arrayTypicalPath, executorService);
+            EndChecking checkMethod = new EndChecking(ResolveForm.sigma, stationCount, arrayPhase, arrayTypicalPath, executorService);
             arrayPhase = checkMethod.run();
             check = checkMethod.check();
 
@@ -99,10 +83,10 @@ public class Start {
             count++;
 //            System.out.println(count);
         } while (!check);
-
+        //System.out.println("count=" + count);
 
         // объединяю станции в группы, дописываю координаты
-        Merger merger = new Merger(stationCount, fileCoord, arrayGroup);
+        Merger merger = new Merger(stationCount, arrayGroup);
         ArrayList<String> groupAndCoordinates = merger.run();
 
 //        System.out.println(System.currentTimeMillis() - start);

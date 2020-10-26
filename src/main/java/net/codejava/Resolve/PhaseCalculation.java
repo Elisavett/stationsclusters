@@ -16,11 +16,11 @@ public class PhaseCalculation implements Callable<Phase> {
     double[] imag;
     double[] phase;
     double[] finals;
-    Temp temp;
+    double[] temp;
     double leftLimit;
     double rightLimit;
 
-    public PhaseCalculation(Temp temp, double leftLimit, double rightLimit) {
+    public PhaseCalculation(double[] temp,double leftLimit, double rightLimit) {
 
         this.temp = temp;
         this.leftLimit = leftLimit;
@@ -42,7 +42,7 @@ public class PhaseCalculation implements Callable<Phase> {
     }
 
     public void LoadFunction(){
-        real = temp.getArray();
+        real = temp;
     }
 
 
@@ -122,7 +122,6 @@ public class PhaseCalculation implements Callable<Phase> {
     public Phase call() throws Exception {
         LoadFunction();
         FFTCalculation();
-        /*Filtration(47, 67);*/
         Filtration(leftLimit, rightLimit);
         IFFTCalculation();
         PhaseCalculation();
