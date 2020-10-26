@@ -44,8 +44,6 @@ public class MapAllocationController {
     }
     @GetMapping("/resolve")
     public String resolve(Model model) {
-        if(ResolveForm.corr != 0)
-        {
             model.addAttribute("tempers", ResolveForm.tempFileName);
             model.addAttribute("coords", ResolveForm.coordFileName);
             model.addAttribute("sigma", ResolveForm.sigma);
@@ -53,15 +51,8 @@ public class MapAllocationController {
             model.addAttribute("wRight", ResolveForm.windowRight);
             model.addAttribute("corr", ResolveForm.corr);
             model.addAttribute("dataType", ResolveForm.dataType);
-        }
-        else{
-/*            model.addAttribute("tempers", );
-            model.addAttribute("coords", null);*/
-            model.addAttribute("sigma", "0.0001");
-            model.addAttribute("wleft", 0);
-            model.addAttribute("wRight", 0);
-            model.addAttribute("corr", "0.8");
-        }
+            model.addAttribute("isStationsOnY", ResolveForm.isStationsOnY);
+
         return "resolve";
     }
 
@@ -81,12 +72,14 @@ public class MapAllocationController {
                       @RequestParam String windowLeft,
                       @RequestParam String  windowRight,
                       @RequestParam String sigma,
+                      @RequestParam String isStationsOnY,
                       @RequestParam(value = "dataType", required = false) String dataType) throws IOException {
 
         ResolveForm.corr = Double.parseDouble(corr);
         ResolveForm.sigma = Double.parseDouble(sigma);
         ResolveForm.windowLeft = Double.parseDouble(windowLeft);
         ResolveForm.windowRight = Double.parseDouble(windowRight);
+        ResolveForm.isStationsOnY = Boolean.parseBoolean(isStationsOnY);
 
 
         if(!fileTemp.getOriginalFilename().equals("")) {
@@ -102,9 +95,8 @@ public class MapAllocationController {
 
         if(ResolveForm.windowLeft==0 && ResolveForm.windowRight==0){
             ResolveForm.dataType = Integer.parseInt(dataType);
-            ResolveForm.windowLeft = ResolveForm.TempData.length*0.80/ResolveForm.dataType;
-            ResolveForm.windowRight = ResolveForm.TempData.length*1.20/ResolveForm.dataType;
-
+            ResolveForm.windowLeft = ResolveForm.TempData[0].length*0.85/ResolveForm.dataType;
+            ResolveForm.windowRight = ResolveForm.TempData[0].length*1.15/ResolveForm.dataType;
         }
 
         ArrayList<String> json = new ArrayList<>();

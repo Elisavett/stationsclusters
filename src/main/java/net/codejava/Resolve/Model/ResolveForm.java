@@ -12,10 +12,11 @@ public class ResolveForm {
     public static double[][] coordData;
     public static String tempFileName;
     public static String coordFileName;
-    public static double corr = 0;
-    public static double windowLeft;
-    public static double windowRight;
-    public static double sigma;
-    public static int dataType;
+    public static double corr = 0.8;
+    public static double windowLeft = 0;
+    public static double windowRight = 0;
+    public static double sigma = 0.0001;
+    public static int dataType = 12;
+    public static boolean isStationsOnY = true;
 
 }

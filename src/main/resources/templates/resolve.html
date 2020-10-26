@@ -106,6 +106,7 @@
             <input type="hidden" id="temps" th:attr="value=${tempers}">
             <input type="hidden" id="coords" th:attr="value=${coords}">
             <input type="hidden" id="dataType" th:attr="value=${dataType}">
+            <input type="thidden" id="isStationsOnY" th:attr="value=${isStationsOnY}">
             <div class="form-group row" style="max-width: 1070px;">
                 <label th:text="'Файл координат:&nbsp;&nbsp;&nbsp;' + (${coords}?${coords}:'')" for="corr" class="col-sm-5 col-form-label">
                 </label>
@@ -122,6 +123,20 @@
             </div>
             <div hidden="true" class="optional">
 
+                <div class="form-group row">
+                    <label for="corr" class="col-sm-12 col-form-label">Компановка файла:
+                    </label>
+                    <div class="col-sm-12">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" checked type="radio" name="isStationsOnY" id="FileContentX" value="false">
+                            <label class="form-check-label" for="avrgMonth">Станции отложены по оси Х</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="isStationsOnY" id="FileContentY" value="true">
+                            <label class="form-check-label" for="avrgDay">Станции отложены по оси Y</label>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group row">
                     <label for="corr" class="col-sm-5 col-form-label">Погрешность вычислений :
                     </label>
@@ -180,6 +195,8 @@
         checkParams();
         var type = $('#dataType').val();
         if(type!=null) $('input[name="dataType"][value='+type+']').prop('checked', true);
+        var fileContent = $('#isStationsOnY').val();
+        if(type!=null) $('input[name="isStationsOnY"][value='+fileContent+']').prop('checked', true);
 
     }
     $('#optionsAdder').click(function() {
@@ -197,7 +214,8 @@
             $(".dataClass").attr("hidden",false);
             $("#windowLeft").attr("value",0);
             $("#windowRight").attr("value",0);
-            $('input[name="dataType"][value="12"]').prop('checked', true)
+            var type = $('#dataType').val();
+            $('input[name="dataType"][value='+type+']').prop('checked', true);
         }
         else{
             $(".dataClass").attr("hidden",true);

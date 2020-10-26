@@ -1,6 +1,7 @@
 package net.codejava.Resolve;
 
 import net.codejava.Resolve.Model.ArrayData;
+import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.Model.Temp;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,13 +44,26 @@ public class SplitInputFile {
             flag = true;
             counter = 0;
         }
-        double[][] arrayTemp = new double[finalTemp.size()][];
-        for (int k = 0; k < finalTemp.size(); k++) {
-            double[] tempArr = new double[finalTemp.get(k).size()];
-            for (int i = 0; i < finalTemp.get(k).size(); i++) {
-                tempArr[i] = finalTemp.get(k).get(i);
+        double[][] arrayTemp;
+        if(ResolveForm.isStationsOnY) {
+            arrayTemp = new double[finalTemp.size()][];
+            for (int k = 0; k < finalTemp.size(); k++) {
+                double[] tempArr = new double[finalTemp.get(k).size()];
+                for (int i = 0; i < finalTemp.get(k).size(); i++) {
+                    tempArr[i] = finalTemp.get(k).get(i);
+                }
+                arrayTemp[k] = tempArr;
             }
-            arrayTemp[k] = tempArr;
+        }
+        else{
+            arrayTemp = new double[finalTemp.get(0).size()][];
+            for (int k = 0; k < finalTemp.get(0).size(); k++) {
+                double[] tempArr = new double[finalTemp.size()];
+                for (int i = 0; i < finalTemp.size(); i++) {
+                    tempArr[i] = finalTemp.get(i).get(k);
+                }
+                arrayTemp[k] = tempArr;
+            }
         }
         return arrayTemp;
     }
