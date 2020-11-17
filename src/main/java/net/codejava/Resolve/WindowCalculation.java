@@ -1,15 +1,5 @@
 package net.codejava.Resolve;
 
-import net.codejava.Resolve.Model.Phase;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.Callable;
 
 public class WindowCalculation extends PhaseCalculationAbstract implements Callable<Integer> {
