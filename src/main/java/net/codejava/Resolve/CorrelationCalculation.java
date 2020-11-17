@@ -36,7 +36,7 @@ public class CorrelationCalculation implements Callable<Corr> {
         array = phase.getArray();
         return array;
     }
-
+//расчет взаимной корреляции между двумя хронологическими рядами
     private double correlationCalc() {
         double average1 = 0, average2 = 0;
         int num = firstStation.length;
@@ -44,6 +44,8 @@ public class CorrelationCalculation implements Callable<Corr> {
             average1 += firstStation[i];
             average2 += secondStation[i];
         }
+        if(average1 == 0 || average2 == 0)
+            return 0;
         average1 = average1 / num;
         average2 = average2 / num;
 
@@ -68,7 +70,7 @@ public class CorrelationCalculation implements Callable<Corr> {
         int counter = 0;
         for (int i = firstIndex + 1; i < totalNumber; i++) {
             secondStation = loadStantion(i);
-            correlation[counter] = correlationCalc();
+                correlation[counter] = correlationCalc();
             counter++;
         }
         Corr corr = new Corr(correlation);

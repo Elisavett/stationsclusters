@@ -1,0 +1,73 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Google Charts Example - Spring Boot</title>
+    <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script type="text/javascript"
+            src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+<header>
+    <div th:replace="fragments/navbar :: navbar (${'resolve'})"></div>
+</header>
+<div align="center">
+    <h2></h2>
+    <div id="chart_div" style="height: 450px"></div>
+    <form th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form" >
+
+        <div class="form-group row">
+            <label for="windowCounted" class="col-sm-4 col-form-label">Выберете окно (по умочанию рекомендованное):
+            </label>
+            <div class="col-sm-1">
+                <input class="form-control" type="number" name="windowCounted"  autocomplete="off"
+                       id="windowCounted" th:attr="value=${window}">
+            </div>
+            <div class="col-sm-1">
+                 </div>
+            <div class="col-sm-1">
+                <input class="form-control" type="submit" name="corr"  autocomplete="off"
+                       value="Рассчитать">
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript">
+    var real_data = /*[[${chartData}]]*/'noValue';
+
+    $(document).ready(function() {
+        google.charts.load('current', {
+            packages : [ 'corechart', 'bar' ]
+        });
+        google.charts.setOnLoadCallback(drawColumnChart);
+    });
+
+    function drawColumnChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'окно');
+        data.addColumn('number', 'ко-во станций');
+        Object.keys(real_data).forEach(function(key) {
+            data.addRow([ key, real_data[key] ]);
+        });
+        var options = {
+            title : 'Определение окна',
+            hAxis : {
+                title : 'кол-во станций',
+            },
+            vAxis : {
+                title : 'Окно'
+            }
+        };
+        var chart = new google.visualization.ColumnChart(document
+            .getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+
+
+</script>
+</body>
+</html>

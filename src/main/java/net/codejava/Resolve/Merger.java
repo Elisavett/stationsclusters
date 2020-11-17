@@ -26,10 +26,12 @@ public class Merger {
     GroupAndCoordinates groupAndCoordinates;
     int stationCount;
     List<Future<Group>> arrayGroup;
+    int minGroupsSize;
 
-    public Merger(int stationCount, List<Future<Group>> arrayGroup) {
+    public Merger(int stationCount, List<Future<Group>> arrayGroup, int minGroupsSize) {
         this.stationCount = stationCount;
         this.arrayGroup = arrayGroup;
+        this.minGroupsSize = minGroupsSize;
     }
 
     public ArrayList<String> run() throws IOException, ExecutionException, InterruptedException {
@@ -62,7 +64,7 @@ public class Merger {
     public void sortGroups() {
         sortGroupLine = new TreeSet<GroupLine>();
         for (int i = 0; i < groupList.size(); i++) {
-            if (groupList.get(i).getGroup().size() > 5) {
+            if (groupList.get(i).getGroup().size() >= minGroupsSize) {
                 sortGroupLine.add(groupList.get(i));
             }
             else

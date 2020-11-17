@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
@@ -28,12 +29,13 @@ public class Start {
         ArrayData arrayTypicalPath = new ArrayData();
         List<Future<Group>> arrayGroup;
         List<Future<Corr>> arrayCorr;
-
+        List<Future<Double>> arrayWindows;
+        int stationCount = ResolveForm.TempData.length;//количество станций
 
         //блок вычисления фазы
         //создаем лист задач
         List<PhaseCalculation> phaseCalculationTasks = new ArrayList<>();
-        int stationCount = ResolveForm.TempData.length;//количество станций
+
         for (int i = 0; i < stationCount; i++) {
             double[] temp = ResolveForm.TempData[i].clone();
             PhaseCalculation phaseCalculation = new PhaseCalculation(temp, ResolveForm.windowLeft, ResolveForm.windowRight);
@@ -41,6 +43,7 @@ public class Start {
         }
         //выполняем все задачи. главный поток ждет
         arrayPhase = executorService.invokeAll(phaseCalculationTasks);
+        List<Future<Phase>> originalArrayPhase = new ArrayList<>(arrayPhase);
 /*        System.out.println("Phases");
         System.out.println(arrayPhase.size());*/
 
@@ -58,6 +61,7 @@ public class Start {
             //выполняем все задачи. главный поток ждет
             arrayCorr = executorService.invokeAll(corrThreadTasks);
             //System.out.println("Corelation");
+            
 
             //блок выделения групп
             GroupAllocation allocationThread = new GroupAllocation(stationCount, ResolveForm.corr, arrayCorr, executorService);
@@ -75,18 +79,19 @@ public class Start {
             //System.out.println("Typicals");
 
             //блок проверки конца алгоритма
-            EndChecking checkMethod = new EndChecking(ResolveForm.sigma, stationCount, arrayPhase, arrayTypicalPath, executorService);
+            EndChecking checkMethod = new EndChecking(Double.parseDouble(ResolveForm.sigma), stationCount, arrayPhase, arrayTypicalPath, executorService);
             arrayPhase = checkMethod.run();
             check = checkMethod.check();
-
 
             count++;
 //            System.out.println(count);
         } while (!check);
         //System.out.println("count=" + count);
 
+        //Алгоритм итоговой группировки
+
         // объединяю станции в группы, дописываю координаты
-        Merger merger = new Merger(stationCount, arrayGroup);
+        Merger merger = new Merger(stationCount, arrayGroup, ResolveForm.minGroupSize);
         ArrayList<String> groupAndCoordinates = merger.run();
 
 //        System.out.println(System.currentTimeMillis() - start);
