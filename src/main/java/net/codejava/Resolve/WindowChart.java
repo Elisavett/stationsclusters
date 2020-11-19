@@ -47,7 +47,7 @@ public class WindowChart {
         {
             //округляем в большую сторону
             if(!windows.get(i).equals(windows.get(i - 1))){
-                graphData.put(String.valueOf(windows.get(i-1)), stationsNum);
+                graphData.put(String.valueOf(windows.get(i-1)), (int)(stationsNum*1.0/stationCount*100));
                 stationsNum-=count;
                 //graphData.put(j + " (" + count + ")", windows.get(i-1));
 
@@ -64,7 +64,7 @@ public class WindowChart {
             }
         }
         //graphData.put(j + " (" + count + ")", windows.get(stationCount-1));
-        graphData.put(String.valueOf(windows.get(stationCount-1)), count);
+        graphData.put(String.valueOf(windows.get(stationCount-1)), (int)(count*1.0/stationCount*100));
         ResolveForm.windowDelta = bestWindow;
         chartData = graphData;
     }

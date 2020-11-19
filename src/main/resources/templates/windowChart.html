@@ -49,17 +49,17 @@
     function drawColumnChart() {
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'окно');
-        data.addColumn('number', 'ко-во станций');
+        data.addColumn('number', '% станций');
         Object.keys(real_data).forEach(function(key) {
             data.addRow([ key, real_data[key] ]);
         });
         var options = {
             title : 'Определение окна',
             hAxis : {
-                title : 'кол-во станций',
+                title : 'Окно',
             },
             vAxis : {
-                title : 'Окно'
+                title : '% станций'
             }
         };
         var chart = new google.visualization.ColumnChart(document
