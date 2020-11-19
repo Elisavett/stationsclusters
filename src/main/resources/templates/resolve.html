@@ -155,7 +155,7 @@
                             <label class="form-check-label" for="avrgDay">Станции расположены в столбец</label>
                         </div>
                         <div style="float: right; margin-right: 10%">
-                            <input  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" id="check" value="Проверить" />
+                            <input  id="submit"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Проверить" />
                         </div>
                     </div>
                 </div>
@@ -245,7 +245,7 @@
                 </div>
                 <div class="form-group row">
                     <div class="col-sm-2" >
-                        <button class="btn btn-outline-secondary btn-block" type="submit" id="submit" >Рассчитать</button>
+                        <button class="btn btn-outline-secondary btn-block" type="submit" >Рассчитать</button>
                     </div>
                 </div>
             </div>
@@ -368,8 +368,6 @@
 
     //проверка
     function checkParams() {
-        if(checked === true) {
-            var corr = $('#corr').val();
             var temps = $('#temps').val();
             var coords = $('#coords').val();
 
@@ -386,12 +384,12 @@
             }
         }
         alert(temps + "...." + coords + ".." + corr + "...." + fileTemp.value + ".." + fileCoordinates.value)*/
-            if (corr !== 0 && (fileTemp.value != 0 || temps !== "") && (fileCoordinates.value != 0 || coords !== "")) {
+            if ((fileTemp.value != 0 || temps !== "") && (fileCoordinates.value != 0 || coords !== "")) {
                 $('#submit').removeAttr('disabled');
             } else {
                 $('#submit').attr('disabled', 'disabled');
             }
-        }
+
     }
 
 </script>
