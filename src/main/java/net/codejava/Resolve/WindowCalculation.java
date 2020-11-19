@@ -19,11 +19,13 @@ public class WindowCalculation extends PhaseCalculationAbstract implements Calla
     @Override
     public Integer call(){
         //int delta = 1;
+        int lastWindow = center;
         LoadFunction();
         FFTCalculation();
         imagFTT = imag.clone();
         realFTT = real.clone();
-        while (true) {
+        while (center-leftLimit>1) {
+        //while (delta<center) {
             imag = imagFTT.clone();
             real = realFTT.clone();
             Filtration(leftLimit, rightLimit);
@@ -32,15 +34,20 @@ public class WindowCalculation extends PhaseCalculationAbstract implements Calla
             phase = new double[realFTT.length];
             PhaseCalculation();
             PhaseLinking();
-            //if(isPhaseBroken()){
-            if (isPhaseUnbroken()) {
-                return (int)rightLimit-center;
+            if(isPhaseBroken()){
+            //if (isPhaseUnbroken()) {
+                lastWindow =  (int)rightLimit-center-1;
                 //return delta-1;
             }
                 leftLimit++;
                 rightLimit--;
                 //delta++;
         }
+        //if(isPhaseUnbroken()){
+            return lastWindow;
+        //}
+        //else return 0;
+
     }
 
 
