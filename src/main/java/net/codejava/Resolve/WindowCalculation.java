@@ -7,45 +7,52 @@ public class WindowCalculation extends PhaseCalculationAbstract implements Calla
     double[] imagFTT;
     double[] realFTT;
     int center;
+    boolean assimetric;
 
-    public WindowCalculation(double[] temp, int limitLeft, int limitRight, int center) {
+    public WindowCalculation(double[] temp, boolean assimetric, int limitLeft, int limitRight, int center) {
 
         this.temp = temp;
         this.leftLimit = limitLeft;
         this.rightLimit = limitRight;
         this.center = center;
+        this.assimetric = assimetric;
     }
 
-    /*@Override
+    @Override
     public Integer call() {
-        int delta = 1;
-        int lastWindow = center;
+        int delta = center;
+        int i = -1;
+        if(assimetric) {
+            delta = 1;
+            i = 1;
+        }
         LoadFunction();
         FFTCalculation();
         imagFTT = imag.clone();
         realFTT = real.clone();
-        while (delta < center) {
-            // while (center-leftLimit>1) {
+        while (true) {
             imag = imagFTT.clone();
             real = realFTT.clone();
-            //Filtration(leftLimit, rightLimit);
-            Filtration(center - delta, center + delta);
+            Filtration(delta>center?0:(center - delta), center + delta);
             IFFTCalculation();
             phase = new double[realFTT.length];
             PhaseCalculation();
             PhaseLinking();
-            if (isPhaseBroken()) {
-                //if (isPhaseUnbroken()) {
-                //lastWindow =  (int)rightLimit-center;
-                return delta - 1;
+            if(assimetric){
+                if (isPhaseBroken()) {
+                    return delta - 1;
+                }
             }
-            //leftLimit++;
-            //rightLimit--;
-            delta++;
+            else {
+                if (isPhaseUnbroken()) {
+                    return delta;
+                }
+            }
+            delta+=i;
         }
 
-    }*/
-    @Override
+    }
+    /*@Override
     public Integer call(){
         //int delta = 1;
         LoadFunction();
@@ -70,7 +77,7 @@ public class WindowCalculation extends PhaseCalculationAbstract implements Calla
             rightLimit--;
             //delta++;
         }
-    }
+    }*/
 
 }
 

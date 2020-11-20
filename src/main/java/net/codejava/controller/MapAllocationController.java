@@ -163,15 +163,18 @@ public class MapAllocationController {
 
 
             if (windowLeft.equals("") && windowRight.equals("")) {
-
-                WindowChart.getWindowsChartData();
-                if (Boolean.parseBoolean(isWindowManually)) {
+                boolean assimetricWindow = false;
+                if(Integer.parseInt(isWindowManually)==2) assimetricWindow=true;
+                WindowChart.getWindowsChartData(assimetricWindow);
+                if (Integer.parseInt(isWindowManually)>0) {
                     model.addAttribute("chartData", WindowChart.chartData);
                     model.addAttribute("window", ResolveForm.windowDelta);
                     return "windowChart";
                 } else {
-                    ResolveForm.windowLeft = ResolveForm.windowCenter - ResolveForm.windowDelta;
-                    ResolveForm.windowRight = ResolveForm.windowCenter + ResolveForm.windowDelta;
+                    if (Integer.parseInt(isWindowManually) == 0) {
+                        ResolveForm.windowLeft = ResolveForm.windowCenter - ResolveForm.windowDelta;
+                        ResolveForm.windowRight = ResolveForm.windowCenter + ResolveForm.windowDelta;
+                    }
                 }
             }
             else{

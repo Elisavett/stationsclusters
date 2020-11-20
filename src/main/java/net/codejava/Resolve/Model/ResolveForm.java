@@ -23,6 +23,7 @@ public class ResolveForm {
     public static int windowDelta;
     public static String sigma = "0.0001";
     public static int dataType = 12;
+    public static int windowManually = 0;
     public static boolean isStationsOnY = true;
 
 }

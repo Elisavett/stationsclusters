@@ -12,7 +12,7 @@ import java.util.concurrent.Future;
 
 public class WindowChart {
     public static LinkedHashMap<String, Integer> chartData;
-    public static void getWindowsChartData() throws InterruptedException, ExecutionException {
+    public static void getWindowsChartData(boolean assimetric) throws InterruptedException, ExecutionException {
         int stationCount = ResolveForm.TempData.length;//количество станций
         LinkedHashMap<String, Integer> graphData = new LinkedHashMap<>();
 
@@ -25,7 +25,7 @@ public class WindowChart {
         List<WindowCalculation> windowCalculationTasks = new ArrayList<>();
         for (int i = 0; i < stationCount; i++) {
             double[] temp = ResolveForm.TempData[i].clone();
-            WindowCalculation phaseCalculation = new WindowCalculation(temp, wLeft, wRight, (int)Math.ceil(ResolveForm.windowCenter));
+            WindowCalculation phaseCalculation = new WindowCalculation(temp, assimetric, wLeft, wRight, (int)Math.ceil(ResolveForm.windowCenter));
             windowCalculationTasks.add(phaseCalculation);
         }
         //выполняем все задачи. главный поток ждет
@@ -39,7 +39,8 @@ public class WindowChart {
         }
         windows.sort((o1, o2) -> o1-o2);
         int count = 1;
-        int j = 1;
+        int j = 0;
+        if(assimetric) j = 1;
         int stationsNum = stationCount;
         int prevCount = 0;
         int bestWindow = 0;
@@ -51,11 +52,10 @@ public class WindowChart {
                 stationsNum-=count;
                 //graphData.put(j + " (" + count + ")", windows.get(i-1));
 
-                j++;
                 if(count > prevCount)
                 {
                     prevCount = count;
-                    bestWindow = windows.get(i);
+                    bestWindow = windows.get(i - j);
                 }
                 count = 1;
             }
@@ -65,6 +65,7 @@ public class WindowChart {
         }
         //graphData.put(j + " (" + count + ")", windows.get(stationCount-1));
         graphData.put(String.valueOf(windows.get(stationCount-1)), (int)(count*1.0/stationCount*100));
+
         ResolveForm.windowDelta = bestWindow;
         chartData = graphData;
     }
