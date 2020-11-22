@@ -113,7 +113,7 @@ public class MapAllocationController {
                 // Content-Type
                 .contentType(mediaType)
                 // Contet-Length
-                .contentLength(ResolveForm.stringPhase.length()) //
+                .contentLength(stringPhase.length()) //
                 .body(stringPhase);
     }
 
