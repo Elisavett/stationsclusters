@@ -8,46 +8,49 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class Start {
     public ArrayList<String> run() throws IOException, ClassNotFoundException, InterruptedException, ExecutionException {
         //long start = System.currentTimeMillis();
         //System.out.println("Start");
+        List<Future<Phase>> arrayPhase;
+        int stationCount;
         //получаем количество процессоров
         int processors = Runtime.getRuntime().availableProcessors();
         //создаем пул на количество процессоров
         ExecutorService executorService = Executors.newFixedThreadPool(processors);
+        if(!ResolveForm.isPhasesCounted) {
+            stationCount = ResolveForm.TempData.length;//количество станций
+            //блок вычисления фазы
+            //создаем лист задач
+            List<PhaseCalculation> phaseCalculationTasks = new ArrayList<>();
 
-        //File file = new File(fileTemp); // файл с температурами
-        //String pathCoordinates = path + Coord;//Путь до координат
-
-        List<Future<Phase>> arrayPhase;
+            for (int i = 0; i < stationCount; i++) {
+                double[] temp = ResolveForm.TempData[i].clone();
+                PhaseCalculation phaseCalculation = new PhaseCalculation(temp, ResolveForm.windowLeft, ResolveForm.windowRight);
+                phaseCalculationTasks.add(phaseCalculation);
+            }
+            //выполняем все задачи. главный поток ждет
+            arrayPhase = executorService.invokeAll(phaseCalculationTasks);
+            ResolveForm.arrayPhase = arrayPhase;
+/*        System.out.println("Phases");
+        System.out.println(arrayPhase.size());*/
+        }
+        else{
+            List<RewritePhase> rewritePhases = new ArrayList<>();
+            for (int i = 0; i < ResolveForm.PhasesData.length; i++) {
+                RewritePhase phaseCalculation = new RewritePhase(ResolveForm.PhasesData[i]);
+                rewritePhases.add(phaseCalculation);
+            }
+            arrayPhase = executorService.invokeAll(rewritePhases);
+            stationCount = arrayPhase.size();
+        }
+        int count = 0;
         ArrayData arrayTypicalPath = new ArrayData();
         List<Future<Group>> arrayGroup;
         List<Future<Corr>> arrayCorr;
         List<Future<Double>> arrayWindows;
-        int stationCount = ResolveForm.TempData.length;//количество станций
-
-        //блок вычисления фазы
-        //создаем лист задач
-        List<PhaseCalculation> phaseCalculationTasks = new ArrayList<>();
-
-        for (int i = 0; i < stationCount; i++) {
-            double[] temp = ResolveForm.TempData[i].clone();
-            PhaseCalculation phaseCalculation = new PhaseCalculation(temp, ResolveForm.windowLeft, ResolveForm.windowRight);
-            phaseCalculationTasks.add(phaseCalculation);
-        }
-        //выполняем все задачи. главный поток ждет
-        arrayPhase = executorService.invokeAll(phaseCalculationTasks);
-        List<Future<Phase>> originalArrayPhase = new ArrayList<>(arrayPhase);
-/*        System.out.println("Phases");
-        System.out.println(arrayPhase.size());*/
-
-        int count = 0;
         boolean check;
         do {
             //System.out.println("Cicle");

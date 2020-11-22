@@ -8,6 +8,7 @@ package net.codejava.controller;
 import com.google.gson.Gson;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -23,13 +24,21 @@ import net.codejava.Resolve.Model.Data;
 import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.Model.Temp;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  *
@@ -43,6 +52,69 @@ public class MapAllocationController {
     @GetMapping("/")
     public String index() {
         return "index";
+    }
+
+    @GetMapping("/resolveFunction")
+    public String resolveFunction(Model model) {
+        return "resolveFunction";
+    }
+    @PostMapping("/resolveFunction")
+    public String resolveFunctionToMap(Model model, @RequestParam(value = "fileTemp", required = false) MultipartFile fileTemp,
+                                       @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates) throws IOException {
+        ResolveForm.isPhasesCounted = true;
+        if(!fileTemp.getOriginalFilename().equals("")) {
+            ResolveForm.PhasesData = new double[(int)fileTemp.getSize()][];
+            ResolveForm.isStationsOnY = false;
+            ResolveForm.PhasesData = SplitInputFile.ReadFromFileSplitting(fileTemp);
+            ResolveForm.isStationsOnY = true;
+        }
+        if(!fileCoordinates.getOriginalFilename().equals("")){
+            ResolveForm.coordData = new double[(int)fileCoordinates.getSize()][];
+            ResolveForm.coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates);
+            ResolveForm.coordFileName = fileCoordinates.getOriginalFilename();
+        }
+        ArrayList<String> json = new ArrayList<>();
+        try {
+            Start start = new Start();
+            json = start.run();
+        } catch (IOException | ClassNotFoundException e) {
+            return "resolve";
+        } catch (NumberFormatException e) {
+            String error = "Проверьте правильность данных";
+            model.addAttribute("error", error);
+            return "resolve";
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        model.addAttribute("json", json);
+        return "map";
+    }
+    @GetMapping("/resolveHistory")
+    public String resolveHistory(Model model) {
+        model.addAttribute("phases", ResolveForm.arrayPhase != null);
+        return "resolveHistory";
+    }
+    @RequestMapping("/downloadPhases")
+    public ResponseEntity<String> downloadFile1() throws IOException, ExecutionException, InterruptedException {
+
+        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
+        String stringPhase = "";
+        for (int i = 0; i < ResolveForm.arrayPhase.size(); i++) {
+            String output = "";
+            for (int j = 0; j < ResolveForm.arrayPhase.get(i).get().getArray().length; j++) {
+                output += ResolveForm.arrayPhase.get(i).get().getArray()[j] + " ";
+            }
+            stringPhase += (output + "\n");
+        }
+
+        return ResponseEntity.ok()
+                // Content-Disposition
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "phases.txt")
+                // Content-Type
+                .contentType(mediaType)
+                // Contet-Length
+                .contentLength(ResolveForm.stringPhase.length()) //
+                .body(stringPhase);
     }
 
     @GetMapping("/resolve")
@@ -152,6 +224,7 @@ public class MapAllocationController {
                       @RequestParam(value = "windowCounted", required = false) Integer windowCounted,
                       @RequestParam(value = "minGroupSize", required = false) Integer minGroupSize) throws IOException, ExecutionException, InterruptedException {
 
+        ResolveForm.isPhasesCounted = false;
         if(windowCounted!=null){
             ResolveForm.windowLeft = ResolveForm.windowCenter - windowCounted;
             ResolveForm.windowRight = ResolveForm.windowCenter + windowCounted;

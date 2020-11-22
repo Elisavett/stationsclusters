@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+
+    <title>Расчет</title>
+</head>
+<header>
+    <div th:replace="fragments/navbar :: navbar (${'resolve'})"></div>
+</header>
+<body class="gradient">
+<!-- Обработка ошибок -->
+<div th:if="${error}">
+    <div class="container">
+        <div class="row p-3">
+            <div class="col-12">
+                <div class="toast shadow-lg" id='toast1' data-autohide="false">
+                    <div class="toast-header bg-danger p-2">
+                        <strong class="mr-auto text-light">Ошибка <span th:text="${error}"></span></strong>
+                        <button type="button" class="mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#toast1').toast({
+            animation: true,
+            autohide: true,
+            delay: 4000
+        })
+        $('.toast').toast('show');
+    </script>
+</div>
+
+
+<div class="container mt-2" >
+    <div>
+
+        <form th:action="@{/resolveFunction}" method="post" enctype="multipart/form-data" id="form1" >
+            <div class="p-4 border border-dark rounded">
+
+
+                <div class="form-group row">
+                    <label th:text="'Шкала отсчетов:' + (${tempers}?${tempers}:'')" class="col-sm-5 col-form-label">
+                    </label>
+                    <div class="col-sm-5" style="margin-left: 2%">
+
+                        <input  type="file" class="custom-file-input" name="fileTemp" accept="text/plain"
+                               onchange="checkParams()" autocomplete="off" id="fileTemp"  th:attr="value=${tempers}">
+                        <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл..')" class="custom-file-label" data-browse="Загрузить" for="fileTemp"></label>
+                    </div>
+                </div>
+                <div class="form-group row" style="max-width: 1070px;">
+                    <label th:text="'Файл координат:' + (${coords}?${coords}:'')" class="col-sm-5 col-form-label">
+                    </label>
+                    <div class="col-sm-5" style="margin-left: 2%">
+                        <input  type="file" class="custom-file-input" name="fileCoordinates" accept="text/plain"
+                               onchange="checkParams()" autocomplete="off" id="fileCoordinates" th:attr="value=${coords}">
+                        <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл..')" class="custom-file-label" data-browse="Загрузить" for="fileCoordinates"></label>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-2" >
+                        <button class="btn btn-outline-secondary btn-block" type="submit" id="submit">Рассчитать</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    window.onload = function (){
+        checkParams();
+
+    }
+
+    //стиль закрузки файла
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+    //проверка
+    function checkParams() {
+            var temps = $('#temps').val();
+            var coords = $('#coords').val();
+
+            /*        if(corr !== 0)
+        {
+            alert(corr);
+            if(temps !== "" || fileTemp.value != 0)
+            {
+                alert(fileTemp.value + " " + temps);
+                if(fileCoordinates.value != 0 || coords !== null)
+                {
+                    alert(fileCoordinates.value  + " " + coords);
+                }
+            }
+        }
+        alert(temps + "...." + coords + ".." + corr + "...." + fileTemp.value + ".." + fileCoordinates.value)*/
+            if ((fileTemp.value != 0 || temps !== "") && (fileCoordinates.value != 0 || coords !== "")) {
+                $('#submit').removeAttr('disabled');
+            } else {
+                $('#submit').attr('disabled', 'disabled');
+            }
+
+    }
+
+</script>
+</body>
+</html>
