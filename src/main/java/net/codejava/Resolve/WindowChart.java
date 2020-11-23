@@ -11,10 +11,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class WindowChart {
-    public static LinkedHashMap<String, Integer> chartData;
+    public static LinkedHashMap<String, Double> chartData;
     public static void getWindowsChartData(boolean assimetric) throws InterruptedException, ExecutionException {
         int stationCount = ResolveForm.TempData.length;//количество станций
-        LinkedHashMap<String, Integer> graphData = new LinkedHashMap<>();
+        LinkedHashMap<String, Double> graphData = new LinkedHashMap<>();
 
         int processors = Runtime.getRuntime().availableProcessors();
         ExecutorService executorService = Executors.newFixedThreadPool(processors);
@@ -48,7 +48,7 @@ public class WindowChart {
         {
             //округляем в большую сторону
             if(!windows.get(i).equals(windows.get(i - 1))){
-                graphData.put(String.valueOf(windows.get(i-1)), (int)(stationsNum*1.0/stationCount*100));
+                graphData.put(String.valueOf(windows.get(i-1)), stationsNum*1.0/stationCount*100);
                 stationsNum-=count;
                 //graphData.put(j + " (" + count + ")", windows.get(i-1));
 
@@ -64,7 +64,7 @@ public class WindowChart {
             }
         }
         //graphData.put(j + " (" + count + ")", windows.get(stationCount-1));
-        graphData.put(String.valueOf(windows.get(stationCount-1)), (int)(count*1.0/stationCount*100));
+        graphData.put(String.valueOf(windows.get(stationCount-1)), count*1.0/stationCount*100);
 
         ResolveForm.windowDelta = bestWindow;
         chartData = graphData;
