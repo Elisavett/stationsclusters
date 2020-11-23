@@ -92,18 +92,37 @@ public class Merger {
         ArrayList<String> json = new ArrayList<>();
         int numberGroup = 1;
         for (GroupLine gr : sortGroupLine) {
-            for (int j : gr.getGroup()) {
-                groupAndCoordinates = new GroupAndCoordinates(
-                        coordinatesSourceTXT[0][j],
-                        coordinatesSourceTXT[1][j],
-                        coordinatesSourceTXT[2][j],
-                        numberGroup,
-                        gr.islessThenFive());
-                String jsonData = GSON.toJson(groupAndCoordinates);
-                json.add(jsonData);
+            if(!gr.islessThenFive()) {
+                for (int j : gr.getGroup()) {
+                    groupAndCoordinates = new GroupAndCoordinates(
+                            coordinatesSourceTXT[0][j],
+                            coordinatesSourceTXT[1][j],
+                            coordinatesSourceTXT[2][j],
+                            numberGroup,
+                            gr.islessThenFive());
+                    String jsonData = GSON.toJson(groupAndCoordinates);
+                    json.add(jsonData);
+                }
+                numberGroup++;
             }
-            numberGroup++;
+
         }
+        for (GroupLine gr : sortGroupLine) {
+            if(gr.islessThenFive()) {
+                for (int j : gr.getGroup()) {
+                    groupAndCoordinates = new GroupAndCoordinates(
+                            coordinatesSourceTXT[0][j],
+                            coordinatesSourceTXT[1][j],
+                            coordinatesSourceTXT[2][j],
+                            numberGroup,
+                            gr.islessThenFive());
+                    String jsonData = GSON.toJson(groupAndCoordinates);
+                    json.add(jsonData);
+                }
+                numberGroup++;
+            }
+        }
+
 //        System.out.println(json);
         return json;
 
