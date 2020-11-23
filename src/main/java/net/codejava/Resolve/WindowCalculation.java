@@ -22,6 +22,7 @@ public class WindowCalculation extends PhaseCalculationAbstract implements Calla
     public Integer call() {
         int delta = center;
         int i = -1;
+        int lastDelta = 1;
         if(assimetric) {
             delta = 1;
             i = 1;
@@ -39,8 +40,13 @@ public class WindowCalculation extends PhaseCalculationAbstract implements Calla
             PhaseCalculation();
             PhaseLinking();
             if(assimetric){
-                if (isPhaseBroken()) {
-                    return delta - 1;
+                if(delta<temp.length) {
+                    if (isPhaseUnbroken()) {
+                        lastDelta =  delta;
+                    }
+                }
+                else{
+                    return lastDelta;
                 }
             }
             else {
