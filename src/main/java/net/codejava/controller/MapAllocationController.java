@@ -41,19 +41,39 @@ public class MapAllocationController {
         return "index";
     }
 
+    @GetMapping("/resolveAverage")
+    public String resolveAverage(Model model) {
+        return "resolveAverage";
+    }
+    @PostMapping("/resolveAverage")
+    public String resolveAverageToMap(Model model, @RequestParam(value = "fileTemp", required = false) MultipartFile fileTemp,
+    @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,
+                                      @RequestParam String radius) throws IOException {
+        double[][] tempData = new double[(int)fileTemp.getSize()][];
+        double[][] coordData = new double[(int)fileCoordinates.getSize()][];
+        if(!fileTemp.getOriginalFilename().equals("")) {
+            tempData = SplitInputFile.ReadFromFileSplitting(fileTemp);
+           // ResolveForm.tempFileName = fileTemp.getOriginalFilename();
+        }
+        if(!fileCoordinates.getOriginalFilename().equals("")){
+            coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates);
+            //ResolveForm.coordFileName = fileCoordinates.getOriginalFilename();
+        }
+        return "resolveFunction";
+    }
+
     @GetMapping("/resolveFunction")
     public String resolveFunction(Model model) {
         return "resolveFunction";
     }
     @PostMapping("/resolveFunction")
-    public String resolveFunctionToMap(Model model, @RequestParam(value = "fileTemp", required = false) MultipartFile fileTemp,
-                                       @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates) throws IOException {
+    public String resolveFunctionToMap(Model model, @RequestParam MultipartFile fileTemp,
+                                       @RequestParam MultipartFile fileCoordinates) throws IOException {
         ResolveForm.isPhasesCounted = true;
         if(!fileTemp.getOriginalFilename().equals("")) {
             ResolveForm.PhasesData = new double[(int)fileTemp.getSize()][];
-            ResolveForm.isStationsOnY = false;
             ResolveForm.PhasesData = SplitInputFile.ReadFromFileSplitting(fileTemp);
-            ResolveForm.isStationsOnY = true;
+
         }
         if(!fileCoordinates.getOriginalFilename().equals("")){
             ResolveForm.coordData = new double[(int)fileCoordinates.getSize()][];
@@ -86,10 +106,10 @@ public class MapAllocationController {
 
         MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
         String stringPhase = "";
-        for (int i = 0; i < ResolveForm.arrayPhase.size(); i++) {
+        for (int i = 0; i < ResolveForm.arrayPhase.get(0).get().getArray().length; i++) {
             String output = "";
-            for (int j = 0; j < ResolveForm.arrayPhase.get(i).get().getArray().length; j++) {
-                output += ResolveForm.arrayPhase.get(i).get().getArray()[j] + " ";
+            for (int j = 0; j < ResolveForm.arrayPhase.size(); j++) {
+                output += ResolveForm.arrayPhase.get(j).get().getArray()[i] + " ";
             }
             stringPhase += (output + "\n");
         }
