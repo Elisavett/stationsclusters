@@ -52,12 +52,15 @@ public class TypicalCalculation {
     }
 
     private void calcTypical() {
+        //Запись первого значения фаз в массив типовых
         for (int i = 0; i < phases.get(0).size(); i++) {
             typical.add(phases.get(0).get(i));
         }
+        //цикл, который идет до количества членов в группе
         for (int i = 1; i < members.size(); i++) {
+            //Цикл до количества фаз каждой стации
             for (int j = 0; j < phases.get(i).size(); j++) {
-                typical.set(i, typical.get(j) + phases.get(i).get(j));
+                typical.set(j, typical.get(j) + phases.get(i).get(j));
             }
         }
         for (int i = 0; i < typical.size(); i++) {
