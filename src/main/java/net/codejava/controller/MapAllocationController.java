@@ -41,6 +41,11 @@ public class MapAllocationController {
         return "index";
     }
 
+    @GetMapping("/error")
+    public String error() {
+        return "index";
+    }
+
     @GetMapping("/resolveAverage")
     public String resolveAverage(Model model) {
         return "resolveAverage";

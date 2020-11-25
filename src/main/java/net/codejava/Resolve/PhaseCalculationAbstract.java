@@ -34,7 +34,7 @@ public abstract class PhaseCalculationAbstract {
      */
     public void Filtration(double a, double b) {
         for (int i = 0; i < real.length; i++) {
-            if (i <= a || i >= b) {
+            if (i < a || i > b) {
                 real[i] = 0;
                 imag[i] = 0;
             }

@@ -18,10 +18,10 @@ public class WindowChart {
 
         int processors = Runtime.getRuntime().availableProcessors();
         ExecutorService executorService = Executors.newFixedThreadPool(processors);
-        int wLeft = 0;
+        int wLeft = 1;
         List<Future<Integer>> arrayWindows;
 
-        int wRight = (int)Math.ceil(ResolveForm.windowCenter*2);
+        int wRight = (int)Math.ceil(ResolveForm.windowCenter*2)-1;
         List<WindowCalculation> windowCalculationTasks = new ArrayList<>();
         for (int i = 0; i < stationCount; i++) {
             double[] temp = ResolveForm.TempData[i].clone();
