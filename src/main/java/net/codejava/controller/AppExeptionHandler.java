@@ -1,21 +1,13 @@
 package net.codejava.controller;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import motif.errormessage.ErrorMessage;
 import net.codejava.Exeptions.FileException;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.logging.Logger;
 @ControllerAdvice
 public class AppExeptionHandler {
     private static final String INCOMING_REQUEST_FAILED = "Incoming request failed:";
