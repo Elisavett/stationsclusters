@@ -31,12 +31,9 @@ public class AppExeptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ModelAndView fileError(final Exception ex) {
+        mw = new ModelAndView("error");
         mw.addObject("error", "Ошибка в исходных файлах");
-        System.out.print(ex.getMessage() + "\n");
-        for(StackTraceElement element : ex.getStackTrace())
-        {
-            System.out.print(element.toString() + "\n");
-        }
+        printStackTrace(ex);
 
         return mw;
     }
@@ -44,14 +41,19 @@ public class AppExeptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ModelAndView internalServerError(final Exception ex) {
+        mw = new ModelAndView("error");
         mw.addObject("error", "Ошибка вычислений");
+
+        printStackTrace(ex);
+
+        return mw;
+    }
+    private void printStackTrace (Exception ex){
         System.out.print(ex.getMessage() + "\n");
         for(StackTraceElement element : ex.getStackTrace())
         {
             System.out.print(element.toString() + "\n");
         }
-
-        return mw;
     }
 
 
