@@ -1,12 +1,6 @@
 package net.codejava.Resolve.Model;
 
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.Future;
 
 public class ResolveForm {
@@ -14,6 +8,7 @@ public class ResolveForm {
     public static double[][] TempData;
     public static double[][] PhasesData;
     public static List<Future<Phase>> arrayPhase;
+    public static List<Future<Phase>> arrayTypical;
     public static String stringPhase;
     public static double[][] coordData;
     public static String tempFileName;
@@ -29,6 +24,6 @@ public class ResolveForm {
     public static String sigma = "0.0001";
     public static int dataType = 12;
     public static boolean isPhasesCounted = false;
-    public static boolean isStationsOnY = true;
-
+    public static boolean tempsIsStationsOnY = true;
+    public static boolean coordsIsStationsOnY = true;
 }

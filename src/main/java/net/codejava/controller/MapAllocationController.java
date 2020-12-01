@@ -55,16 +55,26 @@ public class MapAllocationController {
     @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,
                                       @RequestParam String radius) throws IOException {
         double[][] tempData = new double[(int)fileTemp.getSize()][];
+        Double[] temps = new Double[(int)fileTemp.getSize()];
         double[][] coordData = new double[(int)fileCoordinates.getSize()][];
         if(!fileTemp.getOriginalFilename().equals("")) {
-            tempData = SplitInputFile.ReadFromFileSplitting(fileTemp);
+            tempData = SplitInputFile.ReadFromFileSplitting(fileTemp, 'a');
+            temps = new Double[tempData.length];
+            for(int j = 0; j < tempData.length; j++)
+            {
+                    temps[j] = (Double)tempData[j][0];
+            }
+
            // ResolveForm.tempFileName = fileTemp.getOriginalFilename();
         }
         if(!fileCoordinates.getOriginalFilename().equals("")){
-            coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates);
+            coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates, 'a');
             //ResolveForm.coordFileName = fileCoordinates.getOriginalFilename();
         }
-        return "resolveFunction";
+        resolveAverage resolveAverage = new resolveAverage();
+        ArrayList<String> json = resolveAverage.resolve(Double.parseDouble(radius), temps, coordData);
+        model.addAttribute("json", json);
+        return "map";
     }
 
     @GetMapping("/resolveFunction")
@@ -77,12 +87,12 @@ public class MapAllocationController {
         ResolveForm.isPhasesCounted = true;
         if(!fileTemp.getOriginalFilename().equals("")) {
             ResolveForm.PhasesData = new double[(int)fileTemp.getSize()][];
-            ResolveForm.PhasesData = SplitInputFile.ReadFromFileSplitting(fileTemp);
+            ResolveForm.PhasesData = SplitInputFile.ReadFromFileSplitting(fileTemp, 'f');
 
         }
         if(!fileCoordinates.getOriginalFilename().equals("")){
             ResolveForm.coordData = new double[(int)fileCoordinates.getSize()][];
-            ResolveForm.coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates);
+            ResolveForm.coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates, 'f');
             ResolveForm.coordFileName = fileCoordinates.getOriginalFilename();
         }
         ArrayList<String> json = new ArrayList<>();
@@ -136,7 +146,6 @@ public class MapAllocationController {
             model.addAttribute("sigma", ResolveForm.sigma);
             model.addAttribute("corr", ResolveForm.corr);
             model.addAttribute("dataType", ResolveForm.dataType);
-            model.addAttribute("isStationsOnY", ResolveForm.isStationsOnY);
         model.addAttribute("wleft", ResolveForm.windowLeft);
         model.addAttribute("wRight", ResolveForm.windowRight);
         model.addAttribute("periodStart", ResolveForm.periodStart);
@@ -150,18 +159,17 @@ public class MapAllocationController {
     public String check(Model model, @RequestParam(value = "fileTemp", required = false) MultipartFile fileTemp,
                         @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,
                         @RequestParam(value = "dataType", required = false) String dataType,
-                        @RequestParam String isStationsOnY,
                         @RequestParam(value = "periodStart", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodStart,
                         @RequestParam(value = "periodEnd", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodEnd) throws IOException {
 
         if(!fileTemp.getOriginalFilename().equals("")) {
             ResolveForm.TempData = new double[(int)fileTemp.getSize()][];
-            ResolveForm.TempData = SplitInputFile.ReadFromFileSplitting(fileTemp);
+            ResolveForm.TempData = SplitInputFile.ReadFromFileSplitting(fileTemp, 't');
             ResolveForm.tempFileName = fileTemp.getOriginalFilename();
         }
         if(!fileCoordinates.getOriginalFilename().equals("")){
             ResolveForm.coordData = new double[(int)fileCoordinates.getSize()][];
-            ResolveForm.coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates);
+            ResolveForm.coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates, 'c');
             ResolveForm.coordFileName = fileCoordinates.getOriginalFilename();
         }
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -172,7 +180,7 @@ public class MapAllocationController {
         date1.setTime(periodStart);
         date2.setTime(periodEnd);
         date2.add(Calendar.DATE, 1);
-        if(Boolean.parseBoolean(isStationsOnY)){
+        if(ResolveForm.tempsIsStationsOnY){
             ResolveForm.windowCenter = ResolveForm.TempData[0].length/ResolveForm.dataType;
         }
         else{
@@ -188,7 +196,7 @@ public class MapAllocationController {
 
 
             if(yearsBetween == ResolveForm.windowCenter){
-                if(ResolveForm.coordData[0].length == ResolveForm.TempData.length) {
+                if(ResolveForm.coordData[0].length == ResolveForm.TempData[0].length) {
                     message = "Период выбран верно";
                 }
                 else
@@ -213,7 +221,6 @@ public class MapAllocationController {
         model.addAttribute("sigma", ResolveForm.sigma);
         model.addAttribute("corr", ResolveForm.corr);
         model.addAttribute("dataType", ResolveForm.dataType);
-        model.addAttribute("isStationsOnY", ResolveForm.isStationsOnY);
         model.addAttribute("minGroupSize", ResolveForm.minGroupSize);
         return "resolve";
     }

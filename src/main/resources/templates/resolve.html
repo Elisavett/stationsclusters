@@ -82,7 +82,14 @@
         <form th:action="@{/check}" method="post" enctype="multipart/form-data" id="form1" >
             <div class="p-4 border border-dark rounded">
 
+                <div class="form-group row">
+                    <label>Первой строкой в каждом файле укажите компановку в виде: "Станции по х" или "Станции по у"
 
+                    </label><span class="glyphicon glyphicon-question-sign"></span>
+                </div>
+                <!--<div class="form-group row">
+                    <img height="100px" class="rounded mx-auto d-block" th:src="@{/img/example.jpg}"  alt="logo">
+                </div>-->
                 <div class="form-group row">
                     <label ></label>
                     <label th:text="'Файл температур:&nbsp;&nbsp;&nbsp;' + (${tempers}?${tempers}:'')" for="corr" class="col-sm-5 col-form-label">
@@ -142,23 +149,7 @@
 
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label for="corr" class="col-sm-12 col-form-label">Компановка файла:
-                    </label>
-                    <div class="col-sm-12">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="radio" name="isStationsOnY" id="FileContentX" value="false">
-                            <label class="form-check-label" for="avrgMonth">Станции расположены в строку</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="isStationsOnY" id="FileContentY" value="true">
-                            <label class="form-check-label" for="avrgDay">Станции расположены в столбец</label>
-                        </div>
-                        <div style="float: right; margin-right: 10%">
-                            <input  id="submit"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Проверить" />
-                        </div>
-                    </div>
-                </div>
+
                 <div class="form-group row">
 
                         <label style="color: darkred" class="col-sm-12 col-form-label" th:if="${message}!=null" th:text="${message}"></label>

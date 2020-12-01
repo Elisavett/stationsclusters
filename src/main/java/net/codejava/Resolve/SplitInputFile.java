@@ -21,13 +21,29 @@ public class SplitInputFile {
      *
      * @throws IOException если файл не существует, это каталог, а не обычный файл, или по какой-либо другой причине не может быть открыт для чтения.
      */
-    public static double[][] ReadFromFileSplitting(MultipartFile fileTemp) throws FileException {
+    public static double[][] ReadFromFileSplitting(MultipartFile fileTemp, char filetype) throws FileException {
         try {
 
             ArrayList<ArrayList<Double>> finalTemp = new ArrayList<ArrayList<Double>>();
             InputStream is = fileTemp.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             String line;
+            String firstLine = reader.readLine();
+            String fileContent = firstLine.split("\\s+")[2];
+            boolean isOnY;
+            if(fileContent.equals("x") || fileContent.equals("х")){
+                isOnY = false;
+            }
+            else if(fileContent.equals("y") || fileContent.equals("у")){
+                isOnY = true;
+            }
+            else
+            {
+                throw new Exception("Данные о компановки файла не верны. Укажите данные в формате 'Станции по х' первой строкой в файле");
+            }
+
+            if(filetype == 't') ResolveForm.tempsIsStationsOnY = isOnY;
+            if(filetype == 'c') ResolveForm.coordsIsStationsOnY = isOnY;
             List<String> lines = new ArrayList<String>();
             while ((line = reader.readLine()) != null) {
                 lines.add(line);
@@ -40,7 +56,10 @@ public class SplitInputFile {
                 for (int j = 0; j < parts.length; j++) {
                     if (!parts[j].equals("")) {
                         if (!flag) finalTemp.add(new ArrayList<Double>());
-                        finalTemp.get(counter).add(Double.parseDouble(parts[j]));
+                        {
+                            if(parts[j].contains(",")) parts[j] = parts[j].replace(',', '.');
+                            finalTemp.get(counter).add(Double.parseDouble(parts[j]));
+                        }
                         counter++;
                     }
                 }
@@ -48,7 +67,7 @@ public class SplitInputFile {
                 counter = 0;
             }
             double[][] arrayTemp;
-            if (ResolveForm.isStationsOnY) {
+            if (isOnY) {
                 arrayTemp = new double[finalTemp.size()][];
                 for (int k = 0; k < finalTemp.size(); k++) {
                     double[] tempArr = new double[finalTemp.get(k).size()];
@@ -70,7 +89,7 @@ public class SplitInputFile {
             return arrayTemp;
         }
         catch (Exception ex){
-            throw new FileException();
+            throw new FileException(ex);
         }
 
     }
