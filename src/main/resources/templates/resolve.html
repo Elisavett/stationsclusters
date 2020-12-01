@@ -1,48 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-            crossorigin="anonymous"></script>
-    <style>
-        #additional,#additional2,#additional3{
-            color: blue;
-        }
-        #additional:hover,
-        #additional2:hover,
-        #additional3:hover{
-            color: royalblue;
-            text-decoration: underline;
-        }
-        .optional{
-            border: 1px solid #f4fdff;
-            background-color: #f4fdff;
-            border-radius: 8px;
-            padding-left: 15px;
-            margin: 10px 10px 20px 10px;
-            padding-top: 15px;
-        }
-        .dataClass,.windowClass{
-            border: 1px solid #ffffff;
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding-left: 15px;
-            margin: 10px 10px 20px 10px;
-            padding-top: 15px;
-        }
-        form{
-            padding: 0 12% 0 12%;
-        }
-    </style>
+    <div th:replace="fragments/scripts :: scripts"></div>
     <title>Расчет</title>
 </head>
 <header>
@@ -81,15 +40,14 @@
 
         <form th:action="@{/check}" method="post" enctype="multipart/form-data" id="form1" >
             <div class="p-4 border border-dark rounded">
-
                 <div class="form-group row">
-                    <label>Первой строкой в каждом файле укажите компановку в виде: "Станции по х" или "Станции по у"
+                    <span class="col-sm-12 col-form-label">
+                    <label >Первой строкой в файле укажите, по какой оси расположены станции в формате "станции по у"&nbsp;</label>
 
-                    </label><span class="glyphicon glyphicon-question-sign"></span>
+                        <img data-toggle="tooltip" title="<img src='/img/example.jpg' width='160' height='150'/>" src="/img/question-circle-regular.svg" width='18' height='18'>
+
+                    </span>
                 </div>
-                <!--<div class="form-group row">
-                    <img height="100px" class="rounded mx-auto d-block" th:src="@{/img/example.jpg}"  alt="logo">
-                </div>-->
                 <div class="form-group row">
                     <label ></label>
                     <label th:text="'Файл температур:&nbsp;&nbsp;&nbsp;' + (${tempers}?${tempers}:'')" for="corr" class="col-sm-5 col-form-label">
@@ -146,7 +104,9 @@
                             <input class="form-check-input" type="radio" name="dataType" id="avrgDay" value="365">
                             <label class="form-check-label" for="avrgDay">Среднесуточные</label>
                         </div>
-
+                        <div style="float: right; margin-right: 10%">
+                            <input  id="submit"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Проверить" />
+                        </div>
                     </div>
                 </div>
 
@@ -249,6 +209,8 @@
 </div>
 
 <script>
+
+
     var checked = false;
     function isLeapYear(year) {
         if(year%4!==0){
@@ -310,6 +272,11 @@
         }
     }
     window.onload = function (){
+        $('img[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'bottom',
+            html: true
+        });
         checkParams();
         var type = $('#dataType').val();
         if(type!=null) $('input[name="dataType"][value='+type+']').prop('checked', true);

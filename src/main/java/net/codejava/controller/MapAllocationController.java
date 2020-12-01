@@ -58,7 +58,7 @@ public class MapAllocationController {
         Double[] temps = new Double[(int)fileTemp.getSize()];
         double[][] coordData = new double[(int)fileCoordinates.getSize()][];
         if(!fileTemp.getOriginalFilename().equals("")) {
-            tempData = SplitInputFile.ReadFromFileSplitting(fileTemp, 'a');
+            tempData = SplitInputFile.ReadFromFileSplitting(fileTemp, 't');
             temps = new Double[tempData.length];
             for(int j = 0; j < tempData.length; j++)
             {
@@ -68,7 +68,7 @@ public class MapAllocationController {
            // ResolveForm.tempFileName = fileTemp.getOriginalFilename();
         }
         if(!fileCoordinates.getOriginalFilename().equals("")){
-            coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates, 'a');
+            coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates, 'c');
             //ResolveForm.coordFileName = fileCoordinates.getOriginalFilename();
         }
         resolveAverage resolveAverage = new resolveAverage();
@@ -180,12 +180,9 @@ public class MapAllocationController {
         date1.setTime(periodStart);
         date2.setTime(periodEnd);
         date2.add(Calendar.DATE, 1);
-        if(ResolveForm.tempsIsStationsOnY){
+
             ResolveForm.windowCenter = ResolveForm.TempData[0].length/ResolveForm.dataType;
-        }
-        else{
-            ResolveForm.windowCenter = ResolveForm.TempData.length/ResolveForm.dataType;
-        }
+
 
         ResolveForm.dataType = Integer.parseInt(dataType);
         int yearsBetween = 0;
@@ -196,7 +193,10 @@ public class MapAllocationController {
 
 
             if(yearsBetween == ResolveForm.windowCenter){
-                if(ResolveForm.coordData[0].length == ResolveForm.TempData[0].length) {
+                int period1 = ResolveForm.TempData.length;
+                int period2 = ResolveForm.coordData[0].length;
+
+                if(period1 == period2) {
                     message = "Период выбран верно";
                 }
                 else

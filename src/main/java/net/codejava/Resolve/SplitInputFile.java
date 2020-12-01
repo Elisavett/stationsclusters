@@ -31,15 +31,15 @@ public class SplitInputFile {
             String firstLine = reader.readLine();
             String fileContent = firstLine.split("\\s+")[2];
             boolean isOnY;
-            if(fileContent.equals("x") || fileContent.equals("х")){
+            if(fileContent.equals("x") || fileContent.equals("х") || fileContent.equals("X") || fileContent.equals("Х")){
                 isOnY = false;
             }
-            else if(fileContent.equals("y") || fileContent.equals("у")){
+            else if(fileContent.equals("y") || fileContent.equals("у") || fileContent.equals("Y") || fileContent.equals("У")){
                 isOnY = true;
             }
             else
             {
-                throw new Exception("Данные о компановки файла не верны. Укажите данные в формате 'Станции по х' первой строкой в файле");
+                throw new Exception("Данные о компановке файла не верны. Укажите данные в формате 'Станции по х' первой строкой в файле");
             }
 
             if(filetype == 't') ResolveForm.tempsIsStationsOnY = isOnY;
@@ -67,7 +67,7 @@ public class SplitInputFile {
                 counter = 0;
             }
             double[][] arrayTemp;
-            if (isOnY) {
+            if (filetype=='t'?!isOnY:isOnY) {
                 arrayTemp = new double[finalTemp.size()][];
                 for (int k = 0; k < finalTemp.size(); k++) {
                     double[] tempArr = new double[finalTemp.get(k).size()];

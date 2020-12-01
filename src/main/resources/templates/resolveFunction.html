@@ -1,19 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-            crossorigin="anonymous"></script>
-
+    <div th:replace="fragments/scripts :: scripts"></div>
     <title>Расчет</title>
 </head>
 <header>
@@ -52,7 +40,14 @@
 
         <form th:action="@{/resolveFunction}" method="post" enctype="multipart/form-data" id="form1" >
             <div class="p-4 border border-dark rounded">
+                <div class="form-group row">
+                    <span class="col-sm-12 col-form-label">
+                    <label >Первой строкой в файле укажите, по какой оси расположены станции в формате "станции по у"&nbsp;</label>
 
+                        <img data-toggle="tooltip" title="<img src='/img/example.jpg' width='160' height='150'/>" src="/img/question-circle-regular.svg" width='18' height='18'>
+
+                    </span>
+                </div>
 
                 <div class="form-group row">
                     <label th:text="'Шкала отсчетов:' + (${tempers}?${tempers}:'')" class="col-sm-5 col-form-label">
@@ -73,7 +68,14 @@
                         <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл..')" class="custom-file-label" data-browse="Загрузить" for="fileCoordinates"></label>
                     </div>
                 </div>
-
+                <div class="form-group row">
+                    <label for="corr" class="col-sm-5 col-form-label">Коэффициент корреляции (от 0 до 1):
+                    </label>
+                    <div class="col-sm-2">
+                        <input class="form-control" type="text" name="corr" onkeyup="checkParams()" autocomplete="off"
+                               id="corr" th:attr="value=${corr}">
+                    </div>
+                </div>
                 <div class="form-group row">
                     <div class="col-sm-2" >
                         <button class="btn btn-outline-secondary btn-block" type="submit" id="submit">Рассчитать</button>
@@ -86,6 +88,11 @@
 
 <script>
     window.onload = function (){
+            $('img[data-toggle="tooltip"]').tooltip({
+                animated: 'fade',
+                placement: 'bottom',
+                html: true
+            });
         checkParams();
 
     }
@@ -98,23 +105,7 @@
 
     //проверка
     function checkParams() {
-            var temps = $('#temps').val();
-            var coords = $('#coords').val();
-
-            /*        if(corr !== 0)
-        {
-            alert(corr);
-            if(temps !== "" || fileTemp.value != 0)
-            {
-                alert(fileTemp.value + " " + temps);
-                if(fileCoordinates.value != 0 || coords !== null)
-                {
-                    alert(fileCoordinates.value  + " " + coords);
-                }
-            }
-        }
-        alert(temps + "...." + coords + ".." + corr + "...." + fileTemp.value + ".." + fileCoordinates.value)*/
-            if ((fileTemp.value != 0 || temps !== "") && (fileCoordinates.value != 0 || coords !== "")) {
+         if ((fileTemp.value != 0) && (fileCoordinates.value != 0)) {
                 $('#submit').removeAttr('disabled');
             } else {
                 $('#submit').attr('disabled', 'disabled');
