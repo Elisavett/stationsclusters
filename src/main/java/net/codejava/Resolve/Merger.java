@@ -23,7 +23,7 @@ public class Merger {
     ArrayList<GroupLine> groupList = new ArrayList<>();
     TreeSet<GroupLine> sortGroupLine;
     double[][] coordinatesSourceTXT;
-    GroupAndCoordinates groupAndCoordinates;
+    //GroupAndCoordinates groupAndCoordinates;
     int stationCount;
     List<Future<Group>> arrayGroup;
     int minGroupsSize;
@@ -94,13 +94,18 @@ public class Merger {
         for (GroupLine gr : sortGroupLine) {
             if(!gr.islessThenFive()) {
                 for (int j : gr.getGroup()) {
-                    groupAndCoordinates = new GroupAndCoordinates(
+                   /* groupAndCoordinates = new GroupAndCoordinates(
                             coordinatesSourceTXT[0][j],
                             coordinatesSourceTXT[1][j],
                             coordinatesSourceTXT[2][j],
                             numberGroup,
-                            gr.islessThenFive());
-                    String jsonData = GSON.toJson(groupAndCoordinates);
+                            gr.islessThenFive());*/
+                    //String jsonData = GSON.toJson(groupAndCoordinates);
+                    String jsonData = GSON.toJson(new String[] {String.valueOf(coordinatesSourceTXT[0][j]),
+                            String.valueOf(coordinatesSourceTXT[1][j]),
+                            String.valueOf(coordinatesSourceTXT[2][j]),
+                                    String.valueOf(numberGroup),
+                                            String.valueOf(gr.islessThenFive())});
                     json.add(jsonData);
                 }
                 numberGroup++;
@@ -110,13 +115,17 @@ public class Merger {
         for (GroupLine gr : sortGroupLine) {
             if(gr.islessThenFive()) {
                 for (int j : gr.getGroup()) {
-                    groupAndCoordinates = new GroupAndCoordinates(
+                    /*groupAndCoordinates = new GroupAndCoordinates(
                             coordinatesSourceTXT[0][j],
                             coordinatesSourceTXT[1][j],
                             coordinatesSourceTXT[2][j],
                             numberGroup,
-                            gr.islessThenFive());
-                    String jsonData = GSON.toJson(groupAndCoordinates);
+                            gr.islessThenFive());*/
+                    String jsonData = GSON.toJson(new String[] {String.valueOf(coordinatesSourceTXT[0][j]),
+                            String.valueOf(coordinatesSourceTXT[1][j]),
+                            String.valueOf(coordinatesSourceTXT[2][j]),
+                            String.valueOf(numberGroup),
+                            String.valueOf(gr.islessThenFive())});
                     json.add(jsonData);
                 }
                 numberGroup++;

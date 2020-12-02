@@ -1,4 +1,5 @@
 anychart.onDocumentReady(function () {
+
     anychart.format.outputLocale('ru-ru');
     json = document.getElementById('json').value;
     let data = JSON.parse(json);
