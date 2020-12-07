@@ -115,12 +115,6 @@ public class Merger {
         for (GroupLine gr : sortGroupLine) {
             if(gr.islessThenFive()) {
                 for (int j : gr.getGroup()) {
-                    /*groupAndCoordinates = new GroupAndCoordinates(
-                            coordinatesSourceTXT[0][j],
-                            coordinatesSourceTXT[1][j],
-                            coordinatesSourceTXT[2][j],
-                            numberGroup,
-                            gr.islessThenFive());*/
                     String jsonData = GSON.toJson(new String[] {String.valueOf(coordinatesSourceTXT[0][j]),
                             String.valueOf(coordinatesSourceTXT[1][j]),
                             String.valueOf(coordinatesSourceTXT[2][j]),

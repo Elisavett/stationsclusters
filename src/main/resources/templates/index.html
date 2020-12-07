@@ -8,9 +8,9 @@
 <header>
     <div th:replace="fragments/navbar :: navbar (${'index'})"></div>
 </header>
-<div class="container">
+<div align="center">
     <h2>Программный комплекс климато-экологического мониторинга</h2>
-
+</div>
 <div id="carousel" class="carousel slide" data-ride="carousel">
     <!-- Индикаторы -->
     <ol class="carousel-indicators">
@@ -20,10 +20,13 @@
     </ol>
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img height="400px" class="rounded mx-auto d-block" th:src="@{/img/1.png}"  alt="logo">
+            <img width="65%" class="rounded mx-auto d-block" th:src="@{/img/1.png}"  alt="logo">
         </div>
         <div class="carousel-item">
-            <img height="400px" class="rounded mx-auto d-block" th:src="@{/img/2.png}" alt="...">
+            <img width="65%" class="rounded mx-auto d-block" th:src="@{/img/2.png}" alt="...">
+        </div>
+        <div class="carousel-item">
+            <img width="65%" class="rounded mx-auto d-block" th:src="@{/img/3.png}" alt="...">
         </div>
     </div>
     <!-- Элементы управления -->
@@ -35,7 +38,6 @@
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="sr-only">Следующий</span>
     </a>
-</div>
 </div>
 </body>
 </html>

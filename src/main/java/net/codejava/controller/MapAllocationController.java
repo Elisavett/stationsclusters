@@ -181,7 +181,7 @@ public class MapAllocationController {
         date2.setTime(periodEnd);
         date2.add(Calendar.DATE, 1);
 
-            ResolveForm.windowCenter = ResolveForm.TempData[0].length/ResolveForm.dataType;
+        ResolveForm.windowCenter = ResolveForm.TempData[0].length/ResolveForm.dataType;
 
 
         ResolveForm.dataType = Integer.parseInt(dataType);

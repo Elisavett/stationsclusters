@@ -1,8 +1,39 @@
 var map;
+var circlesToShow = [];
+var rectangleClusters = [];
+var circleClusters = [];
 function setType (type) {
-    // Меняем тип карты на "Гибрид".
     map.setType(type);
 }
+function mapRemoveAll (){
+    for (let i=1; i<circleClusters.length; i++) {
+        map.geoObjects.remove(circleClusters[i-1]);
+        map.geoObjects.remove(rectangleClusters[i]);
+    }
+    map.geoObjects.remove(circleClusters[circleClusters.length-1]);
+}
+function setObjectType (type) {
+    mapRemoveAll();
+    if(type==='rect') {
+        for (let i=1; i<rectangleClusters.length; i++) {
+            map.geoObjects.add(rectangleClusters[i]);
+        }
+    }
+    if(type==='circ') {
+        for (let i=0; i<circleClusters.length; i++) {
+            map.geoObjects.add(circleClusters[i]);
+        }
+    }
+    if(type==='both') {
+        for (let i=1; i<circleClusters.length; i++) {
+            map.geoObjects.add(circleClusters[i-1]);
+            map.geoObjects.add(rectangleClusters[i]);
+        }
+        map.geoObjects.add(circleClusters[circleClusters.length-1]);
+    }
+}
+
+
 window.onload = function (){
 
 
@@ -11,6 +42,7 @@ window.onload = function (){
     //преобразую в число с плавающей точкой
     ymaps.ready(init);
     function init() {
+
         // Создание экземпляра карты и его привязка к контейнеру с
         // заданным id ("map").
         map = new ymaps.Map('map', {
@@ -66,11 +98,38 @@ window.onload = function (){
             "#08E8DE", "#FFB300", "#007CAD", "#CD00CD",
             "#99c5cc", "#f0ff83", "#1a5478", "#9a5aff",
         ];
-
+        var rects = [];
+        circlesToShow[0] = [];
         for (let i = 0; i < coordinates.length; i++) {
+
+
 
             // Создаем круг.
             if (coordinates[i][4] == 'false') {
+                if (rects[coordinates[i][3]] === undefined) {
+                    rectangleClusters[coordinates[i][3]] = new ymaps.GeoObjectCollection();
+                    circleClusters[coordinates[i][3]] = new ymaps.GeoObjectCollection();
+                    circlesToShow[coordinates[i][3]] = [];
+                    rects[coordinates[i][3]] = [];
+                    rects[coordinates[i][3]][0] = coordinates[i][0];
+                    rects[coordinates[i][3]][1] = coordinates[i][1];
+                    rects[coordinates[i][3]][2] = coordinates[i][0];
+                    rects[coordinates[i][3]][3] = coordinates[i][1];
+                } else {
+                    if (parseFloat(coordinates[i][0]) < parseFloat(rects[coordinates[i][3]][0])) {
+                        rects[coordinates[i][3]][0] = coordinates[i][0];
+                    }
+                    if (parseFloat(coordinates[i][1]) < parseFloat(rects[coordinates[i][3]][1])) {
+                        rects[coordinates[i][3]][1] = coordinates[i][1];
+                    }
+                    if (parseFloat(coordinates[i][0]) > parseFloat(rects[coordinates[i][3]][2])) {
+                        rects[coordinates[i][3]][2] = coordinates[i][0];
+                    }
+                    if (parseFloat(coordinates[i][1]) > parseFloat(rects[coordinates[i][3]][3])) {
+                        rects[coordinates[i][3]][3] = coordinates[i][1];
+                    }
+
+                }
                 var myCircle = new ymaps.Circle([
                         // Координаты центра круга.
                         [coordinates[i][0], coordinates[i][1]],
@@ -80,7 +139,7 @@ window.onload = function (){
                     {
                         // Содержимое балуна. //
                         balloonContentBody:
-                            " №Станции: " + coordinates[i][2] + "<br \/>" +
+                            " №Станции: " + parseInt(coordinates[i][2]) + "<br \/>" +
                             " Координаты: " + coordinates[i][0] + "; " + coordinates[i][1] + "<br \/>" +
                             " №группы: " + coordinates[i][3]
                         // Содержимое хинта.
@@ -89,18 +148,17 @@ window.onload = function (){
                         // Задаем опции круга.
                         // Цвет заливки.
                         // Последний байт (77) определяет прозрачность.
-                        fillColor: color[(coordinates[i][3] - 1)%color.length],
+                        fillColor: color[(coordinates[i][3] - 1) % color.length],
                         // Цвет обводки.
-                        strokeColor: color[(coordinates[i][3] - 1)%color.length],
+                        strokeColor: color[(coordinates[i][3] - 1) % color.length],
                         // Ширина обводки в пикселях.
                         strokeWidth: 7,
                         geodesic: true
                     });
 
                 // Добавляем круг на карту.
-                map.geoObjects.add(myCircle);
-            }
-            else{
+                circleClusters[coordinates[i][3]].add(myCircle);
+            } else {
                 var myCircle = new ymaps.Placemark([coordinates[i][0], coordinates[i][1]],
                     {
                         // Содержимое балуна. //
@@ -122,10 +180,50 @@ window.onload = function (){
                         iconImageOffset: [-16, -16],// Задаем опции круга.
 
                     });
-
+                circleClusters[0] = new ymaps.GeoObjectCollection().add(myCircle);
                 // Добавляем круг на карту.
-                map.geoObjects.add(myCircle);
+                //map.geoObjects.add(myCircle);
             }
         }
+
+        for (let i = 1; i < rects.length; i++)
+        {
+
+            let myRectangle = new ymaps.Rectangle([
+                // Setting the coordinates of the diagonal corners of the rectangle.
+                [rects[i][0], rects[i][1]],
+                [rects[i][2], rects[i][3]]
+            ], {
+                //Properties
+                hintContent: '№группы: ' + i
+            }, {
+                /**
+                 * Options.
+                 *  The fill color and transparency.
+                 */
+                fillColor: color[(i - 1) % color.length],
+                /**
+                 * Additional fill transparency.
+                 *  The resulting transparency will not be #33(0.2), but 0.1(0.2*0.5).
+                 */
+                fillOpacity: 0.2,
+                // Stroke color.
+                strokeColor: color[(i - 1) % color.length],
+                // Stroke transparency.
+                strokeOpacity: 0.8,
+                // Line width.
+                strokeWidth: 6,
+                /**
+                 * The radius of rounded corners.
+                 *  This option is accepted only for a rectangle.
+                 */
+                borderRadius: 4
+            });
+
+            rectangleClusters[i].add(myRectangle);
         }
+        setObjectType('rect');
+
+
+    }
 }
