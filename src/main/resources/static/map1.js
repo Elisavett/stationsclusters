@@ -23,22 +23,23 @@ function setObjectType (type) {
         }
     }
     if(type==='circ') {
+
+        for (let i=1; i<circleClusters.length; i++) {
+            map.geoObjects.add(circleClusters[i]);
+        }
         if(circleClusters[0]!==undefined)
         {
             map.geoObjects.add(circleClusters[0]);
-        }
-        for (let i=1; i<circleClusters.length; i++) {
-            map.geoObjects.add(circleClusters[i]);
         }
     }
     if(type==='both') {
+        for (let i=1; i<circleClusters.length; i++) {
+            map.geoObjects.add(rectangleClusters[i]);
+            map.geoObjects.add(circleClusters[i]);
+        }
         if(circleClusters[0]!==undefined)
         {
             map.geoObjects.add(circleClusters[0]);
-        }
-        for (let i=1; i<circleClusters.length; i++) {
-            map.geoObjects.add(circleClusters[i]);
-            map.geoObjects.add(rectangleClusters[i]);
         }
     }
 }
@@ -110,6 +111,7 @@ window.onload = function (){
         ];
         var rects = [];
         circlesToShow[0] = [];
+        circleClusters[0] = new ymaps.GeoObjectCollection();
         for (let i = 0; i < coordinates.length; i++) {
 
 
@@ -184,13 +186,13 @@ window.onload = function (){
                         // Своё изображение иконки метки.
                         iconImageHref: '/img/cross.png',
                         // Размеры метки.
-                        iconImageSize: [6, 6],
+                        iconImageSize: [7, 7],
                         // Смещение левого верхнего угла иконки относительно
                         // её "ножки" (точки привязки).
-                        iconImageOffset: [-16, -16],// Задаем опции круга.
+                        iconImageOffset: [-1, -1],// Задаем опции круга.
 
                     });
-                circleClusters[0] = new ymaps.GeoObjectCollection().add(myCircle);
+                circleClusters[0].add(myCircle);
                 // Добавляем круг на карту.
                 //map.geoObjects.add(myCircle);
             }

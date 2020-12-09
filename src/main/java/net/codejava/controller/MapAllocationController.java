@@ -83,8 +83,12 @@ public class MapAllocationController {
     }
     @PostMapping("/resolveFunction")
     public String resolveFunctionToMap(Model model, @RequestParam MultipartFile fileTemp,
-                                       @RequestParam MultipartFile fileCoordinates) throws IOException {
+                                       @RequestParam MultipartFile fileCoordinates,
+                                       @RequestParam(value = "corr", required = false) String corr
+            ) throws IOException {
         ResolveForm.isPhasesCounted = true;
+        ResolveForm.corr = Double.parseDouble(corr);
+
         if(!fileTemp.getOriginalFilename().equals("")) {
             ResolveForm.PhasesData = new double[(int)fileTemp.getSize()][];
             ResolveForm.PhasesData = SplitInputFile.ReadFromFileSplitting(fileTemp, 'f');
