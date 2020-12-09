@@ -6,11 +6,14 @@ function setType (type) {
     map.setType(type);
 }
 function mapRemoveAll (){
+    if(circleClusters[0]!==undefined)
+    {
+        map.geoObjects.remove(circleClusters[0]);
+    }
     for (let i=1; i<circleClusters.length; i++) {
-        map.geoObjects.remove(circleClusters[i-1]);
+        map.geoObjects.remove(circleClusters[i]);
         map.geoObjects.remove(rectangleClusters[i]);
     }
-    map.geoObjects.remove(circleClusters[circleClusters.length-1]);
 }
 function setObjectType (type) {
     mapRemoveAll();
@@ -20,16 +23,23 @@ function setObjectType (type) {
         }
     }
     if(type==='circ') {
-        for (let i=0; i<circleClusters.length; i++) {
+        if(circleClusters[0]!==undefined)
+        {
+            map.geoObjects.add(circleClusters[0]);
+        }
+        for (let i=1; i<circleClusters.length; i++) {
             map.geoObjects.add(circleClusters[i]);
         }
     }
     if(type==='both') {
+        if(circleClusters[0]!==undefined)
+        {
+            map.geoObjects.add(circleClusters[0]);
+        }
         for (let i=1; i<circleClusters.length; i++) {
-            map.geoObjects.add(circleClusters[i-1]);
+            map.geoObjects.add(circleClusters[i]);
             map.geoObjects.add(rectangleClusters[i]);
         }
-        map.geoObjects.add(circleClusters[circleClusters.length-1]);
     }
 }
 
@@ -49,13 +59,13 @@ window.onload = function (){
             // При инициализации карты обязательно нужно указать
             // её центр и коэффициент масштабирования.
             center: [58.846573, 60.930432],
-            zoom: 2,
+            zoom: 3,
             controls: ['zoomControl']
         }, {
             //searchControlProvider: 'yandex#search',
             //restrictMapArea: true,
-            minZoom: 1,
-            maxZoom: 7,
+            minZoom: 2,
+            maxZoom: 12,
         });
 
         //массив

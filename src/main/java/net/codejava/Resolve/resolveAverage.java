@@ -218,18 +218,16 @@ public class resolveAverage {
 
     public ArrayList<String> getJson(double mas[][]) {
         //формирую json файл
-        GroupAndCoordinates groupAndCoordinates;
         ArrayList<String> json = new ArrayList<>();
         int numberGroup = 1;
         for (int i = 0; i<mas.length; i++) {
-                    groupAndCoordinates = new GroupAndCoordinates(
-                            mas[i][1],
-                            mas[i][2],
-                            mas[i][0],
-                            mas[i][5],
-                            false);
-                    String jsonData = GSON.toJson(groupAndCoordinates);
-                    json.add(jsonData);
+            String jsonData = GSON.toJson(new String[] {String.valueOf(mas[i][1]),
+                    String.valueOf(mas[i][2]),
+                    String.valueOf(mas[i][0]),
+                    String.valueOf((int)mas[i][5]),
+                    String.valueOf(false)});
+            json.add(jsonData);
+
         }
 
 //        System.out.println(json);
