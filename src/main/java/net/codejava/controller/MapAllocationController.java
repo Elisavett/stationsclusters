@@ -23,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,6 +51,7 @@ public class MapAllocationController {
     public String resolveAverage(Model model) {
         return "resolveAverage";
     }
+    @Transactional(timeout = 120)
     @PostMapping("/resolveAverage")
     public String resolveAverageToMap(Model model, @RequestParam(value = "fileTemp", required = false) MultipartFile fileTemp,
     @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,
@@ -81,6 +83,7 @@ public class MapAllocationController {
     public String resolveFunction(Model model) {
         return "resolveFunction";
     }
+    @Transactional(timeout = 120)
     @PostMapping("/resolveFunction")
     public String resolveFunctionToMap(Model model, @RequestParam MultipartFile fileTemp,
                                        @RequestParam MultipartFile fileCoordinates,
@@ -238,6 +241,7 @@ public class MapAllocationController {
     private static final Gson GSON = new GsonBuilder().create();
 
     @PostMapping("/map")
+    @Transactional(timeout = 120)
     public String map(Model model,
                       @RequestParam(value = "corr", required = false) String corr,
                       @RequestParam(value = "windowLeft", required = false) String windowLeft,
