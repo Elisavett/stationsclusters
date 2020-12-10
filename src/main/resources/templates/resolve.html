@@ -35,11 +35,11 @@
 </div>
 
 
-<div class="container mt-2" >
+<div class="mt-2" >
     <div>
 
         <form th:action="@{/check}" method="post" enctype="multipart/form-data" id="form1" >
-            <div class="p-4 border border-dark rounded">
+            <div class="p-3 border border-dark rounded">
                 <div class="form-group row">
                     <span class="col-sm-12 col-form-label">
                     <label >Первой строкой в файле укажите, по какой оси расположены станции в формате "станции по у"&nbsp;</label>
@@ -50,26 +50,54 @@
                 </div>
                 <div class="form-group row">
                     <label ></label>
-                    <label th:text="'Файл температур:&nbsp;&nbsp;&nbsp;' + (${tempers}?${tempers}:'')" for="corr" class="col-sm-5 col-form-label">
+                    <label th:text="'Файл температур:&nbsp;&nbsp;&nbsp;' + (${tempers}?${tempers}:'')" for="corr" class="col-sm-3 col-form-label">
                     </label>
-                    <div class="col-sm-5" style="margin-left: 2%">
+                    <div class="col-sm-4">
 
                         <input  type="file" class="custom-file-input" name="fileTemp" accept="text/plain"
                                onchange="checkParams()" autocomplete="off" id="fileTemp"  th:attr="value=${tempers}">
                         <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл..')" class="custom-file-label" data-browse="Загрузить" for="fileTemp"></label>
+                    </div>
+                    <div class="col-sm-5 row">
+                        <label class="col-sm-4 pl-3">Отсчеты:</label>
+                            <div class="col-sm-4">
+                                <input class="form-check-input" checked type="radio" name="tempType" id="tempsLine" value="12">
+                                <label class="form-check-label">В строку</label>
+                                <img data-toggle="tooltip" title="<img src='/img/example.jpg' width='160' height='150'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="form-check-input" type="radio" name="tempType" id="tempsCol" value="365">
+                                <label class="form-check-label">В столбец</label>
+                                <img data-toggle="tooltip" title="<img src='/img/example.jpg' width='160' height='150'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+                            </div>
                     </div>
                 </div>
                 <input type="hidden" id="temps" th:attr="value=${tempers}">
                 <input type="hidden" id="coords" th:attr="value=${coords}">
                 <input type="hidden" id="dataType" th:attr="value=${dataType}">
                 <input type="hidden" id="isStationsOnY" th:attr="value=${isStationsOnY}">
-                <div class="form-group row" style="max-width: 1070px;">
-                    <label th:text="'Файл координат:&nbsp;&nbsp;&nbsp;' + (${coords}?${coords}:'')" for="corr" class="col-sm-5 col-form-label">
+                <div class="form-group row">
+                    <label th:text="'Файл координат:&nbsp;&nbsp;&nbsp;' + (${coords}?${coords}:'')" for="corr" class="col-sm-3 col-form-label">
                     </label>
-                    <div class="col-sm-5" style="margin-left: 2%">
+                    <div class="col-sm-4">
                         <input  type="file" class="custom-file-input" name="fileCoordinates" accept="text/plain"
                                onchange="checkParams()" autocomplete="off" id="fileCoordinates" th:attr="value=${coords}">
                         <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл..')" class="custom-file-label" data-browse="Загрузить" for="fileCoordinates"></label>
+                    </div>
+                    <div class="col-sm-5 row">
+                        <label class="col-sm-4 pl-3">Координаты:</label>
+                        <div class="col-sm-4">
+                            <input class="form-check-input" checked type="radio" name="cordsType" id="cordsLine" value="line">
+                            <label class="form-check-label">В строку</label>
+                            <img data-toggle="tooltip" title="<img src='/img/example.jpg' width='160' height='150'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="radio" name="cordsType" id="cordsCol" value="col">
+                            <label class="form-check-label">В столбец</label>
+                            <img data-toggle="tooltip" title="<img src='/img/example.jpg' width='160' height='150'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+
+                        </div>
                     </div>
                 </div>
                 <div id="message" hidden class="row p-3">
@@ -273,8 +301,6 @@
     }
     window.onload = function (){
         $('img[data-toggle="tooltip"]').tooltip({
-            animated: 'fade',
-            placement: 'bottom',
             html: true
         });
         checkParams();

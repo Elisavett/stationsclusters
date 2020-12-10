@@ -116,7 +116,7 @@ public class MapAllocationController {
             e.printStackTrace();
         }
         model.addAttribute("json", json);
-        return "map";
+        return "map1";
     }
     @GetMapping("/resolveHistory")
     public String resolveHistory(Model model) {
@@ -234,7 +234,7 @@ public class MapAllocationController {
 
     @GetMapping("/map")
     public String map() {
-        return "map";
+        return "map1";
     }
 
 
@@ -299,6 +299,6 @@ public class MapAllocationController {
 
 
         model.addAttribute("json", json);
-        return "map";
+        return "map1";
     }
 }
