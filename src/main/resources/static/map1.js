@@ -60,7 +60,7 @@ window.onload = function (){
             // При инициализации карты обязательно нужно указать
             // её центр и коэффициент масштабирования.
             center: [58.846573, 60.930432],
-            zoom: 3,
+            zoom: 2,
             controls: ['zoomControl']
         }, {
             //searchControlProvider: 'yandex#search',

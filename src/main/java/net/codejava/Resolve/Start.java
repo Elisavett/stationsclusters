@@ -23,7 +23,7 @@ public class Start {
             //блок вычисления фазы
             //создаем лист задач
             List<PhaseCalculation> phaseCalculationTasks = new ArrayList<>();
-            long startExec = System.currentTimeMillis(); //время старта вычислений
+            //long startExec = System.currentTimeMillis(); //время старта вычислений
             for (int i = 0; i < stationCount; i++) {
                 double[] temp = ResolveForm.TempData[i].clone();
                 PhaseCalculation phaseCalculation = new PhaseCalculation(temp, ResolveForm.windowLeft, ResolveForm.windowRight);
@@ -33,8 +33,8 @@ public class Start {
             arrayPhase = executorService.invokeAll(phaseCalculationTasks);
             ResolveForm.arrayPhase = arrayPhase;
             //Время выполнения п
-            long finishExec = System.currentTimeMillis(); // время конца вычислений
-            System.out.println("Total phase calculation time: " + (finishExec - startExec));
+            //long finishExec = System.currentTimeMillis(); // время конца вычислений
+            //System.out.println("Total phase calculation time: " + (finishExec - startExec));
         }
 
         else{
@@ -50,9 +50,8 @@ public class Start {
         ArrayData arrayTypicalPath = new ArrayData();
         List<Future<Group>> arrayGroup;
         List<Future<Corr>> arrayCorr;
-        List<Future<Double>> arrayWindows;
         boolean check;
-        long cicleStartExec = System.currentTimeMillis(); //время старта вычислений
+        //long cicleStartExec = System.currentTimeMillis(); //время старта вычислений
         do {
             //System.out.println("Cicle");
             //блок вычисления таблицы корреляции
@@ -67,27 +66,27 @@ public class Start {
             arrayCorr = executorService.invokeAll(corrThreadTasks);
             //System.out.println("Corelation");
             long finishExec = System.currentTimeMillis(); // время конца вычислений
-            System.out.println("Total corelation calculation time: " + (finishExec - startExec));
+            //System.out.println("Total corelation calculation time: " + (finishExec - startExec));
 
-            startExec = System.currentTimeMillis(); //время старта вычислений
+            //startExec = System.currentTimeMillis(); //время старта вычислений
             //блок выделения групп
             GroupAllocation allocationThread = new GroupAllocation(stationCount, ResolveForm.corr, arrayCorr, executorService);
             arrayGroup = allocationThread.run();
-            finishExec = System.currentTimeMillis(); // время конца вычислений
-            System.out.println("Total group allocation time: " + (finishExec - startExec));
+            //finishExec = System.currentTimeMillis(); // время конца вычислений
+            //System.out.println("Total group allocation time: " + (finishExec - startExec));
 
             //System.out.println("Groups");
             //блок вычисления типовых фаз
             arrayTypicalPath.clear();
-            startExec = System.currentTimeMillis(); //время старта вычислений
+            //startExec = System.currentTimeMillis(); //время старта вычислений
             for (int i = 0; i < stationCount; i++) {
                 Group groupIndex = (Group) arrayGroup.get(i).get();
                 TypicalCalculation typical = new TypicalCalculation(stationCount, arrayPhase, groupIndex);
                 TypicalPhase typicalPhase = typical.run();
                 arrayTypicalPath.addData(typicalPhase);
             }
-            finishExec = System.currentTimeMillis(); // время конца вычислений
-            System.out.println("Total typical calculation time: " + (finishExec - startExec));
+            //finishExec = System.currentTimeMillis(); // время конца вычислений
+            //System.out.println("Total typical calculation time: " + (finishExec - startExec));
             //System.out.println("Typicals");
 
             //блок проверки конца алгоритма
@@ -100,7 +99,7 @@ public class Start {
         } while (!check);
         //System.out.println("count=" + count);
         long finishExec = System.currentTimeMillis(); // время конца вычислений
-        System.out.println("Total cycle ending time: " + (finishExec - cicleStartExec));
+        //System.out.println("Total cycle ending time: " + (finishExec - cicleStartExec));
         //Алгоритм итоговой группировки
 
         // объединяю станции в группы, дописываю координаты
@@ -108,8 +107,8 @@ public class Start {
         ArrayList<String> groupAndCoordinates = merger.run();
 
 //        System.out.println(System.currentTimeMillis() - start);
-        finishExec = System.currentTimeMillis(); // время конца вычислений
-        System.out.println("Total calculations time: " + (finishExec - cicleStartExec));
+        //finishExec = System.currentTimeMillis(); // время конца вычислений
+        //System.out.println("Total calculations time: " + (finishExec - cicleStartExec));
         //закрываем потоки
         executorService.shutdown();
         return groupAndCoordinates;
