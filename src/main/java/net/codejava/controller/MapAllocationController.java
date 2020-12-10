@@ -94,12 +94,12 @@ public class MapAllocationController {
 
         if(!fileTemp.getOriginalFilename().equals("")) {
             ResolveForm.PhasesData = new double[(int)fileTemp.getSize()][];
-            ResolveForm.PhasesData = SplitInputFile.ReadFromFileSplitting(fileTemp, 'f');
+            ResolveForm.PhasesData = SplitInputFile.ReadFromFileSplitting(fileTemp, 't');
 
         }
         if(!fileCoordinates.getOriginalFilename().equals("")){
             ResolveForm.coordData = new double[(int)fileCoordinates.getSize()][];
-            ResolveForm.coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates, 'f');
+            ResolveForm.coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates, 'c');
             ResolveForm.coordFileName = fileCoordinates.getOriginalFilename();
         }
         ArrayList<String> json = new ArrayList<>();
