@@ -46,6 +46,7 @@ public abstract class PhaseCalculationAbstract {
         for (int i = 0; i < real.length; i++) {
             phase[i] = Math.atan2(imag[i], real[i]);
         }
+
     }
 
     protected void PhaseLinking() {

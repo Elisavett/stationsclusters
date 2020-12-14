@@ -77,6 +77,7 @@
                 <input type="hidden" id="dataType" th:attr="value=${dataType}">
                 <input type="hidden" id="tempType" th:attr="value=${tempType}">
                 <input type="hidden" id="cordType" th:attr="value=${cordType}">
+                <input type="hidden" id="isForPhase" th:attr="value=${isForPhase}">
                 <input type="hidden" id="isStationsOnY" th:attr="value=${isStationsOnY}">
                 <div class="form-group row">
                     <label th:text="'Файл координат:&nbsp;&nbsp;&nbsp;' + (${coords}?${coords}:'')" for="corr" class="col-sm-3 col-form-label">
@@ -168,7 +169,20 @@
                 </div>
                 <div hidden="true" class="optional">
 
-
+                    <div class="form-group row">
+                        <label class="col-sm-12 col-form-label">Выполнять расчет по:
+                        </label>
+                        <div class="col-sm-12">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" checked type="radio" name="isForPhase" id="forPhase" value="true">
+                                <label class="form-check-label" >Фазе</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="isForPhase" id="forAmplitude" value="false">
+                                <label class="form-check-label" >Амплитуде</label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group row">
                         <label for="corr" class="col-sm-5 col-form-label">Погрешность вычислений :
                         </label>
@@ -249,6 +263,8 @@
         if(cordType!=null) $('input[name="cordsType"][value='+cordType+']').prop('checked', true);
         var tempType = $('#tempType').val();
         if(tempType!=null) $('input[name="tempType"][value='+tempType+']').prop('checked', true);
+        var isForPhase = $('#isForPhase').val();
+        if(isForPhase!=null) $('input[name="isForPhase"][value='+isForPhase+']').prop('checked', true);
 
         var type = $('#dataType').val();
         if(type!=null) $('input[name="dataType"][value='+type+']').prop('checked', true);

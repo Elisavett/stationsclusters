@@ -26,4 +26,5 @@ public class ResolveForm {
     public static boolean isPhasesCounted = false;
     public static boolean tempsIsStationsOnY = true;
     public static boolean coordsIsStationsOnY = true;
+    public static boolean isForPhases = true;
 }

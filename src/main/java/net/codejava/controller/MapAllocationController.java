@@ -172,6 +172,7 @@ public class MapAllocationController {
         model.addAttribute("periodEnd", ResolveForm.periodEnd);
         model.addAttribute("cordType", ResolveForm.coordsIsStationsOnY);
         model.addAttribute("tempType", ResolveForm.tempsIsStationsOnY);
+        model.addAttribute("isForPhase", ResolveForm.isForPhases);
     }
 
     @PostMapping("/check")
@@ -255,11 +256,13 @@ public class MapAllocationController {
                       @RequestParam(value = "windowLeft", required = false) String windowLeft,
                       @RequestParam(value = "windowRight", required = false) String  windowRight,
                       @RequestParam(value = "sigma", required = false) String sigma,
+                      @RequestParam(value = "isForPhase", required = false) String isForPhase,
                       @RequestParam(value = "isWindowManually", required = false) String isWindowManually,
                       @RequestParam(value = "windowCounted", required = false) Integer windowCounted,
                       @RequestParam(value = "minGroupSize", required = false) Integer minGroupSize) throws IOException, ExecutionException, InterruptedException {
 
         ResolveForm.isPhasesCounted = false;
+        ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
         if(windowCounted!=null){
             ResolveForm.windowLeft = ResolveForm.windowCenter - windowCounted;
             ResolveForm.windowRight = ResolveForm.windowCenter + windowCounted;
@@ -290,7 +293,6 @@ public class MapAllocationController {
                 ResolveForm.windowRight = Double.parseDouble(windowRight);
             }
         }
-
         ArrayList<String> json = new ArrayList<>();
         try {
             Start start = new Start();
