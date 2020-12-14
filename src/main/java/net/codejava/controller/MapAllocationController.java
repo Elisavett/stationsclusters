@@ -54,8 +54,14 @@ public class MapAllocationController {
     @Transactional(timeout = 120)
     @PostMapping("/resolveAverage")
     public String resolveAverageToMap(Model model, @RequestParam(value = "fileTemp", required = false) MultipartFile fileTemp,
-    @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,
-                                      @RequestParam String radius) throws IOException {
+                                      @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,
+                                      @RequestParam String radius,
+                                      @RequestParam(value = "cordsType", required = false) String cordsType,
+                                      @RequestParam(value = "tempType", required = false) String tempType) throws IOException {
+
+
+        ResolveForm.tempsIsStationsOnY = Boolean.parseBoolean(tempType);
+        ResolveForm.coordsIsStationsOnY = Boolean.parseBoolean(cordsType);
         double[][] tempData = new double[(int)fileTemp.getSize()][];
         Double[] temps = new Double[(int)fileTemp.getSize()];
         double[][] coordData = new double[(int)fileCoordinates.getSize()][];
@@ -87,15 +93,17 @@ public class MapAllocationController {
     @PostMapping("/resolveFunction")
     public String resolveFunctionToMap(Model model, @RequestParam MultipartFile fileTemp,
                                        @RequestParam MultipartFile fileCoordinates,
-                                       @RequestParam(value = "corr", required = false) String corr
-            ) throws IOException {
+                                       @RequestParam(value = "tempType", required = false) String tempType,
+                                       @RequestParam(value = "cordsType", required = false) String cordsType,
+                                       @RequestParam(value = "corr", required = false) String corr) throws IOException {
+        ResolveForm.tempsIsStationsOnY = Boolean.parseBoolean(tempType);
+        ResolveForm.coordsIsStationsOnY = Boolean.parseBoolean(cordsType);
         ResolveForm.isPhasesCounted = true;
         ResolveForm.corr = Double.parseDouble(corr);
 
         if(!fileTemp.getOriginalFilename().equals("")) {
             ResolveForm.PhasesData = new double[(int)fileTemp.getSize()][];
             ResolveForm.PhasesData = SplitInputFile.ReadFromFileSplitting(fileTemp, 't');
-
         }
         if(!fileCoordinates.getOriginalFilename().equals("")){
             ResolveForm.coordData = new double[(int)fileCoordinates.getSize()][];
@@ -116,7 +124,7 @@ public class MapAllocationController {
             e.printStackTrace();
         }
         model.addAttribute("json", json);
-        return "map1";
+        return "map";
     }
     @GetMapping("/resolveHistory")
     public String resolveHistory(Model model) {
@@ -148,27 +156,34 @@ public class MapAllocationController {
 
     @GetMapping("/resolve")
     public String resolve(Model model) {
-            model.addAttribute("tempers", ResolveForm.tempFileName);
-            model.addAttribute("coords", ResolveForm.coordFileName);
-            model.addAttribute("sigma", ResolveForm.sigma);
-            model.addAttribute("corr", ResolveForm.corr);
-            model.addAttribute("dataType", ResolveForm.dataType);
+        addAllToModel(model);
+        return "resolve";
+    }
+
+    public void addAllToModel(Model model){
+        model.addAttribute("tempers", ResolveForm.tempFileName);
+        model.addAttribute("coords", ResolveForm.coordFileName);
+        model.addAttribute("sigma", ResolveForm.sigma);
+        model.addAttribute("corr", ResolveForm.corr);
+        model.addAttribute("dataType", ResolveForm.dataType);
         model.addAttribute("wleft", ResolveForm.windowLeft);
         model.addAttribute("wRight", ResolveForm.windowRight);
         model.addAttribute("periodStart", ResolveForm.periodStart);
         model.addAttribute("periodEnd", ResolveForm.periodEnd);
-
-
-        return "resolve";
+        model.addAttribute("cordType", ResolveForm.coordsIsStationsOnY);
+        model.addAttribute("tempType", ResolveForm.tempsIsStationsOnY);
     }
 
     @PostMapping("/check")
     public String check(Model model, @RequestParam(value = "fileTemp", required = false) MultipartFile fileTemp,
                         @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,
+                        @RequestParam(value = "tempType", required = false) String tempType,
+                        @RequestParam(value = "cordsType", required = false) String cordsType,
                         @RequestParam(value = "dataType", required = false) String dataType,
                         @RequestParam(value = "periodStart", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodStart,
                         @RequestParam(value = "periodEnd", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodEnd) throws IOException {
-
+        ResolveForm.tempsIsStationsOnY = Boolean.parseBoolean(tempType);
+        ResolveForm.coordsIsStationsOnY = Boolean.parseBoolean(cordsType);
         if(!fileTemp.getOriginalFilename().equals("")) {
             ResolveForm.TempData = new double[(int)fileTemp.getSize()][];
             ResolveForm.TempData = SplitInputFile.ReadFromFileSplitting(fileTemp, 't');
@@ -180,6 +195,7 @@ public class MapAllocationController {
             ResolveForm.coordFileName = fileCoordinates.getOriginalFilename();
         }
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
         ResolveForm.periodStart = formatter.format(periodStart);
         ResolveForm.periodEnd = formatter.format(periodEnd);
         Calendar date1 = Calendar.getInstance();
@@ -187,11 +203,10 @@ public class MapAllocationController {
         date1.setTime(periodStart);
         date2.setTime(periodEnd);
         date2.add(Calendar.DATE, 1);
+        ResolveForm.dataType = Integer.parseInt(dataType);
 
         ResolveForm.windowCenter = ResolveForm.TempData[0].length/ResolveForm.dataType;
 
-
-        ResolveForm.dataType = Integer.parseInt(dataType);
         int yearsBetween = 0;
         String message;
         if(date1.get(Calendar.DAY_OF_MONTH) == date2.get(Calendar.DAY_OF_MONTH) && date1.get(Calendar.MONTH) == date2.get(Calendar.MONTH))
@@ -220,21 +235,14 @@ public class MapAllocationController {
             message = "Неверно указан период. Данные должны быть выбраны за ровное количество лет (Пример: 01.01.1955-31.12.2017)";
         }
         model.addAttribute("message", message);
-        model.addAttribute("tempers", ResolveForm.tempFileName);
-        model.addAttribute("coords", ResolveForm.coordFileName);
-        model.addAttribute("dataType", ResolveForm.dataType);
-        model.addAttribute("periodStart", ResolveForm.periodStart);
-        model.addAttribute("periodEnd", ResolveForm.periodEnd);
-        model.addAttribute("sigma", ResolveForm.sigma);
-        model.addAttribute("corr", ResolveForm.corr);
-        model.addAttribute("dataType", ResolveForm.dataType);
         model.addAttribute("minGroupSize", ResolveForm.minGroupSize);
+        addAllToModel(model);
         return "resolve";
     }
 
     @GetMapping("/map")
     public String map() {
-        return "map1";
+        return "map";
     }
 
 
@@ -262,7 +270,7 @@ public class MapAllocationController {
             ResolveForm.sigma = sigma;
 
 
-            if (windowLeft.equals("") && windowRight.equals("")) {
+            if (windowLeft.equals("0.0") && windowRight.equals("0.0")) {
                 boolean assimetricWindow = false;
                 if(Integer.parseInt(isWindowManually)==2) assimetricWindow=true;
                 WindowChart.getWindowsChartData(assimetricWindow);
@@ -299,6 +307,6 @@ public class MapAllocationController {
 
 
         model.addAttribute("json", json);
-        return "map1";
+        return "map";
     }
 }

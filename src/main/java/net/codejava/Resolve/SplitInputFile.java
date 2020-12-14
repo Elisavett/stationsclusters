@@ -28,22 +28,10 @@ public class SplitInputFile {
             InputStream is = fileTemp.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             String line;
-            String firstLine = reader.readLine();
-            String fileContent = firstLine.split("\\s+")[2];
-            boolean isOnY;
-            if(fileContent.equals("x") || fileContent.equals("х") || fileContent.equals("X") || fileContent.equals("Х")){
-                isOnY = false;
-            }
-            else if(fileContent.equals("y") || fileContent.equals("у") || fileContent.equals("Y") || fileContent.equals("У")){
-                isOnY = true;
-            }
-            else
-            {
-                throw new Exception("Данные о компановке файла не верны. Укажите данные в формате 'Станции по х' первой строкой в файле");
-            }
+            boolean isOnY = false;
 
-            if(filetype == 't') ResolveForm.tempsIsStationsOnY = isOnY;
-            if(filetype == 'c') ResolveForm.coordsIsStationsOnY = isOnY;
+            if(filetype == 't') isOnY = ResolveForm.tempsIsStationsOnY;
+            if(filetype == 'c') isOnY = ResolveForm.coordsIsStationsOnY;
             List<String> lines = new ArrayList<String>();
             while ((line = reader.readLine()) != null) {
                 lines.add(line);
