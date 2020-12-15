@@ -309,6 +309,6 @@ public class MapAllocationController {
 
 
         model.addAttribute("json", json);
-        return "map";
+        return "map1";
     }
 }

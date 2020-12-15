@@ -4,49 +4,156 @@
 <head>
     <div th:replace="fragments/scripts :: scripts"></div>
     <title>Map</title>
-    <link href="https://playground.anychart.com/gallery/Maps_Point_Maps_(Dot_Maps)/Airplane_Crashes_since_1970_till_2009/iframe"
-          rel="canonical">
-    <meta content="AJAX Chart,Chart from JSON,Dot Chart,Dot Map,Geo Chart,Geo Visualization,JSON Chart,JSON Plot,Marker Chart,Point Map,Statistical Data,Tooltip"
-          name="keywords">
-    <meta content="AnyChart - JavaScript Charts designed to be embedded and integrated" name="description">
-    <link href="https://cdn.anychart.com/releases/v8/css/anychart-ui.min.css?hcode=c11e6e3cfefb406e8ce8d99fa8368d33"
-          rel="stylesheet" type="text/css">
-    <link href="https://cdn.anychart.com/releases/v8/fonts/css/anychart-font.min.css?hcode=c11e6e3cfefb406e8ce8d99fa8368d33"
-          rel="stylesheet" type="text/css">
+    <span style="display:none;" class="anychart">
+        <link href="https://playground.anychart.com/gallery/Maps_Point_Maps_(Dot_Maps)/Airplane_Crashes_since_1970_till_2009/iframe"
+              rel="canonical">
+        <meta content="AJAX Chart,Chart from JSON,Dot Chart,Dot Map,Geo Chart,Geo Visualization,JSON Chart,JSON Plot,Marker Chart,Point Map,Statistical Data,Tooltip"
+              name="keywords">
+        <meta content="AnyChart - JavaScript Charts designed to be embedded and integrated" name="description">
+        <link href="https://cdn.anychart.com/releases/v8/css/anychart-ui.min.css?hcode=c11e6e3cfefb406e8ce8d99fa8368d33"
+              rel="stylesheet" type="text/css">
+        <link href="https://cdn.anychart.com/releases/v8/fonts/css/anychart-font.min.css?hcode=c11e6e3cfefb406e8ce8d99fa8368d33"
+              rel="stylesheet" type="text/css">
+    </span>
+    <style>
+        html, body{
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        #map{
+            position: absolute;
+            width: 100%;
+            height: 97%;
+            padding: 0;
+
+        }
+        .dropbtn {
+
+            background-color: #1b4d6e;
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+            width: 100%;
+        }
+
+        /* The container <div> - needed to position the dropdown content */
+        .dropdown {
+            display: inline-block;
+            float: right;
+            width: 12%;
+            margin: 1%;
+        }
+
+        /* Dropdown Content (Hidden by Default) */
+        .dropdown-content {
+            display: none;
+
+            background-color: #f1f1f1;
+            min-width: 100px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        /* Links inside the dropdown */
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        html,
+        body,
+        .container128 {
+            width: 100%;
+            height: 97%;
+            position: absolute;
+        }
+
+        /* Change color of dropdown links on hover */
+        .dropdown-content a:hover {background-color: #ddd;}
+
+        /* Show the dropdown menu on hover */
+        .dropdown:hover .dropdown-content {display: block;}
+
+        /* Change the background color of the dropdown button when the dropdown content is shown */
+        .dropdown:hover .dropbtn {background-color: #376b8e;}
+
+    </style>
 
 </head>
 
-<body>
-<script type="text/javascript" th:src="@{https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js}"></script>
-<script type="text/javascript" th:src="@{https://oss.maxcdn.com/respond/1.4.2/respond.min.js}"></script>
-<script type="text/javascript"
-        th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-base.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
-<script type="text/javascript" th:src="@{/world.js}"></script>
-<script type="text/javascript" th:src="@{/proj4.js}"></script>
-<script type="text/javascript" th:src="@{/map.js}"></script>
-<script type="text/javascript"
-        th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
-<script type="text/javascript"
-        th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-exports.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
-<script type="text/javascript"
-        th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-map.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
-<script type="text/javascript"
-        th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-data-adapter.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
-
 <span for="json"></span><input type="text" th:value="*{json}" id="json" hidden="true">
-<style>
-    html,
-    body,
-    .container128 {
-        width: 100%;
-        height: 98%;
-    }
-</style>
+<div th:replace="fragments/navbar :: navbar (${'map'})"></div>
 
+<!-- Anychart map -->
+
+<span style="display:none;" class="anychart">
+    <script type="text/javascript" th:src="@{https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js}"></script>
+    <script type="text/javascript" th:src="@{https://oss.maxcdn.com/respond/1.4.2/respond.min.js}"></script>
+    <script type="text/javascript"
+            th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-base.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
+    <script type="text/javascript" th:src="@{/world.js}"></script>
+    <script type="text/javascript" th:src="@{/proj4.js}"></script>
+    <script type="text/javascript" th:src="@{/map.js}"></script>
+    <script type="text/javascript"
+            th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
+    <script type="text/javascript"
+            th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-exports.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
+    <script type="text/javascript"
+            th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-map.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
+    <script type="text/javascript"
+            th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-data-adapter.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
 <div class="container128" id="container">
-    <div class="header128" th:replace="fragments/navbar :: navbar (${'map'})"></div>
+</div>
+</span>
 
-    <!-- Модальное окно-->
+<!-- ///Anychart map -->
+
+<!-- Yandex map -->
+
+<span class="yandex">
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=00edbb4c-85c6-4375-8249-f0baae6a12c2" type="text/javascript"></script>
+
+    <script type="text/javascript" th:src="@{/map1.js}"></script>
+
+    <div id="map"></div>
+</span>
+
+    <div class="dropdown">
+    <button class="dropbtn">Вид карты</button>
+    <div class="dropdown-content">
+        <a href="#" onclick="setMap('.anychart');setType('yandex#map')">Обычная</a>
+        <a href="#" onclick="setMap('.yandex');setType('yandex#map')">Подробная</a>
+        <a href="#" onclick="setMap('.yandex');setType('yandex#satellite')">Со спутника</a>
+        <a href="#" onclick="setMap('.yandex');setType('yandex#hybrid')">Комбинированная</a>
+    </div>
+</div>
+<span class="yandex">
+    <div class="dropdown">
+        <button class="dropbtn">Отображение групп</button>
+        <div class="dropdown-content">
+            <a href="#" onclick="setObjectType('rect')">Прямоугольное</a>
+            <a href="#" onclick="setObjectType('circ')">Точечное</a>
+            <a href="#" onclick="setObjectType('both')">Комбинированое</a>
+        </div>
+    </div>
+</span>
+<!-- ///Yandex map -->
+
+
+
+
+<div class="container">
     <div class="modal fade" id="modal-1" tabindex="-1" role="dialog" aria-labelledby="modalLabel1">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -57,7 +164,6 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Содержимое модального окна-->
                     <div>
                         Номер группы, маркер которой необходимо поменять: <br>
                         <input type="number" id="number" name="number" min="1">
@@ -92,16 +198,11 @@
             </div>
         </div>
     </div>
-
-
 </div>
-<!-- jQuery -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-<!-- Bootstrap JS -->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-        crossorigin="anonymous"></script>
 
+
+
+</body>
 <script>
     $(function () {
         // функция с параметрами idModal1 (1 модальное окно)
@@ -110,6 +211,10 @@
         };
         twoModal('#modal-1');
     });
+    function setMap(map){
+            $(map).css('display', 'inline');
+            let hiddenmap = map==='.yandex'?'.anychart':'.yandex';
+        $(hiddenmap).css('display', 'none');
+    }
 </script>
-</body>
 </html>

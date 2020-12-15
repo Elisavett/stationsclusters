@@ -59,12 +59,13 @@ window.onload = function (){
         map = new ymaps.Map('map', {
             // При инициализации карты обязательно нужно указать
             // её центр и коэффициент масштабирования.
-            center: [58.846573, 60.930432],
+            center: [58.846573, 80.930432],
             zoom: 2,
             controls: ['zoomControl']
         }, {
             //searchControlProvider: 'yandex#search',
             //restrictMapArea: true,
+            //restrictMapArea: [[-40, -159], [80, 200]],
             minZoom: 2,
             maxZoom: 12,
         });
@@ -113,70 +114,67 @@ window.onload = function (){
         circlesToShow[0] = [];
         circleClusters[0] = new ymaps.GeoObjectCollection();
         for (let i = 0; i < coordinates.length; i++) {
-
-
-
             // Создаем круг.
-            if (coordinates[i][4] == 'false') {
-                if (rects[coordinates[i][3]] === undefined) {
-                    rectangleClusters[coordinates[i][3]] = new ymaps.GeoObjectCollection();
-                    circleClusters[coordinates[i][3]] = new ymaps.GeoObjectCollection();
-                    circlesToShow[coordinates[i][3]] = [];
-                    rects[coordinates[i][3]] = [];
-                    rects[coordinates[i][3]][0] = coordinates[i][0];
-                    rects[coordinates[i][3]][1] = coordinates[i][1];
-                    rects[coordinates[i][3]][2] = coordinates[i][0];
-                    rects[coordinates[i][3]][3] = coordinates[i][1];
+            if (coordinates[i].isLessThenFive === false) {
+                if (rects[coordinates[i].number_group] === undefined) {
+                    rectangleClusters[coordinates[i].number_group] = new ymaps.GeoObjectCollection();
+                    circleClusters[coordinates[i].number_group] = new ymaps.GeoObjectCollection();
+                    circlesToShow[coordinates[i].number_group] = [];
+                    rects[coordinates[i].number_group] = [];
+                    rects[coordinates[i].number_group][0] = coordinates[i].lat;
+                    rects[coordinates[i].number_group][1] = coordinates[i].long;
+                    rects[coordinates[i].number_group][2] = coordinates[i].lat;
+                    rects[coordinates[i].number_group][3] = coordinates[i].long;
                 } else {
-                    if (parseFloat(coordinates[i][0]) < parseFloat(rects[coordinates[i][3]][0])) {
-                        rects[coordinates[i][3]][0] = coordinates[i][0];
+                    if (parseFloat(coordinates[i].lat) < parseFloat(rects[coordinates[i].number_group][0])) {
+                        rects[coordinates[i].number_group][0] = coordinates[i].lat;
                     }
-                    if (parseFloat(coordinates[i][1]) < parseFloat(rects[coordinates[i][3]][1])) {
-                        rects[coordinates[i][3]][1] = coordinates[i][1];
+                    if (parseFloat(coordinates[i].long) < parseFloat(rects[coordinates[i].number_group][1])) {
+                        rects[coordinates[i].number_group][1] = coordinates[i].long;
                     }
-                    if (parseFloat(coordinates[i][0]) > parseFloat(rects[coordinates[i][3]][2])) {
-                        rects[coordinates[i][3]][2] = coordinates[i][0];
+                    if (parseFloat(coordinates[i].lat) > parseFloat(rects[coordinates[i].number_group][2])) {
+                        rects[coordinates[i].number_group][2] = coordinates[i].lat;
                     }
-                    if (parseFloat(coordinates[i][1]) > parseFloat(rects[coordinates[i][3]][3])) {
-                        rects[coordinates[i][3]][3] = coordinates[i][1];
+                    if (parseFloat(coordinates[i].long) > parseFloat(rects[coordinates[i].number_group][3])) {
+                        rects[coordinates[i].number_group][3] = coordinates[i].long;
                     }
 
                 }
                 var myCircle = new ymaps.Circle([
                         // Координаты центра круга.
-                        [coordinates[i][0], coordinates[i][1]],
+                        [coordinates[i].lat, coordinates[i].long],
                         // Радиус круга в метрах.
                         20500
                     ],
                     {
                         // Содержимое балуна. //
                         balloonContentBody:
-                            " №Станции: " + parseInt(coordinates[i][2]) + "<br \/>" +
-                            " Координаты: " + coordinates[i][0] + "; " + coordinates[i][1] + "<br \/>" +
-                            " №группы: " + coordinates[i][3]
+                            " №Станции: " + parseInt(coordinates[i].number_station) + "<br \/>" +
+                            " Координаты: " + coordinates[i].lat + "; " + coordinates[i].long + "<br \/>" +
+                            " №группы: " + coordinates[i].number_group
                         // Содержимое хинта.
                         //hintContent: "Подвинь меня"
                     }, {
                         // Задаем опции круга.
                         // Цвет заливки.
                         // Последний байт (77) определяет прозрачность.
-                        fillColor: color[(coordinates[i][3] - 1) % color.length],
+                        fillColor: color[(coordinates[i].number_group - 1) % color.length],
                         // Цвет обводки.
-                        strokeColor: color[(coordinates[i][3] - 1) % color.length],
+                        strokeColor: color[(coordinates[i].number_group - 1) % color.length],
                         // Ширина обводки в пикселях.
                         strokeWidth: 7,
                         geodesic: true
                     });
 
                 // Добавляем круг на карту.
-                circleClusters[coordinates[i][3]].add(myCircle);
+                circleClusters[coordinates[i].number_group].add(myCircle);
             } else {
-                var myCircle = new ymaps.Placemark([coordinates[i][0], coordinates[i][1]],
+                var myCircle = new ymaps.Placemark([coordinates[i].lat, coordinates[i].long],
                     {
                         // Содержимое балуна. //
                         balloonContentBody:
-                            " №Станции: " + coordinates[i][2] + "<br \/>" +
-                            " Координаты: " + coordinates[i][0] + "; " + coordinates[i][1] + "<br \/>" +
+                            " №Станции: " + coordinates[i].number_station + "<br \/>" +
+                            " Координаты: " + coordinates[i].lat + "; " + coordinates[i].long + "<br \/>" +
                             " №группы: без группы"
                         // Содержимое хинта.
                         //hintContent: "Подвинь меня"
