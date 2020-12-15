@@ -82,7 +82,7 @@ public class MapAllocationController {
         resolveAverage resolveAverage = new resolveAverage();
         ArrayList<String> json = resolveAverage.resolve(Double.parseDouble(radius), temps, coordData);
         model.addAttribute("json", json);
-        return "map";
+        return "map1";
     }
 
     @GetMapping("/resolveFunction")
@@ -124,7 +124,7 @@ public class MapAllocationController {
             e.printStackTrace();
         }
         model.addAttribute("json", json);
-        return "map";
+        return "map1";
     }
     @GetMapping("/resolveHistory")
     public String resolveHistory(Model model) {
@@ -243,7 +243,7 @@ public class MapAllocationController {
 
     @GetMapping("/map")
     public String map() {
-        return "map";
+        return "map1";
     }
 
 
