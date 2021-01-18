@@ -97,15 +97,9 @@ anychart.onDocumentReady(function () {
             grouped.push(crashesDataSet.filter('number_group', filter_function(i + 1)));
     }
         for (let i = 0; i < grouped.length; i++) {
-
-            //color = rainbow(grouped.length, i+1);
-            if(grouped.length%2===0)
-                color = rainbow(grouped.length+2, i%2===0?i+1:grouped.length-i+1);
-            else
-                color = rainbow(grouped.length+2, i%2===0?i+2:grouped.length-i+1);
             type = 'circle';
             size = '4';
-            createSeries(i+1, grouped[i], color, type, size);
+            createSeries(i+1, grouped[i], colors[i], type, size);
 
     }
     createSeries(grouped.length+1, notGruped, '#000000', 'diagonal-cross', 2);

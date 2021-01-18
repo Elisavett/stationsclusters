@@ -107,6 +107,7 @@ public class Merger1 {
             }
 
         }
+        ResolveForm.groupNum = numberGroup-1;
         for (GroupLine gr : sortGroupLine) {
             if(gr.islessThenFive()) {
                 for (int j : gr.getGroup()) {

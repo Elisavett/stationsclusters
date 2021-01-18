@@ -72,9 +72,7 @@ public class Merger {
                 groupList.get(i).lessThenFive();
                 sortGroupLine.add(groupList.get(i));
             }
-
         }
-
     }
 
     public void loadCoordinates() throws IOException {

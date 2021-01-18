@@ -87,7 +87,7 @@
 
 <span for="json"></span><input type="text" th:value="*{json}" id="json" hidden="true">
 <div th:replace="fragments/navbar :: navbar (${'map'})"></div>
-
+<input type="text" th:value="*{groupNum}" id="groupNum" hidden="true">
 <!-- Anychart map -->
 
 <span style="display:none;" class="anychart">
@@ -97,7 +97,8 @@
             th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-base.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
     <script type="text/javascript" th:src="@{/world.js}"></script>
     <script type="text/javascript" th:src="@{/proj4.js}"></script>
-    <script type="text/javascript" th:src="@{/map.js}"></script>
+    <script type="text/javascript" th:src="@{/map1.js}"></script>
+
     <script type="text/javascript"
             th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
     <script type="text/javascript"
@@ -107,14 +108,8 @@
     <script type="text/javascript"
             th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-data-adapter.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
 
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-            crossorigin="anonymous"></script>
-<div class="container128" id="container">
-</div>
+    <div class="container128" id="container">
+    </div>
 </span>
 
 <!-- ///Anychart map -->
@@ -124,12 +119,10 @@
 <span class="yandex">
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=00edbb4c-85c6-4375-8249-f0baae6a12c2" type="text/javascript"></script>
 
-    <script type="text/javascript" th:src="@{/map1.js}"></script>
-
     <div id="map"></div>
 </span>
 
-    <div class="dropdown">
+<div class="dropdown">
     <button class="dropbtn">Вид карты</button>
     <div class="dropdown-content">
         <a href="#" onclick="setMap('.anychart');setType('yandex#map')">Обычная</a>
@@ -147,11 +140,19 @@
             <a href="#" onclick="setObjectType('both')">Комбинированое</a>
         </div>
     </div>
+    <div id="exampleItem" class="slider__item" >
+                    <div class="div1" style="background: orange;"></div>
+                     <div class="div2"></div>
+    </div>
+    <div class="slider">
+        <h4 class="div2" style="text-align: center">Группы</h4>
+        <div class="slider__wrapper">
+        </div>
+            <a class="slider__control slider__control_left" href="#" role="button"></a>
+            <a class="slider__control slider__control_right" href="#" role="button"></a>
+    </div>
 </span>
 <!-- ///Yandex map -->
-
-
-
 
 <div class="container">
     <div class="modal fade" id="modal-1" tabindex="-1" role="dialog" aria-labelledby="modalLabel1">
@@ -171,38 +172,22 @@
                     <br>
                     <div>
                         Задайте имя:<br>
-                        <input type="text" id="name" name="name">
+                        <input type="text" id="name" name="name" maxlength="5">
                     </div>
                     <br>
                     <label>
                         Задайте цвет:
                         <input type="color" id="color" name="color">
                     </label><br><br>
-                    <label>
-                        Вид маркера:<br>
-                        <input type="radio" name="type" value="circle" checked> Круг
-                        <input type="radio" name="type" value="square"> Квадрат
-                        <input type="radio" name="type" value="star4"> Звезда-4
-                        <input type="radio" name="type" value="star6"> Звезда-6
-                    </label><br>
-                    <br>
-                    <label>
-                        Задайте размер:<br>
-                        <input type="range" id="size" name="size" min="4" max="20">
-                    </label><br><br>
-                    <input type="button" onclick="update()" value="Изменить">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                    <input type="button" onclick="update()" data-dismiss="modal" value="Изменить">
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-
-
 </body>
+
 <script>
     $(function () {
         // функция с параметрами idModal1 (1 модальное окно)
@@ -216,5 +201,8 @@
             let hiddenmap = map==='.yandex'?'.anychart':'.yandex';
         $(hiddenmap).css('display', 'none');
     }
+
+
 </script>
+<script type="text/javascript" th:src="@{/slider.js}"></script>
 </html>

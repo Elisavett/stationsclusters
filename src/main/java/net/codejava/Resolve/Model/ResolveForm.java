@@ -10,6 +10,7 @@ public class ResolveForm {
     public static List<Future<Phase>> arrayPhase;
     public static List<Future<Phase>> arrayTypical;
     public static String stringPhase;
+    public static int groupNum;
     public static double[][] coordData;
     public static String tempFileName;
     public static String coordFileName;

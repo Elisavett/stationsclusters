@@ -273,7 +273,8 @@ public class MapAllocationController {
             ResolveForm.sigma = sigma;
 
 
-            if (windowLeft.equals("0.0") && windowRight.equals("0.0")) {
+            if ((windowLeft.equals("0.0") && windowRight.equals("0.0")) ||
+                    (windowLeft.equals("") && windowRight.equals(""))) {
                 boolean assimetricWindow = false;
                 if(Integer.parseInt(isWindowManually)==2) assimetricWindow=true;
                 WindowChart.getWindowsChartData(assimetricWindow);
@@ -309,6 +310,7 @@ public class MapAllocationController {
 
 
         model.addAttribute("json", json);
+        model.addAttribute("groupNum", ResolveForm.groupNum);
         return "map1";
     }
 }
