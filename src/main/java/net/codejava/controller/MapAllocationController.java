@@ -265,7 +265,7 @@ public class MapAllocationController {
 
         ResolveForm.isPhasesCounted = false;
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
-        if(classification.equals("true")) ResolveForm.classification = true;
+        if("true".equals(classification)) ResolveForm.classification = true;
         if(windowCounted!=null){
             ResolveForm.windowLeft = ResolveForm.windowCenter - windowCounted;
             ResolveForm.windowRight = ResolveForm.windowCenter + windowCounted;
