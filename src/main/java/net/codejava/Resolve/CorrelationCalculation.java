@@ -24,7 +24,6 @@ public class CorrelationCalculation implements Callable<Corr> {
 
     @Override
     public Corr call() throws Exception {
-        firstStation = loadStantion(firstIndex);
         int counter = 0;
         for (int i = firstIndex + 1; i < totalNumber; i++) {
             secondStation = loadStantion(i);
@@ -35,7 +34,8 @@ public class CorrelationCalculation implements Callable<Corr> {
         return corr;
     }
 
-    public CorrelationCalculation(int firstIndex, int totalNumber, List<Future<Phase>> arrayPhase) {
+    public CorrelationCalculation(Future<Phase> station, int firstIndex, int totalNumber, List<Future<Phase>> arrayPhase) throws ExecutionException, InterruptedException {
+        this.firstStation = station.get().getArray();
         this.firstIndex = firstIndex;
         this.totalNumber = totalNumber;
         this.correlation = new double[totalNumber - firstIndex - 1];

@@ -1,6 +1,6 @@
 //Цвета кругов
 let colors = ["#34C924", "#990066", "#FF6E4A", "#B8B428",
-    "#3C18FF", "#000000", "#066", "#990000",
+    "#3C18FF", "#343030", "#066", "#990000",
     "#622", "#4b6273", "#252850", "#346e24",
     "#480607", "#ACB78E", "#d3a7ff", "#1CA9C9",
     "#FFA000", "#FF0000", "#2c4815", "#FF5349",
@@ -216,6 +216,7 @@ var map;
 var circlesToShow = [];
 var rectangleClusters = [];
 var circleClusters = [];
+var clastersCenters = [];
 var currentClusterNums = new Set();;
 var mode = 'rect';
 
@@ -273,6 +274,9 @@ function setObjectType (type) {
 window.onload = function () {
     var json = document.getElementById('json').value;
     let coordinates = JSON.parse(json);
+
+
+
     //преобразую в число с плавающей точкой
     ymaps.ready(init);
     function init() {
@@ -304,6 +308,8 @@ window.onload = function () {
         var rects = [];
         circlesToShow[0] = [];
         circleClusters[0] = new ymaps.GeoObjectCollection();
+        let Xsumm = 0;
+        let Ysumm = 0;
         for (let i = 0; i < coordinates.length; i++) {
             // Создаем круг.
             if (coordinates[i].isLessThenFive === false) {
@@ -316,7 +322,10 @@ window.onload = function () {
                     rects[coordinates[i].number_group][1] = coordinates[i].long;
                     rects[coordinates[i].number_group][2] = coordinates[i].lat;
                     rects[coordinates[i].number_group][3] = coordinates[i].long;
+                    clastersCenters[coordinates[i].number_group] = [coordinates[i].lat, coordinates[i].long];
                 } else {
+                    clastersCenters[coordinates[i].number_group][0] += coordinates[i].lat;
+                    clastersCenters[coordinates[i].number_group][1] += coordinates[i].long;
                     if (parseFloat(coordinates[i].lat) < parseFloat(rects[coordinates[i].number_group][0])) {
                         rects[coordinates[i].number_group][0] = coordinates[i].lat;
                     }
@@ -422,6 +431,39 @@ window.onload = function () {
 
             rectangleClusters[i].add(myRectangle);
             currentClusterNums.add(i);
+
+            var trangleSize = 1.2;
+            var centerX = Math.floor(clastersCenters[i][0]/circleClusters[i].getLength()*100)/100;
+            var centerY = Math.floor(clastersCenters[i][1]/circleClusters[i].getLength()*100)/100;
+            //Центры кластеров
+            var myCircle = new ymaps.Polygon([[
+                // Координаты вершин внешней границы многоугольника.
+                [centerX + (trangleSize-0.1)/Math.log(centerX/22), centerY],
+                [centerX - 0.5*trangleSize, centerY - 0.866*trangleSize],
+                [centerX - 0.5*trangleSize, centerY + 0.866*trangleSize]
+            ]],
+                {
+                    // Содержимое балуна. //
+                    balloonContentBody:
+                        " Центр кластера " + "<br \/>" +
+                        " Координаты: " + centerX + "; " + centerY
+
+                }, {
+                    // Задаем опции круга.
+                    // Цвет заливки.
+                    // Последний байт (77) определяет прозрачность.
+                    fillColor: colors[(i - 1) % colors.length],
+                    // Цвет обводки.
+                    fillOpacity: 0.2,
+                    // Stroke colors.
+                    strokeColor: colors[(i - 1) % colors.length],
+                    // Stroke transparency.
+                    strokeOpacity: 0.9,
+
+                    strokeWidth: 2,
+                });
+
+            rectangleClusters[i].add(myCircle);
 
         }
         setObjectType('rect');

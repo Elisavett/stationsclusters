@@ -73,7 +73,7 @@ public class Start {
             long startExec = System.currentTimeMillis(); //время старта вычислений
             List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
             for (int i = 0; i < stationCount; i++) {
-                CorrelationCalculation corrThread = new CorrelationCalculation(i, stationCount, arrayPhase);
+                CorrelationCalculation corrThread = new CorrelationCalculation(arrayPhase.get(i), i, stationCount, arrayPhase);
                 corrThreadTasks.add(corrThread);
             }
             //выполняем все задачи. главный поток ждет
@@ -115,6 +115,26 @@ public class Start {
         long finishExec = System.currentTimeMillis(); // время конца вычислений
         //System.out.println("Total cycle ending time: " + (finishExec - cicleStartExec));
         //Алгоритм итоговой группировки
+
+        /////////Классификация
+
+        if(ResolveForm.classification) {
+
+            List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
+            for (int i = 0; i < stationCount; i++) {
+                CorrelationCalculation corrThread = new CorrelationCalculation(ResolveForm.arrayPhase.get(i), i, stationCount, arrayPhase);
+                corrThreadTasks.add(corrThread);
+            }
+            //выполняем все задачи. главный поток ждет
+            arrayCorr = executorService.invokeAll(corrThreadTasks);
+            //System.out.println("Corelation");
+            //System.out.println("Total corelation calculation time: " + (finishExec - startExec));
+
+            //startExec = System.currentTimeMillis(); //время старта вычислений
+            //блок выделения групп
+            GroupAllocation allocationThread = new GroupAllocation(stationCount, ResolveForm.corr, arrayCorr, executorService);
+            arrayGroup = allocationThread.run();
+        }
 
         // объединяю станции в группы, дописываю координаты
         //Merger merger = new Merger(stationCount, arrayGroup, ResolveForm.minGroupSize);
