@@ -216,8 +216,9 @@ var map;
 var circlesToShow = [];
 var rectangleClusters = [];
 var circleClusters = [];
-var clastersCenters = [];
-var currentClusterNums = new Set();;
+var centerClusters = [];
+var clusterCordsSumm = [];
+var currentClusterNums = new Set();
 var mode = 'rect';
 
 function setType (type) {
@@ -237,6 +238,7 @@ function mapRemoveAll (){
     for (let i=1; i<circleClusters.length; i++) {
         map.geoObjects.remove(circleClusters[i]);
         map.geoObjects.remove(rectangleClusters[i]);
+        map.geoObjects.remove(centerClusters[i]);
     }
 }
 function setObjectType (type) {
@@ -268,6 +270,9 @@ function setObjectType (type) {
         {
             map.geoObjects.add(circleClusters[0]);
         }
+    }
+    for (let i=1; i<centerClusters.length; i++) {
+        if(currentClusterNums.has(i)) map.geoObjects.add(centerClusters[i]);
     }
 }
 
@@ -316,16 +321,17 @@ window.onload = function () {
                 if (rects[coordinates[i].number_group] === undefined) {
                     rectangleClusters[coordinates[i].number_group] = new ymaps.GeoObjectCollection();
                     circleClusters[coordinates[i].number_group] = new ymaps.GeoObjectCollection();
+                    centerClusters[coordinates[i].number_group] = new ymaps.GeoObjectCollection();
                     circlesToShow[coordinates[i].number_group] = [];
                     rects[coordinates[i].number_group] = [];
                     rects[coordinates[i].number_group][0] = coordinates[i].lat;
                     rects[coordinates[i].number_group][1] = coordinates[i].long;
                     rects[coordinates[i].number_group][2] = coordinates[i].lat;
                     rects[coordinates[i].number_group][3] = coordinates[i].long;
-                    clastersCenters[coordinates[i].number_group] = [coordinates[i].lat, coordinates[i].long];
+                    clusterCordsSumm[coordinates[i].number_group] = [coordinates[i].lat, coordinates[i].long];
                 } else {
-                    clastersCenters[coordinates[i].number_group][0] += coordinates[i].lat;
-                    clastersCenters[coordinates[i].number_group][1] += coordinates[i].long;
+                    clusterCordsSumm[coordinates[i].number_group][0] += coordinates[i].lat;
+                    clusterCordsSumm[coordinates[i].number_group][1] += coordinates[i].long;
                     if (parseFloat(coordinates[i].lat) < parseFloat(rects[coordinates[i].number_group][0])) {
                         rects[coordinates[i].number_group][0] = coordinates[i].lat;
                     }
@@ -433,10 +439,10 @@ window.onload = function () {
             currentClusterNums.add(i);
 
             var trangleSize = 1.2;
-            var centerX = Math.floor(clastersCenters[i][0]/circleClusters[i].getLength()*100)/100;
-            var centerY = Math.floor(clastersCenters[i][1]/circleClusters[i].getLength()*100)/100;
+            var centerX = Math.floor(clusterCordsSumm[i][0]/circleClusters[i].getLength()*100)/100;
+            var centerY = Math.floor(clusterCordsSumm[i][1]/circleClusters[i].getLength()*100)/100;
             //Центры кластеров
-            var myCircle = new ymaps.Polygon([[
+            var centerTrangle = new ymaps.Polygon([[
                 // Координаты вершин внешней границы многоугольника.
                 [centerX + (trangleSize-0.1)/Math.log(centerX/22), centerY],
                 [centerX - 0.5*trangleSize, centerY - 0.866*trangleSize],
@@ -445,7 +451,7 @@ window.onload = function () {
                 {
                     // Содержимое балуна. //
                     balloonContentBody:
-                        " Центр кластера " + "<br \/>" +
+                        " Центр кластера " + i + "<br \/>" +
                         " Координаты: " + centerX + "; " + centerY
 
                 }, {
@@ -463,7 +469,7 @@ window.onload = function () {
                     strokeWidth: 2,
                 });
 
-            rectangleClusters[i].add(myCircle);
+            centerClusters[i].add(centerTrangle);
 
         }
         setObjectType('rect');
@@ -518,6 +524,7 @@ window.onload = function () {
                 //Если кластер учтен, убираем его из списка
                 if(currentClusterNums.has(parseInt(index))) currentClusterNums.delete(parseInt(index));
                 //Если в режиме прямоугольников и мы отключили не группу "без группы" удаляем прямоугольник с карты
+                if (index > 0) map.geoObjects.remove(centerClusters[index]);
                 if (mode === 'rect' && index > 0) map.geoObjects.remove(rectangleClusters[index]);
                 //Если в режиме точечном, удаляем кластер с карты
                 else if (mode === 'circ') {
@@ -533,6 +540,9 @@ window.onload = function () {
                 element.css('background-color', '#ffffff');
             } else { //Если включаем группу
                 if(!currentClusterNums.has(parseInt(index))) currentClusterNums.add(parseInt(index));
+                if(index > 0) {
+                    map.geoObjects.add(centerClusters[index]);
+                }
                 if (mode === 'rect') {
                     if(index > 0) {
                         map.geoObjects.add(rectangleClusters[index]);
