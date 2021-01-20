@@ -458,9 +458,9 @@ window.onload = function () {
                     // Задаем опции круга.
                     // Цвет заливки.
                     // Последний байт (77) определяет прозрачность.
-                    fillColor: colors[(i - 1) % colors.length],
+                    fillColor: "#ffffff",
                     // Цвет обводки.
-                    fillOpacity: 0.2,
+                    fillOpacity: 1,
                     // Stroke colors.
                     strokeColor: colors[(i - 1) % colors.length],
                     // Stroke transparency.
@@ -524,7 +524,6 @@ window.onload = function () {
                 //Если кластер учтен, убираем его из списка
                 if(currentClusterNums.has(parseInt(index))) currentClusterNums.delete(parseInt(index));
                 //Если в режиме прямоугольников и мы отключили не группу "без группы" удаляем прямоугольник с карты
-                if (index > 0) map.geoObjects.remove(centerClusters[index]);
                 if (mode === 'rect' && index > 0) map.geoObjects.remove(rectangleClusters[index]);
                 //Если в режиме точечном, удаляем кластер с карты
                 else if (mode === 'circ') {
@@ -537,12 +536,10 @@ window.onload = function () {
                 if(index==0){
                     element.css('background', '');
                 }
+                if (index > 0) map.geoObjects.remove(centerClusters[index]);
                 element.css('background-color', '#ffffff');
             } else { //Если включаем группу
                 if(!currentClusterNums.has(parseInt(index))) currentClusterNums.add(parseInt(index));
-                if(index > 0) {
-                    map.geoObjects.add(centerClusters[index]);
-                }
                 if (mode === 'rect') {
                     if(index > 0) {
                         map.geoObjects.add(rectangleClusters[index]);
@@ -557,7 +554,11 @@ window.onload = function () {
                 if(index==0){
                     element.css('background', 'url(/img/cross.png) no-repeat center /cover');
                 }
-                else element.css('background-color', colors[index - 1]);
+                else
+                {
+                    map.geoObjects.add(centerClusters[index]);
+                    element.css('background-color', colors[index - 1]);
+                }
             }
 
     });

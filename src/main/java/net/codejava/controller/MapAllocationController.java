@@ -173,6 +173,7 @@ public class MapAllocationController {
         model.addAttribute("cordType", ResolveForm.coordsIsStationsOnY);
         model.addAttribute("tempType", ResolveForm.tempsIsStationsOnY);
         model.addAttribute("isForPhase", ResolveForm.isForPhases);
+        model.addAttribute("classification", ResolveForm.classification);
     }
 
     @PostMapping("/check")
@@ -257,12 +258,14 @@ public class MapAllocationController {
                       @RequestParam(value = "windowRight", required = false) String  windowRight,
                       @RequestParam(value = "sigma", required = false) String sigma,
                       @RequestParam(value = "isForPhase", required = false) String isForPhase,
+                      @RequestParam(value = "classification", required = false) String classification,
                       @RequestParam(value = "isWindowManually", required = false) String isWindowManually,
                       @RequestParam(value = "windowCounted", required = false) Integer windowCounted,
                       @RequestParam(value = "minGroupSize", required = false) Integer minGroupSize) throws IOException, ExecutionException, InterruptedException {
 
         ResolveForm.isPhasesCounted = false;
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
+        if(classification.equals("true")) ResolveForm.classification = true;
         if(windowCounted!=null){
             ResolveForm.windowLeft = ResolveForm.windowCenter - windowCounted;
             ResolveForm.windowRight = ResolveForm.windowCenter + windowCounted;
