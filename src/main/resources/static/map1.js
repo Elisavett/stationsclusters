@@ -272,10 +272,10 @@ function setObjectType (type) {
         }
     }
     for (let i=1; i<centerClusters.length; i++) {
-        if(currentClusterNums.has(i)) map.geoObjects.add(centerClusters[i]);
+        if(currentClusterNums.has(i) && isChecked) map.geoObjects.add(centerClusters[i]);
     }
 }
-
+var isChecked = true;
 window.onload = function () {
     var json = document.getElementById('json').value;
     let coordinates = JSON.parse(json);
@@ -393,7 +393,7 @@ window.onload = function () {
                         iconImageSize: [7, 7],
                         // Смещение левого верхнего угла иконки относительно
                         // её "ножки" (точки привязки).
-                        //iconImageOffset: [-1, -1],// Задаем опции круга.
+                        iconImageOffset: [-2, -2],// Задаем опции круга.
 
                     });
                 circleClusters[0].add(myCircle);
@@ -560,6 +560,23 @@ window.onload = function () {
                     element.css('background-color', colors[index - 1]);
                 }
             }
+
+    });
+
+    $('#centersShow').on('click', function() {
+        if(isChecked){
+            for (let i=1; i<circleClusters.length; i++) {
+                map.geoObjects.remove(centerClusters[i]);
+            }
+            isChecked=false;
+        }
+        else{
+            for (let i=1; i<circleClusters.length; i++) {
+                if(currentClusterNums.has(i)) map.geoObjects.add(centerClusters[i]);
+
+            }
+            isChecked=true;
+        }
 
     });
 }

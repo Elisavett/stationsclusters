@@ -2,6 +2,7 @@ package net.codejava.Resolve;
 
 import net.codejava.Resolve.Model.ArrayData;
 import net.codejava.Resolve.Model.Phase;
+import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.Model.TypicalPhase;
 
 import java.util.ArrayList;
@@ -24,14 +25,12 @@ public class EndChecking {
     List<Future<Phase>> arrayPhase;
     ArrayData arrayTypicalPath;
     ExecutorService executorService;
-    double sigma;
 
-    public EndChecking(double sigma, int stationCount, List<Future<Phase>> arrayPhase, ArrayData arrayTypicalPath,ExecutorService executorService) {
+    public EndChecking(int stationCount, List<Future<Phase>> arrayPhase, ArrayData arrayTypicalPath,ExecutorService executorService) {
         this.stationCount = stationCount;
         this.arrayPhase = arrayPhase;
         this.arrayTypicalPath = arrayTypicalPath;
         this.executorService = executorService;
-        this.sigma = sigma;
     }
 
     public List<Future<Phase>> run() throws ExecutionException, InterruptedException {
@@ -41,7 +40,6 @@ public class EndChecking {
     }
 
     public boolean check() {
-
         return checkEnd();
     }
 
@@ -76,7 +74,7 @@ public class EndChecking {
                     max = temp;
             }
         }
-        if (max >= sigma) {
+        if (max >= Double.parseDouble(ResolveForm.sigma)) {
             return false;
         } else {
             return true;

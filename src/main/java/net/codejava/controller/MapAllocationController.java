@@ -260,12 +260,19 @@ public class MapAllocationController {
                       @RequestParam(value = "isForPhase", required = false) String isForPhase,
                       @RequestParam(value = "classification", required = false) String classification,
                       @RequestParam(value = "isWindowManually", required = false) String isWindowManually,
+                      @RequestParam(value = "isAccurate", required = false) String isAccurate,
                       @RequestParam(value = "windowCounted", required = false) Integer windowCounted,
                       @RequestParam(value = "minGroupSize", required = false) Integer minGroupSize) throws IOException, ExecutionException, InterruptedException {
 
         ResolveForm.isPhasesCounted = false;
+        ResolveForm.isAccurate = Boolean.parseBoolean(isAccurate);
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
-        if("true".equals(classification)) ResolveForm.classification = true;
+        if("true".equals(classification)) {
+            ResolveForm.classification = true;
+        }
+        else {
+            ResolveForm.classification = false;
+        }
         if(windowCounted!=null){
             ResolveForm.windowLeft = ResolveForm.windowCenter - windowCounted;
             ResolveForm.windowRight = ResolveForm.windowCenter + windowCounted;

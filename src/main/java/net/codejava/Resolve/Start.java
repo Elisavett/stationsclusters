@@ -1,9 +1,11 @@
 package net.codejava.Resolve;
 
 import net.codejava.Resolve.Model.*;
+import org.springframework.util.CollectionUtils;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -63,8 +65,9 @@ public class Start {
         int count = 0;
         ArrayData arrayTypicalPath = new ArrayData();
         List<Future<Group>> arrayGroup;
+        List<Future<Group>> arrayPrevGroup = new ArrayList<>();
         List<Future<Corr>> arrayCorr;
-        boolean check;
+        boolean check = false;
         //long cicleStartExec = System.currentTimeMillis(); //время старта вычислений
         do {
             //System.out.println("Cicle");
@@ -83,12 +86,22 @@ public class Start {
             //System.out.println("Total corelation calculation time: " + (finishExec - startExec));
 
             //startExec = System.currentTimeMillis(); //время старта вычислений
+
             //блок выделения групп
-            GroupAllocation allocationThread = new GroupAllocation(stationCount, ResolveForm.corr, arrayCorr, executorService);
+            GroupAllocation allocationThread = new GroupAllocation(false, stationCount, ResolveForm.corr, arrayCorr, executorService);
             arrayGroup = allocationThread.run();
             //finishExec = System.currentTimeMillis(); // время конца вычислений
             //System.out.println("Total group allocation time: " + (finishExec - startExec));
-
+            int equalsCount = 0;
+            if(count>0 && ResolveForm.isAccurate) {
+                for (int i = 0; i < stationCount; i++) {
+                    if (Arrays.equals(arrayPrevGroup.get(i).get().getArray(), arrayGroup.get(i).get().getArray())) {
+                        equalsCount++;
+                    }
+                }
+                if (equalsCount == stationCount)
+                    break;
+            }
             //System.out.println("Groups");
             //блок вычисления типовых фаз
             arrayTypicalPath.clear();
@@ -99,16 +112,19 @@ public class Start {
                 TypicalPhase typicalPhase = typical.run();
                 arrayTypicalPath.addData(typicalPhase);
             }
+
             //finishExec = System.currentTimeMillis(); // время конца вычислений
             //System.out.println("Total typical calculation time: " + (finishExec - startExec));
             //System.out.println("Typicals");
 
             //блок проверки конца алгоритма
-            EndChecking checkMethod = new EndChecking(Double.parseDouble(ResolveForm.sigma), stationCount, arrayPhase, arrayTypicalPath, executorService);
+            EndChecking checkMethod = new EndChecking(stationCount, arrayPhase, arrayTypicalPath, executorService);
             arrayPhase = checkMethod.run();
-            check = checkMethod.check();
+            if(!ResolveForm.isAccurate) check = checkMethod.check();
 
             count++;
+            arrayPrevGroup.clear();
+            arrayPrevGroup.addAll(arrayGroup);
 //            System.out.println(count);
         } while (!check);
         //System.out.println("count=" + count);
@@ -132,7 +148,7 @@ public class Start {
 
             //startExec = System.currentTimeMillis(); //время старта вычислений
             //блок выделения групп
-            GroupAllocation allocationThread = new GroupAllocation(stationCount, ResolveForm.corr, arrayCorr, executorService);
+            GroupAllocation allocationThread = new GroupAllocation(true, stationCount, ResolveForm.corr, arrayCorr, executorService);
             arrayGroup = allocationThread.run();
         }
 

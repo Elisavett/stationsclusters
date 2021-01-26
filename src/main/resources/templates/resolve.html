@@ -170,7 +170,7 @@
                 <div hidden="true" class="optional">
                     <div class="form-group row">
                         <div class="col-sm-12">
-                            <input type="checkbox" name="classification" value="true">&nbsp;&nbsp;Классификация
+                            <input type="checkbox" name="classification" checked="checked" value="true">&nbsp;&nbsp;Классификация
                         </div>
                     </div>
                     <div class="form-group row">
@@ -188,11 +188,28 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="corr" class="col-sm-5 col-form-label">Погрешность вычислений :
+                        <label class="col-sm-12 col-form-label">Точность расчета:
                         </label>
-                        <div class="col-sm-2">
-                            <input class="form-control" type="text" name="sigma" onkeyup="checkParams()" autocomplete="off"
-                                   id="sigma" th:attr="value=${sigma}">
+                        <div class="col-sm-12">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" checked type="radio" name="isAccurate" id="accurateCalc" value="true">
+                                <label class="form-check-label" >Точный расчет</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="isAccurate" id="errorCalc" value="false">
+                                <label class="form-check-label" >Указать погрешность</label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div hidden="true" class="errorClass">
+                        <div class="form-group row">
+                            <label for="corr" class="col-sm-5 col-form-label">Погрешность вычислений :
+                            </label>
+                            <div class="col-sm-2">
+                                <input class="form-control" type="text" name="sigma" onkeyup="checkParams()" autocomplete="off"
+                                       id="sigma" th:attr="value=${sigma}">
+                            </div>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -311,6 +328,14 @@
             $(".windowClass").attr("hidden",true);
         }
         $(".dataClass").attr("hidden",true);
+    });
+
+    $('#errorCalc').click(function() {
+            $(".errorClass").attr("hidden",false);
+    });
+
+    $('#accurateCalc').click(function() {
+        $(".errorClass").attr("hidden",true);
     });
 
     //стиль закрузки файла
