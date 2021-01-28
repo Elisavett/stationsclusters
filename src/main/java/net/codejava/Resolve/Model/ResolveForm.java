@@ -1,5 +1,7 @@
 package net.codejava.Resolve.Model;
 
+import org.springframework.ui.Model;
+
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -30,4 +32,20 @@ public class ResolveForm {
     public static boolean isForPhases = true;
     public static boolean classification = false;
     public static boolean isAccurate = true;
+
+    public static void addAllToModel(Model model){
+        model.addAttribute("tempers", ResolveForm.tempFileName);
+        model.addAttribute("coords", ResolveForm.coordFileName);
+        model.addAttribute("sigma", ResolveForm.sigma);
+        model.addAttribute("corr", ResolveForm.corr);
+        model.addAttribute("dataType", ResolveForm.dataType);
+        model.addAttribute("wleft", ResolveForm.windowLeft);
+        model.addAttribute("wRight", ResolveForm.windowRight);
+        model.addAttribute("periodStart", ResolveForm.periodStart);
+        model.addAttribute("periodEnd", ResolveForm.periodEnd);
+        model.addAttribute("cordType", ResolveForm.coordsIsStationsOnY);
+        model.addAttribute("tempType", ResolveForm.tempsIsStationsOnY);
+        model.addAttribute("isForPhase", ResolveForm.isForPhases);
+        model.addAttribute("classification", ResolveForm.classification);
+    }
 }

@@ -1,4 +1,4 @@
-package net.codejava.Resolve;
+package net.codejava.Resolve.PhaseCalc;
 /**
  * Класс служид для дискретного преобразование Фурье (DFT) и обратного дискретного преобразование Фурье (IDFT)
  *

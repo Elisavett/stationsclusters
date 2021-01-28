@@ -1,4 +1,4 @@
-package net.codejava.Resolve;
+package net.codejava.Resolve.PhaseCalc;
 
 import java.util.concurrent.Callable;
 

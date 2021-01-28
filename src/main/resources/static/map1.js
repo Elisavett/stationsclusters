@@ -556,7 +556,7 @@ window.onload = function () {
                 }
                 else
                 {
-                    map.geoObjects.add(centerClusters[index]);
+                    if(isChecked) map.geoObjects.add(centerClusters[index]);
                     element.css('background-color', colors[index - 1]);
                 }
             }

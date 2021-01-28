@@ -1,0 +1,44 @@
+<div class="optional" xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="form-group row">
+        <label for="corr" class="col-sm-5 col-form-label">Коэффициент корреляции (от 0 до 1):
+        </label>
+        <div class="col-sm-2">
+            <input class="form-control" type="text" name="corr" onkeyup="checkParams()" autocomplete="off"
+                   id="corr" th:attr="value=${corr}">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-sm-12 col-form-label">Точность расчета:
+        </label>
+        <div class="col-sm-12">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" checked type="radio" name="isAccurate" id="accurateCalc" value="true">
+                <label class="form-check-label" >Точный расчет</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="isAccurate" id="errorCalc" value="false">
+                <label class="form-check-label" >Указать погрешность</label>
+            </div>
+        </div>
+    </div>
+    <div hidden="true" class="errorClass">
+        <div class="form-group row">
+            <label class="col-sm-5 col-form-label">Погрешность вычислений :
+            </label>
+            <div class="col-sm-2">
+                <input class="form-control" type="text" name="sigma" autocomplete="off"
+                       id="sigma" th:attr="value=${sigma}">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#errorCalc').click(function() {
+        $(".errorClass").attr("hidden",false);
+    });
+
+    $('#accurateCalc').click(function() {
+        $(".errorClass").attr("hidden",true);
+    });
+</script>

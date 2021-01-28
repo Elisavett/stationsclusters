@@ -1,0 +1,117 @@
+<div class="optional">
+    <div class="form-group row">
+        <label class="col-sm-12 col-form-label">Выполнять расчет по:
+        </label>
+        <div class="col-sm-12">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" checked type="radio" name="isForPhase" id="forPhase" value="true">
+                <label class="form-check-label" >Фазе</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="isForPhase" id="forAmplitude" value="false">
+                <label class="form-check-label" >Амплитуде</label>
+            </div>
+        </div>
+    </div>
+    <div id="dataTypes" class="form-group row">
+        <div class="col-sm-6">
+            <a id="additional2">Указать режим вычисления окна</a> /
+            <a id="additional3">Указать окно</a>
+        </div>
+    </div>
+    <div hidden="true" class="dataClass">
+        <div class="form-group row">
+            <label class="col-sm-12 col-form-label">Вычисление окна:
+            </label>
+            <div class="col-sm-12">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" checked type="radio" name="isWindowManually" id="automaticWindow" value="0" onclick="$('#chartButton').attr('hidden',true);">
+                    <label class="form-check-label" >Автоматически</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyWindow" value="1" onclick="$('#chartButton').attr('hidden',false);">
+                    <label class="form-check-label" >Вручную</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyAsimetricWindow" value="2" onclick="$('#chartButton').attr('hidden',false);">
+                    <label class="form-check-label" >Вручную (несимметричное)</label>
+                </div>
+                <div id="chartButton" class="form-check form-check-inline" hidden="true">
+                    <a class="btn btn-primary" href="#chart" role="button">Показать график</a>
+                </div>
+            </div>
+        </div>
+
+        <div hidden="true" id="chartPlace" style="min-height: 350px"></div>
+        <a name="chart"></a>
+    </div>
+    <div hidden="true" class="windowClass">
+        <div class="form-group row">
+            <label class="col-sm-5 col-form-label">Размер окна :
+            </label>
+            <div class="col-sm-2">
+                <input class="form-control" type="text" name="windowLeft" onkeyup="checkParams()" autocomplete="off"
+                       id="windowLeft">
+            </div>
+            <div class="col-sm-2">
+                <input class="form-control" type="text" name="windowRight" onkeyup="checkParams()" autocomplete="off"
+                       id="windowRight">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#additional2').click(function() {
+        if($('.dataClass').attr("hidden"))
+        {
+            $(".dataClass").attr("hidden",false);
+            $("#windowLeft").attr("value", null);
+            $("#windowRight").attr("value",null);
+
+            //Не понимаю что дабивалась этой строчкой
+            // var type = $('#dataType').val();
+           // $('input[name="dataType"][value='+type+']').prop('checked', true);
+        }
+        else{
+            $(".dataClass").attr("hidden",true);
+        }
+        $(".windowClass").attr("hidden",true);
+    });
+    $('#additional3').click(function() {
+        if($('.windowClass').attr("hidden"))
+        {
+            $(".windowClass").attr("hidden",false);
+            $("#windowLeft").attr("value", $('#windowLeft').val());
+            $("#windowRight").attr("value", $('#windowRight').val());
+            //Не понимаю что дабивалась этой строчкой
+            // $('input[name="dataType"]').prop('checked', false);
+
+        }
+        else{
+            $(".windowClass").attr("hidden",true);
+        }
+        $(".dataClass").attr("hidden",true);
+    });
+    $('#chartButton').click(function() {
+        $('#chartPlace').attr("hidden", false);
+        var data;
+        if(!$('#chartButton').attr("hidden")){
+            if($('input[name="isWindowManually"][value="1"]').prop('checked'))
+            {
+                data=1;
+            }
+            else{
+                data=2;
+            }
+            $.ajax({
+                url: '/showChart',
+                contentType: 'text/html',
+                dataType: 'html',
+                data: "isWindowManually="+data,
+                success: function (html) {
+                    $('#chartPlace').append(html);
+                }
+            })
+        }
+    });
+</script>

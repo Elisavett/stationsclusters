@@ -1,0 +1,280 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script type="text/javascript"
+            src="https://www.gstatic.com/charts/loader.js"></script>
+    <div th:replace="fragments/scripts :: scripts"></div>
+    <title>Расчет</title>
+</head>
+<header>
+    <div th:replace="fragments/navbar :: navbar (${'resolve'})"></div>
+</header>
+<body class="gradient">
+<!-- Обработка ошибок -->
+<div th:if="${error}">
+    <div class="container">
+        <div class="row p-3">
+            <div class="col-12">
+                <div class="toast shadow-lg" id='toast1' data-autohide="false">
+                    <div class="toast-header bg-danger p-2">
+                        <strong class="mr-auto text-light">Ошибка <span th:text="${error}"></span></strong>
+                        <button type="button" class="mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#toast1').toast({
+            animation: true,
+            autohide: true,
+            delay: 4000
+        })
+        $('.toast').toast('show');
+    </script>
+</div>
+
+
+<div class="mt-2" >
+    <div>
+
+        <form th:action="@{/check}" method="post" enctype="multipart/form-data" id="form1" >
+            <div class="p-3 border border-dark rounded">
+                <!--<div class="form-group row">
+                    <span class="col-sm-12 col-form-label">
+                    <label >Первой строкой в файле укажите, по какой оси расположены станции в формате "станции по у"&nbsp;</label>
+
+                        <img data-toggle="tooltip" title="<img src='/img/example.jpg' width='160' height='150'/>" src="/img/question-circle-regular.svg" width='18' height='18'>
+
+                    </span>
+                </div>-->
+                <div class="form-group row">
+                    <label ></label>
+                    <label th:text="'Файл температур:&nbsp;&nbsp;&nbsp;' + (${tempers}?${tempers}:'')" class="col-sm-3 col-form-label">
+                    </label>
+                    <div class="col-sm-4">
+
+                        <input  type="file" class="custom-file-input" name="fileTemp" accept="text/plain"
+                                onchange="checkParams()" autocomplete="off" id="fileTemp"  th:attr="value=${tempers}">
+                        <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл..')" class="custom-file-label" data-browse="Загрузить" for="fileTemp"></label>
+                    </div>
+                    <div class="col-sm-5 row">
+                        <label class="col-sm-4 pl-3">Отсчеты:</label>
+                        <div class="col-sm-4">
+                            <input class="form-check-input" checked type="radio" name="tempType" id="tempsLine" value="true">
+                            <label class="form-check-label">В строку</label>
+                            <img data-toggle="tooltip" title="<img src='/img/TempsStrEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="radio" name="tempType" id="tempsCol" value="false">
+                            <label class="form-check-label">В столбец</label>
+                            <img data-toggle="tooltip" title="<img src='/img/TempsColEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="temps" th:attr="value=${tempers}">
+                <input type="hidden" id="coords" th:attr="value=${coords}">
+                <input type="hidden" id="dataType" th:attr="value=${dataType}">
+                <input type="hidden" id="tempType" th:attr="value=${tempType}">
+                <input type="hidden" id="cordType" th:attr="value=${cordType}">
+                <input type="hidden" id="isForPhase" th:attr="value=${isForPhase}">
+                <input type="hidden" id="isStationsOnY" th:attr="value=${isStationsOnY}">
+                <input type="hidden" name="isModules" id="isModules" th:attr="value='true'">
+
+                <div class="form-group row">
+                    <label th:text="'Файл координат:&nbsp;&nbsp;&nbsp;' + (${coords}?${coords}:'')"  class="col-sm-3 col-form-label">
+                    </label>
+                    <div class="col-sm-4">
+                        <input  type="file" class="custom-file-input" name="fileCoordinates" accept="text/plain"
+                                onchange="checkParams()" autocomplete="off" id="fileCoordinates" th:attr="value=${coords}">
+                        <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл..')" class="custom-file-label" data-browse="Загрузить" for="fileCoordinates"></label>
+                    </div>
+                    <div class="col-sm-5 row">
+                        <label class="col-sm-4 pl-3">Координаты:</label>
+                        <div class="col-sm-4">
+                            <input class="form-check-input" checked type="radio" name="cordsType" id="cordsLine" value="false">
+                            <label class="form-check-label">В строку</label>
+                            <img data-toggle="tooltip" title="<img src='/img/CordsStrEx.jpg' width='185' height='180'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="radio" name="cordsType" id="cordsCol" value="true">
+                            <label class="form-check-label">В столбец</label>
+                            <img data-toggle="tooltip" title="<img src='/img/CordsColEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+
+                        </div>
+                    </div>
+                </div>
+                <div id="message" hidden class="row p-3">
+                    <span style="color: gray" id="TextMessage"></span>
+                </div>
+                <div class="form-group row">
+                    <label for="periodStart" class="col-sm-4 col-form-label">Данные получены за период с:
+                    </label>
+                    <div class="col-sm-3">
+                        <input class="form-control" type="date" name="periodStart" onkeyup="checkParams()" autocomplete="off"
+                               th:attr="value=${periodStart}" id="periodStart" >
+                    </div>
+                    <label class="col-sm-1 col-form-label">
+                    </label>
+                    <label for="periodEnd" class="col-sm-1 col-form-label">по:
+                    </label>
+                    <div class="col-sm-3">
+                        <input class="form-control" type="date" name="periodEnd" onkeyup="checkParams()" autocomplete="off"
+                               th:attr="value=${periodEnd}" id="periodEnd" >
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-12 col-form-label">Периодичность данных:
+                    </label>
+                    <div class="col-sm-12">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" checked type="radio" name="dataType" id="avrgMonth" value="12">
+                            <label class="form-check-label" for="avrgMonth">Среднемесячные</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="dataType" id="avrgDay" value="365">
+                            <label class="form-check-label" for="avrgDay">Среднесуточные</label>
+                        </div>
+                        <div style="float: right; margin-right: 10%">
+                            <input  id="submit"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Проверить" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+
+                    <label style="color: darkred" class="col-sm-12 col-form-label" th:if="${message}!=null" th:text="${message}"></label>
+
+                </div>
+            </div>
+        </form>
+        <form th:if="${message}=='Период выбран верно'" th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form" >
+             <div class="form-group row">
+                   <div class="col-sm-12">
+                        <input type="checkbox" name="phaseCalc" class="phaseCalc" value="true">&nbsp;&nbsp;Расчет фазы / амплитуды
+                   </div>
+             </div>
+            <div id="phaseCalc"></div>
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <input type="checkbox" name="clusters" class="clustersCalc" value="true">&nbsp;&nbsp;Кластеризация
+                </div>
+            </div>
+            <div id="clustersCalc"></div>
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <input type="checkbox" name="classification" value="true">&nbsp;&nbsp;Классификация
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <input type="checkbox" name="toMap" class="showGroups" value="true">&nbsp;&nbsp;Отображение на карте
+                </div>
+            </div>
+            <div id="showGroups"></div>
+        </form>
+    </div>
+</div>
+<script>
+    var phaseCalc = false;
+    var clustersCalc = false;
+    var classedCalc = false;
+    var showGroups = false;
+    window.onload = function (){
+        $('.phaseCalc').on('click', function() {
+            if(!phaseCalc) {
+                phaseCalc = true;
+                $.ajax({
+                    url: '/getPhaseFragment',
+                    contentType: 'text/html',
+                    dataType: 'html',
+                    success: function(html){
+                        $('#phaseCalc').append(html);
+                    }
+                });
+            }
+            else{
+                phaseCalc = false;
+                $('#phaseCalc').html('');
+            }
+        });
+
+        $('.clustersCalc').on('click', function() {
+            if(!clustersCalc) {
+                clustersCalc = true;
+                $.ajax({
+                    url: '/getClusterFragment',
+                    contentType: 'text/html',
+                    dataType: 'html',
+                    success: function(html){
+                        $('#clustersCalc').append(html);
+                    }
+                });
+            }
+            else{
+                clustersCalc = false;
+                $('#clustersCalc').html('');
+            }
+        });
+
+        $('.showGroups').on('click', function() {
+            if(!showGroups) {
+                showGroups = true;
+                $.ajax({
+                    url: '/getShowGrFragment',
+                    contentType: 'text/html',
+                    dataType: 'html',
+                    success: function(html){
+                        $('#showGroups').append(html);
+                    }
+                });
+            }
+            else{
+                showGroups = false;
+                $('#showGroups').html('');
+            }
+        });
+
+        $('img[data-toggle="tooltip"]').tooltip({
+            html: true
+        });
+
+        var cordType = $('#cordType').val();
+        if(cordType!=null) $('input[name="cordsType"][value='+cordType+']').prop('checked', true);
+        var tempType = $('#tempType').val();
+        if(tempType!=null) $('input[name="tempType"][value='+tempType+']').prop('checked', true);
+        checkParams();
+
+    }
+
+
+
+    //стиль закрузки файла
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+    //проверка
+    function checkParams() {
+        if ((fileTemp.value != 0) && (fileCoordinates.value != 0)) {
+            $('#submit').removeAttr('disabled');
+        } else {
+            $('#submit').attr('disabled', 'disabled');
+        }
+
+    }
+
+
+</script>
+</body>
+</html>

@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 import com.google.gson.GsonBuilder;
 import net.codejava.Resolve.*;
 import net.codejava.Resolve.Model.ResolveForm;
+import net.codejava.Resolve.PhaseCalc.WindowChart;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -49,7 +50,7 @@ public class MapAllocationController {
 
     @GetMapping("/resolveAverage")
     public String resolveAverage(Model model) {
-        return "resolveAverage";
+        return "resolve/resolveAverage";
     }
     @Transactional(timeout = 120)
     @PostMapping("/resolveAverage")
@@ -87,7 +88,7 @@ public class MapAllocationController {
 
     @GetMapping("/resolveFunction")
     public String resolveFunction(Model model) {
-        return "resolveFunction";
+        return "resolve/resolveFunction";
     }
     @Transactional(timeout = 120)
     @PostMapping("/resolveFunction")
@@ -115,11 +116,11 @@ public class MapAllocationController {
             Start start = new Start();
             json = start.run();
         } catch (IOException | ClassNotFoundException e) {
-            return "resolve";
+            return "resolve/resolve";
         } catch (NumberFormatException e) {
             String error = "Проверьте правильность данных";
             model.addAttribute("error", error);
-            return "resolve";
+            return "resolve/resolve";
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -129,7 +130,7 @@ public class MapAllocationController {
     @GetMapping("/resolveHistory")
     public String resolveHistory(Model model) {
         model.addAttribute("phases", ResolveForm.arrayPhase != null);
-        return "resolveHistory";
+        return "additionals/resolveHistory";
     }
     @RequestMapping("/downloadPhases")
     public ResponseEntity<String> downloadFile1() throws IOException, ExecutionException, InterruptedException {
@@ -156,30 +157,15 @@ public class MapAllocationController {
 
     @GetMapping("/resolve")
     public String resolve(Model model) {
-        addAllToModel(model);
-        return "resolve";
-    }
-
-    public void addAllToModel(Model model){
-        model.addAttribute("tempers", ResolveForm.tempFileName);
-        model.addAttribute("coords", ResolveForm.coordFileName);
-        model.addAttribute("sigma", ResolveForm.sigma);
-        model.addAttribute("corr", ResolveForm.corr);
-        model.addAttribute("dataType", ResolveForm.dataType);
-        model.addAttribute("wleft", ResolveForm.windowLeft);
-        model.addAttribute("wRight", ResolveForm.windowRight);
-        model.addAttribute("periodStart", ResolveForm.periodStart);
-        model.addAttribute("periodEnd", ResolveForm.periodEnd);
-        model.addAttribute("cordType", ResolveForm.coordsIsStationsOnY);
-        model.addAttribute("tempType", ResolveForm.tempsIsStationsOnY);
-        model.addAttribute("isForPhase", ResolveForm.isForPhases);
-        model.addAttribute("classification", ResolveForm.classification);
+        ResolveForm.addAllToModel(model);
+        return "resolve/resolve";
     }
 
     @PostMapping("/check")
     public String check(Model model, @RequestParam(value = "fileTemp", required = false) MultipartFile fileTemp,
                         @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,
                         @RequestParam(value = "tempType", required = false) String tempType,
+                        @RequestParam(value = "isModules", required = false) String isModules,
                         @RequestParam(value = "cordsType", required = false) String cordsType,
                         @RequestParam(value = "dataType", required = false) String dataType,
                         @RequestParam(value = "periodStart", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodStart,
@@ -215,7 +201,6 @@ public class MapAllocationController {
         {
             yearsBetween = date2.get(Calendar.YEAR) - date1.get(Calendar.YEAR);
 
-
             if(yearsBetween == ResolveForm.windowCenter){
                 int period1 = ResolveForm.TempData.length;
                 int period2 = ResolveForm.coordData[0].length;
@@ -238,8 +223,9 @@ public class MapAllocationController {
         }
         model.addAttribute("message", message);
         model.addAttribute("minGroupSize", ResolveForm.minGroupSize);
-        addAllToModel(model);
-        return "resolve";
+        ResolveForm.addAllToModel(model);
+        if("true".equals(isModules)) return "resolve/resolveModules";
+        else return "resolve/resolve";
     }
 
     @GetMapping("/map")
@@ -291,7 +277,7 @@ public class MapAllocationController {
                 if (Integer.parseInt(isWindowManually)>0) {
                     model.addAttribute("chartData", WindowChart.chartData);
                     model.addAttribute("window", ResolveForm.windowDelta);
-                    return "windowChart";
+                    return "additionals/windowChart";
                 } else {
                     if (Integer.parseInt(isWindowManually) == 0) {
                         ResolveForm.windowLeft = ResolveForm.windowCenter - ResolveForm.windowDelta;
@@ -309,15 +295,14 @@ public class MapAllocationController {
             Start start = new Start();
             json = start.run();
         } catch (IOException | ClassNotFoundException e) {
-            return "resolve";
+            return "resolve/resolve";
         } catch (NumberFormatException e) {
             String error = "Проверьте правильность данных";
             model.addAttribute("error", error);
-            return "resolve";
+            return "resolve/resolve";
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-
 
         model.addAttribute("json", json);
         model.addAttribute("groupNum", ResolveForm.groupNum);

@@ -1,7 +1,13 @@
 package net.codejava.Resolve;
 
+import net.codejava.Resolve.Clustering.CorrelationCalculation;
+import net.codejava.Resolve.Clustering.EndChecking;
+import net.codejava.Resolve.Clustering.GroupAllocation;
+import net.codejava.Resolve.Clustering.TypicalCalculation;
 import net.codejava.Resolve.Model.*;
-import org.springframework.util.CollectionUtils;
+import net.codejava.Resolve.PhaseCalc.AmplitudeCalculation;
+import net.codejava.Resolve.PhaseCalc.PhaseCalculation;
+import net.codejava.Resolve.PhaseCalc.RewritePhase;
 
 import java.io.*;
 import java.util.ArrayList;

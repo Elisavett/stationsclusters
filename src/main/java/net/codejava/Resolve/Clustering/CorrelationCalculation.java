@@ -1,4 +1,4 @@
-package net.codejava.Resolve;
+package net.codejava.Resolve.Clustering;
 
 import net.codejava.Resolve.Model.Corr;
 import net.codejava.Resolve.Model.Phase;
