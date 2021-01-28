@@ -52,11 +52,30 @@ public class CalcModulesController {
     @GetMapping("/countPhase")
     @ResponseStatus(value = HttpStatus.OK)
     public void countPhase(@RequestParam(value = "isForPhase", required = false) String isForPhase,
-                                                @RequestParam(value = "windowCounted", required = false) Integer windowCounted) throws InterruptedException {
+                           @RequestParam(value = "windowCounted", required = false) String windowCounted,
+                           @RequestParam(value = "isWindowManually", required = false) String isWindowManually,
+                           @RequestParam(value = "windowLeft", required = false) String windowLeft,
+                           @RequestParam(value = "windowRight", required = false) String  windowRight) throws InterruptedException, ExecutionException {
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
-        ResolveForm.windowDelta = windowCounted;
-        ResolveForm.windowLeft = ResolveForm.windowCenter - windowCounted;
-        ResolveForm.windowRight = ResolveForm.windowCenter + windowCounted;
+        if(windowCounted!=""){
+            ResolveForm.windowLeft = ResolveForm.windowCenter - Integer.parseInt(windowCounted);
+            ResolveForm.windowRight = ResolveForm.windowCenter + Integer.parseInt(windowCounted);
+        }
+        else {
+            if ((windowLeft.equals("0.0") && windowRight.equals("0.0")) ||
+                    (windowLeft.equals("") && windowRight.equals(""))) {
+
+                    if (Integer.parseInt(isWindowManually) == 0) {
+                        WindowChart.getWindowsChartData(false);
+                        ResolveForm.windowLeft = ResolveForm.windowCenter - ResolveForm.windowDelta;
+                        ResolveForm.windowRight = ResolveForm.windowCenter + ResolveForm.windowDelta;
+                    }
+                }
+            else{
+                ResolveForm.windowLeft = Double.parseDouble(windowLeft);
+                ResolveForm.windowRight = Double.parseDouble(windowRight);
+            }
+        }
         PhaseAmplCalc.calculation();
     }
 

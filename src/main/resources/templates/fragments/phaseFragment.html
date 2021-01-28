@@ -19,21 +19,21 @@
             <a id="additional3">Указать окно</a>
         </div>
     </div>
-    <div hidden="true" class="dataClass">
+    <div class="dataClass">
         <div class="form-group row">
             <label class="col-sm-12 col-form-label">Вычисление окна:
             </label>
             <div class="col-sm-12">
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" checked type="radio" name="isWindowManually" id="automaticWindow" value="0" onclick="$('#chartButton').attr('hidden',true);">
+                    <input class="form-check-input" checked type="radio" name="isWindowManually" id="automaticWindow" value="0" onclick="modeChanged('NOTmanually')">
                     <label class="form-check-label" >Автоматически</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyWindow" value="1" onclick="$('#chartButton').attr('hidden',false);">
+                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyWindow" value="1" onclick="modeChanged('manually')">
                     <label class="form-check-label" >Вручную</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyAsimetricWindow" value="2" onclick="$('#chartButton').attr('hidden',false);">
+                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyAsimetricWindow" value="2" onclick="modeChanged('manually')">
                     <label class="form-check-label" >Вручную (несимметричное)</label>
                 </div>
                 <div id="chartButton" class="form-check form-check-inline" hidden="true">
@@ -59,8 +59,28 @@
             </div>
         </div>
     </div>
+    <div class="form-group row">
+        <div class="col-sm-3">
+            <a id="countPhaseButton" class="btn btn-primary" href="#PhaseFile" role="button">Выполнить расчет</a>
+        </div>
+        <div id="fileDownload" class="col-sm-3" hidden="true" >
+            <a href="/downloadPhases">Скачать файл с фазами</a>
+        </div>
+    </div>
 </div>
+<a name="PhaseFile"></a>
 <script>
+    function modeChanged(mode){
+        if(mode === 'manually'){
+            $('#chartButton').attr('hidden',false);
+        }
+        else{
+            $('#chartButton').attr('hidden',true);
+        }
+        $('#fileDownload').attr("hidden", true);
+        $('#chartPlace').html('');
+        $('#chartPlace').attr("hidden", true);
+    }
     $('#additional2').click(function() {
         if($('.dataClass').attr("hidden"))
         {
@@ -113,5 +133,22 @@
                 }
             })
         }
+    });
+    $('#countPhaseButton').click(function() {
+        var windowDelta = $("input[name=windowCounted]").val();
+        var isForPhase = $("input[type=radio][name=isForPhase]:checked").val();
+        var isWindowManually = $("input[type=radio][name=isWindowManually]:checked").val();
+        var windowLeft = $("input[type=text][name=windowLeft]").val();
+        var windowRight = $("input[type=text][name=windowRight]").val();
+        if(windowDelta===undefined) windowDelta = "";
+        $.ajax({
+            url: '/countPhase',
+            data: "isForPhase=" + isForPhase + "&windowCounted=" + windowDelta
+                + "&isWindowManually=" + isWindowManually + "&windowLeft=" + windowLeft
+                + "&windowRight=" + windowRight,
+            success: function () {
+                $('#fileDownload').attr("hidden", false);
+            }
+        });
     });
 </script>
