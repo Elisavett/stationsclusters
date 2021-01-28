@@ -2,7 +2,6 @@
 <div align="center" xmlns:th="http://www.w3.org/1999/xhtml">
     <h2></h2>
     <div id="chart_div" style="height: 450px"></div>
-    <form th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form" >
 
         <div class="form-group row">
             <label for="windowCounted" class="col-sm-4 col-form-label">Выберете окно (по умочанию рекомендованное):
@@ -14,12 +13,14 @@
             <div class="col-sm-1">
                  </div>
             <div class="col-sm-2">
-                <input class="form-control" type="submit" name="corr"  autocomplete="off"
-                       value="Рассчитать">
+                <a class="btn btn-primary" id="countPhaseButton" href="#PhaseFile" role="button">Расчитать</a>
             </div>
         </div>
-    </form>
+    <div hidden="true" id="fileDownload" class="form-group row">
+        <a th:href="@{/downloadPhases}">Скачать файл с фазами</a>
+    </div>
 </div>
+<a name="PhaseFile"></a>
 <script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
     var real_data = /*[[${chartData}]]*/'noValue';
 
@@ -50,7 +51,18 @@
             .getElementById('chart_div'));
         chart.draw(data, options);
     }
+    $('#countPhaseButton').click(function() {
 
+        var windowDelta = $("input[name=windowCounted]").val();
+        var isForPhase = $("input[type=radio][name=isForPhase]:checked").val();
+        $.ajax({
+            url: '/countPhase',
+            data: "isForPhase=" + isForPhase + "&windowCounted=" + windowDelta,
+            success: function () {
+                $('#fileDownload').attr("hidden", false);
+            }
+        });
+    });
 
 </script>
 </body>

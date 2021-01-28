@@ -1,16 +1,20 @@
 package net.codejava.controller;
 
 import net.codejava.Resolve.Model.ResolveForm;
+import net.codejava.Resolve.PhaseCalc.PhaseAmplCalc;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
 import net.codejava.Resolve.Start;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -43,6 +47,17 @@ public class CalcModulesController {
         model.addAttribute("chartData", WindowChart.chartData);
         model.addAttribute("window", ResolveForm.windowDelta);
         return "additionals/windowChart";
+    }
+
+    @GetMapping("/countPhase")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void countPhase(@RequestParam(value = "isForPhase", required = false) String isForPhase,
+                                                @RequestParam(value = "windowCounted", required = false) Integer windowCounted) throws InterruptedException {
+        ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
+        ResolveForm.windowDelta = windowCounted;
+        ResolveForm.windowLeft = ResolveForm.windowCenter - windowCounted;
+        ResolveForm.windowRight = ResolveForm.windowCenter + windowCounted;
+        PhaseAmplCalc.calculation();
     }
 
 
