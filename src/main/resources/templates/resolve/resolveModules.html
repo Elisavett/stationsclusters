@@ -252,6 +252,8 @@
         if(cordType!=null) $('input[name="cordsType"][value='+cordType+']').prop('checked', true);
         var tempType = $('#tempType').val();
         if(tempType!=null) $('input[name="tempType"][value='+tempType+']').prop('checked', true);
+
+
         checkParams();
 
     }
@@ -266,7 +268,9 @@
 
     //проверка
     function checkParams() {
-        if ((fileTemp.value != 0) && (fileCoordinates.value != 0)) {
+        var temps = $('#temps').val();
+        var coords = $('#coords').val();
+        if ((fileTemp.value != 0 || temps !== "") && (fileCoordinates.value != 0 || coords !== "")) {
             $('#submit').removeAttr('disabled');
         } else {
             $('#submit').attr('disabled', 'disabled');

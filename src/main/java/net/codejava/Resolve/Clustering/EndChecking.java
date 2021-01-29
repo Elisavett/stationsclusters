@@ -35,7 +35,6 @@ public class EndChecking {
 
     public List<Future<Phase>> run() throws ExecutionException, InterruptedException {
         phaseLoading();
-        end = comparison();
         return savePhase();
     }
 
@@ -95,6 +94,7 @@ public class EndChecking {
     }
 
     public boolean checkEnd() {
+        end = comparison();
         return end;
     }
 

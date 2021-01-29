@@ -46,6 +46,7 @@ public class PhaseAmplCalc {
             arrayPhase = executorService.invokeAll(amplitudeCalculationTasks);
             ResolveForm.arrayPhase = arrayPhase;
         }
+        executorService.shutdown();
     }
 }
 

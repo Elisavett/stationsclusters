@@ -1,10 +1,20 @@
 <div class="optional" xmlns:th="http://www.w3.org/1999/xhtml">
-    <div class="form-group row">
-        <label class="col-sm-5 col-form-label">Минимальный размер групп:
-        </label>
-        <div class="col-sm-2">
-            <input class="form-control" type="number" name="minGroupSize" onkeyup="checkParams()" autocomplete="off"
-                   id="minGroupSize" th:attr="value=${minGroupSize}">
+    <form th:action="@{/toMap}" method="post" enctype="multipart/form-data">
+        <div class="form-group row">
+            <label class="col-sm-5 col-form-label">Минимальный размер групп:
+            </label>
+            <div class="col-sm-2">
+                <input class="form-control" type="number" name="minGroupSize" onkeyup="checkParams()" autocomplete="off"
+                       id="minGroupSize" th:attr="value=${minGroupSize}">
+            </div>
         </div>
-    </div>
+        <div style="color: red" hidden id="error-element" class="form-group row"></div>
+
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <input id="toMapButton" type="submit" class="btn btn-primary" value="Выполнить расчет"/>
+            </div>
+        </div>
+    </form>
 </div>
+

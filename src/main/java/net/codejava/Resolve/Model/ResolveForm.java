@@ -11,6 +11,7 @@ public class ResolveForm {
     public static double[][] PhasesData;
     public static List<Future<Phase>> arrayPhase;
     public static List<Future<Phase>> arrayTypical;
+    public static List<Future<Group>> arrayGroup;
     public static String stringPhase;
     public static int groupNum;
     public static double[][] coordData;
