@@ -20,32 +20,32 @@ public class PhaseAmplCalc {
         int stationCount = ResolveForm.TempData.length;//количество станций
         //блок вычисления фазы
         //создаем лист задач
-        if (ResolveForm.isForPhases) {
-            List<PhaseCalculation> phaseCalculationTasks = new ArrayList<>();
-            //long startExec = System.currentTimeMillis(); //время старта вычислений
-            for (int i = 0; i < stationCount; i++) {
-                double[] temp = ResolveForm.TempData[i].clone();
-                PhaseCalculation phaseCalculation = new PhaseCalculation(temp, ResolveForm.windowLeft, ResolveForm.windowRight);
-                phaseCalculationTasks.add(phaseCalculation);
+            if (ResolveForm.isForPhases) {
+                List<PhaseCalculation> phaseCalculationTasks = new ArrayList<>();
+                //long startExec = System.currentTimeMillis(); //время старта вычислений
+                for (int i = 0; i < stationCount; i++) {
+                    double[] temp = ResolveForm.TempData[i].clone();
+                    PhaseCalculation phaseCalculation = new PhaseCalculation(temp, ResolveForm.windowLeft, ResolveForm.windowRight);
+                    phaseCalculationTasks.add(phaseCalculation);
+                }
+                //выполняем все задачи. главный поток ждет
+
+                arrayPhase = executorService.invokeAll(phaseCalculationTasks);
+
+                ResolveForm.arrayPhase = arrayPhase;
+            } else {
+                List<AmplitudeCalculation> amplitudeCalculationTasks = new ArrayList<>();
+                //long startExec = System.currentTimeMillis(); //время старта вычислений
+                for (int i = 0; i < stationCount; i++) {
+                    double[] temp = ResolveForm.TempData[i].clone();
+                    AmplitudeCalculation phaseCalculation = new AmplitudeCalculation(temp, ResolveForm.windowLeft, ResolveForm.windowRight);
+                    amplitudeCalculationTasks.add(phaseCalculation);
+                }
+                //выполняем все задачи. главный поток ждет
+
+                arrayPhase = executorService.invokeAll(amplitudeCalculationTasks);
+                ResolveForm.arrayPhase = arrayPhase;
             }
-            //выполняем все задачи. главный поток ждет
-
-            arrayPhase = executorService.invokeAll(phaseCalculationTasks);
-
-            ResolveForm.arrayPhase = arrayPhase;
-        } else {
-            List<AmplitudeCalculation> amplitudeCalculationTasks = new ArrayList<>();
-            //long startExec = System.currentTimeMillis(); //время старта вычислений
-            for (int i = 0; i < stationCount; i++) {
-                double[] temp = ResolveForm.TempData[i].clone();
-                AmplitudeCalculation phaseCalculation = new AmplitudeCalculation(temp, ResolveForm.windowLeft, ResolveForm.windowRight);
-                amplitudeCalculationTasks.add(phaseCalculation);
-            }
-            //выполняем все задачи. главный поток ждет
-
-            arrayPhase = executorService.invokeAll(amplitudeCalculationTasks);
-            ResolveForm.arrayPhase = arrayPhase;
-        }
         executorService.shutdown();
     }
 }

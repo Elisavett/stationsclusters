@@ -4,7 +4,7 @@
         </label>
         <div class="col-sm-2">
             <input class="form-control" type="text" name="corr" onkeyup="checkParams()" autocomplete="off"
-                   id="corr" th:attr="value=${corr}">
+                   id="corr" value="0.8">
         </div>
     </div>
     <div class="form-group row">
@@ -27,16 +27,18 @@
             </label>
             <div class="col-sm-2">
                 <input class="form-control" type="text" name="sigma" autocomplete="off"
-                       id="sigma" th:attr="value=${sigma}">
+                       id="sigma" value="0.1">
             </div>
         </div>
     </div>
-    <div style="color: red" hidden id="error-element" class="form-group row">
+    <div style="color: red" hidden id="error-element" class="col-sm-5 form-group row">
 
     </div>
     <div class="form-group row">
         <div class="col-sm-3">
             <a id="countClustersButton" class="btn btn-primary" href="#ClustersFile" role="button">Выполнить расчет</a>
+        </div>
+        <div id="loaderCluster" class="loader" style="width: 30px; height: 30px; border-width: 4px; border-top-width: 4px" hidden="true" >
         </div>
         <div id="fileTypDownload" class="col-sm-3" hidden="true" >
             <a href="/downloadTypicals">Скачать файл с типовыми</a>
@@ -49,6 +51,7 @@
 <a name="ClustersFile"></a>
 
 <script>
+    var isClusterizationEnd = false;
     $('#errorCalc').click(function() {
         $(".errorClass").attr("hidden",false);
     });
@@ -57,22 +60,27 @@
         $(".errorClass").attr("hidden",true);
     });
     $('#countClustersButton').click(function() {
+        $('#error-element').attr("hidden", true);
+
         var corr = $("input[type=text][name=corr]").val();
         var isAccurate = $("input[type=radio][name=isAccurate]:checked").val();
         var sigma = $("input[type=text][name=sigma]").val();
-        $('#error-element').attr("hidden", true);
+
         if(corr==="" || (isAccurate==="false" && sigma==="")){
             $('#error-element').html('Заполните все поля');
             $('#error-element').attr("hidden", false);
         }
         else {
+            $('#loaderCluster').attr("hidden", false);
             $.ajax({
                 url: '/countClusters',
                 data: "corr=" + corr + "&isAccurate=" + isAccurate
                     + "&sigma=" + sigma,
                 success: function () {
+                    $('#loaderCluster').attr("hidden", true);
                     $('#fileTypDownload').attr("hidden", false);
                     $('#fileGroupsDownload').attr("hidden", false);
+                    isClusterizationEnd = true;
                 }
             });
         }

@@ -1,5 +1,6 @@
 package net.codejava.controller;
 
+import net.codejava.Resolve.ClassesCalc;
 import net.codejava.Resolve.Clustering.ClustersCalc;
 import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.PhaseCalc.PhaseAmplCalc;
@@ -40,6 +41,11 @@ public class CalcModulesController {
     public String getShowGrFragment() {
         return "fragments/showGrFragment";
     }
+    @GetMapping("/getClassesFragment")
+    public String getClassesFragment() {
+        return "fragments/classesFragment";
+    }
+
 
     @GetMapping("/showChart")
     public String showChart(Model model,
@@ -60,6 +66,8 @@ public class CalcModulesController {
                            @RequestParam(value = "windowLeft", required = false) String windowLeft,
                            @RequestParam(value = "windowRight", required = false) String  windowRight) throws InterruptedException, ExecutionException {
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
+        //Отмечаем, что фаза считалась
+        ResolveForm.isPhasesCounted = false;
         if(windowCounted!=""){
             ResolveForm.windowLeft = ResolveForm.windowCenter - Integer.parseInt(windowCounted);
             ResolveForm.windowRight = ResolveForm.windowCenter + Integer.parseInt(windowCounted);
@@ -92,15 +100,26 @@ public class CalcModulesController {
         ResolveForm.sigma = sigma;
         ClustersCalc.calculation();
     }
-    @PostMapping("/toMap")
+    @GetMapping("/countClasses")
     @ResponseStatus(value = HttpStatus.OK)
-    public String toMap(Model model,@RequestParam(value = "minGroupSize", required = false) String minGroupSize) throws InterruptedException, ExecutionException, IOException {
+    public void countClasses(@RequestParam(value = "classCoef", required = false) String classCoef) throws InterruptedException, ExecutionException, IOException {
+        ResolveForm.classCoef = Double.parseDouble(classCoef);
+        ClassesCalc.calculation();
+    }
+    @GetMapping("/toMap")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void toMap(@RequestParam(value = "minGroupSize", required = false) String minGroupSize) throws InterruptedException, ExecutionException, IOException {
         ResolveForm.minGroupSize = Integer.parseInt(minGroupSize);
-        ArrayList<String> json = toMap.getGroups();
-        model.addAttribute("json", json);
+        ResolveForm.json = new ArrayList<>();
+        ResolveForm.json.addAll(toMap.getGroups());
+    }
+    @RequestMapping("/showMap")
+    public String showMap(Model model){
+        model.addAttribute("json", ResolveForm.json);
         model.addAttribute("groupNum", ResolveForm.groupNum);
         return "map1";
     }
+
     @RequestMapping("/downloadTypicals")
     public ResponseEntity<String> downloadTypicals() throws IOException, ExecutionException, InterruptedException {
 
@@ -145,5 +164,24 @@ public class CalcModulesController {
                 .contentLength(stringPhase.length()) //
                 .body(stringPhase);
     }
+    @RequestMapping("/downloadJSON")
+    public ResponseEntity<String> downloadJSON() throws IOException, ExecutionException, InterruptedException {
+
+        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
+        String stringPhase = "";
+        for (int i = 0; i < ResolveForm.json.size(); i++) {
+            stringPhase += (ResolveForm.json.get(i) + "\n");
+        }
+
+        return ResponseEntity.ok()
+                // Content-Disposition
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "groups.txt")
+                // Content-Type
+                .contentType(mediaType)
+                // Contet-Length
+                .contentLength(stringPhase.length()) //
+                .body(stringPhase);
+    }
+
 
 }

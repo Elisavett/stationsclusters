@@ -172,22 +172,29 @@
             <div id="clustersCalc"></div>
             <div class="form-group row">
                 <div class="col-sm-12">
-                    <input type="checkbox" name="classification" value="true">&nbsp;&nbsp;Классификация
+                    <input type="checkbox" name="classification" class="classesCalc" value="true">&nbsp;&nbsp;Классификация
                 </div>
             </div>
+            <div id="classesCalc"></div>
             <div class="form-group row">
                 <div class="col-sm-12">
                     <input type="checkbox" name="toMap" class="showGroups" value="true">&nbsp;&nbsp;Отображение на карте
                 </div>
             </div>
             <div id="showGroups"></div>
+            <div class="form-group row">
+                <div class="col-sm-3">
+                    <button disabled id="countClassesButton" class="btn btn-primary" formaction="/showMap" role="button">Отобразить</button>
+                </div>
+            </div>
         </form>
     </div>
 </div>
 <script>
+
     var phaseCalc = false;
     var clustersCalc = false;
-    var classedCalc = false;
+    var classesCalc = false;
     var showGroups = false;
     window.onload = function (){
         $('.phaseCalc').on('click', function() {
@@ -201,9 +208,12 @@
                         $('#phaseCalc').append(html);
                     }
                 });
+                if(isClusterizationEnd && isGroopingEnd) $('#submit').removeAttr('disabled');
+
             }
             else{
                 phaseCalc = false;
+                if(!isClusterizationEnd || !isGroopingEnd) $('#submit').attr('disabled', 'disabled');
                 $('#phaseCalc').html('');
             }
         });
@@ -219,10 +229,32 @@
                         $('#clustersCalc').append(html);
                     }
                 });
+                if(isClusterizationEnd && isGroopingEnd) $('#submit').removeAttr('disabled');
             }
             else{
                 clustersCalc = false;
                 $('#clustersCalc').html('');
+                if(!isClusterizationEnd || !isGroopingEnd) $('#submit').attr('disabled', 'disabled');
+            }
+        });
+
+        $('.classesCalc').on('click', function() {
+            if(!classesCalc) {
+                classesCalc = true;
+                $.ajax({
+                    url: '/getClassesFragment',
+                    contentType: 'text/html',
+                    dataType: 'html',
+                    success: function(html){
+                        $('#classesCalc').append(html);
+                    }
+                });
+                if(isClusterizationEnd && isGroopingEnd) $('#submit').removeAttr('disabled');
+            }
+            else{
+                classesCalc = false;
+                $('#classesCalc').html('');
+                if(!isClusterizationEnd || !isGroopingEnd) $('#submit').attr('disabled', 'disabled');
             }
         });
 
@@ -237,10 +269,12 @@
                         $('#showGroups').append(html);
                     }
                 });
+                if(isClusterizationEnd && isGroopingEnd) $('#submit').removeAttr('disabled');
             }
             else{
                 showGroups = false;
                 $('#showGroups').html('');
+                if(!isClusterizationEnd || !isGroopingEnd) $('#submit').attr('disabled', 'disabled');
             }
         });
 

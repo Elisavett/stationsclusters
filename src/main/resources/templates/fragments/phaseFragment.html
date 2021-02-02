@@ -37,13 +37,16 @@
                     <label class="form-check-label" >Вручную (несимметричное)</label>
                 </div>
                 <div id="chartButton" class="form-check form-check-inline" hidden="true">
-                    <a class="btn btn-primary" href="#chart" role="button">Показать график</a>
+                    <a class="btn btn-primary" href="#underchart" role="button">Показать график</a>
                 </div>
             </div>
         </div>
 
-        <div hidden="true" id="chartPlace" style="min-height: 350px"></div>
-        <a name="chart"></a>
+        <div hidden="true" id="chartPlace" style="min-height: 350px">
+            <div class="loader" style="margin: 0 auto;"></div>
+            <div id="chart"></div>
+        </div>
+        <a name="underchart"></a>
     </div>
     <div hidden="true" class="windowClass">
         <div class="form-group row">
@@ -51,17 +54,19 @@
             </label>
             <div class="col-sm-2">
                 <input class="form-control" type="text" name="windowLeft" onkeyup="checkParams()" autocomplete="off"
-                       id="windowLeft">
+                       id="windowLeft" value="1">
             </div>
             <div class="col-sm-2">
                 <input class="form-control" type="text" name="windowRight" onkeyup="checkParams()" autocomplete="off"
-                       id="windowRight">
+                       id="windowRight" value="111">
             </div>
         </div>
     </div>
     <div class="form-group row">
         <div class="col-sm-3">
             <a id="countPhaseButton" class="btn btn-primary" href="#PhaseFile" role="button">Выполнить расчет</a>
+        </div>
+        <div id="loaderPhase" class="loader" style="width: 30px; height: 30px; border-width: 4px; border-top-width: 4px" hidden="true" >
         </div>
         <div id="fileDownload" class="col-sm-3" hidden="true" >
             <a href="/downloadPhases">Скачать файл с фазами</a>
@@ -73,13 +78,17 @@
     function modeChanged(mode){
         if(mode === 'manually'){
             $('#chartButton').attr('hidden',false);
+            $('#countPhaseButton').attr('hidden',true);
         }
         else{
             $('#chartButton').attr('hidden',true);
+            $('#countPhaseButton').attr('hidden',false);
+
         }
         $('#fileDownload').attr("hidden", true);
-        $('#chartPlace').html('');
+        $('#chart').html('');
         $('#chartPlace').attr("hidden", true);
+        $(".loader").attr("hidden", false);
     }
     $('#additional2').click(function() {
         if($('.dataClass').attr("hidden"))
@@ -114,6 +123,7 @@
     });
     $('#chartButton').click(function() {
         $('#chartPlace').attr("hidden", false);
+
         var data;
         if(!$('#chartButton').attr("hidden")){
             if($('input[name="isWindowManually"][value="1"]').prop('checked'))
@@ -129,12 +139,16 @@
                 dataType: 'html',
                 data: "isWindowManually="+data,
                 success: function (html) {
-                    $('#chartPlace').append(html);
+                    $(".loader").attr("hidden", true);
+                    $('#chart').append(html);
+                    $('#countPhaseButton').attr('hidden',false);
                 }
             })
         }
     });
     $('#countPhaseButton').click(function() {
+        $('#loaderPhase').attr("hidden", false);
+
         var windowDelta = $("input[name=windowCounted]").val();
         var isForPhase = $("input[type=radio][name=isForPhase]:checked").val();
         var isWindowManually = $("input[type=radio][name=isWindowManually]:checked").val();
@@ -147,6 +161,7 @@
                 + "&isWindowManually=" + isWindowManually + "&windowLeft=" + windowLeft
                 + "&windowRight=" + windowRight,
             success: function () {
+                $('#loaderPhase').attr("hidden", true);
                 $('#fileDownload').attr("hidden", false);
             }
         });

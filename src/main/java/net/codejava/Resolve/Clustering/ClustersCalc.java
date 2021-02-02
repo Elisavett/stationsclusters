@@ -19,11 +19,20 @@ public class ClustersCalc {
         int processors = Runtime.getRuntime().availableProcessors();
         ExecutorService executorService = Executors.newFixedThreadPool(processors);
         List<RewritePhase> rewritePhases = new ArrayList<>();
-        for (int i = 0; i < ResolveForm.arrayPhase.size(); i++) {
-            RewritePhase phaseCalculation = new RewritePhase(ResolveForm.arrayPhase.get(i).get().getArray());
-            rewritePhases.add(phaseCalculation);
-        }
+        if (!ResolveForm.isPhasesCounted){
+            for (int i = 0; i < ResolveForm.arrayPhase.size(); i++) {
+                RewritePhase phaseCalculation = new RewritePhase(ResolveForm.arrayPhase.get(i).get().getArray());
+                rewritePhases.add(phaseCalculation);
+            }
         arrayPhase = executorService.invokeAll(rewritePhases);
+        }
+        else{
+            for (int i = 0; i < ResolveForm.TempData.length; i++) {
+                RewritePhase phaseCalculation = new RewritePhase(ResolveForm.TempData[i]);
+                rewritePhases.add(phaseCalculation);
+            }
+            arrayPhase = executorService.invokeAll(rewritePhases);
+        }
         ArrayData arrayTypicalPath = new ArrayData();
         List<Future<Group>> arrayGroup;
         List<Future<Group>> arrayPrevGroup = new ArrayList<>();
