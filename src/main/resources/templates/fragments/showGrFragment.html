@@ -22,7 +22,6 @@
 </div>
 
 <script>
-    var isGroopingEnd = false;
     $('#groupsButton').click(function() {
         var minGroupSize = $("input[type=number][name=minGroupSize]").val();
         $('#error-element').attr("hidden", true);
@@ -39,6 +38,7 @@
                     isGroopingEnd = true;
                     $('#loaderGroup').attr("hidden", true);
                     $('#fileJSONDownload').attr("hidden", false);
+                    if(isClusterizationEnd === true) $('#showOnMap').removeAttr('disabled');
                 }
             });
         }
