@@ -138,6 +138,9 @@
                         <div style="float: right; margin-right: 10%">
                             <input  id="submit"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Проверить" />
                         </div>
+                        <div style="float: right; margin-right: 10%">
+                            <input  id="submit2" formaction="/withNoCheck"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Расчет без проверки" />
+                        </div>
                     </div>
                 </div>
 
@@ -148,7 +151,7 @@
                 </div>
             </div>
         </form>
-        <form th:if="${message}=='Период выбран верно'" th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form" >
+        <form th:if="${message}=='Период выбран верно' OR ${message}=='Данные не прошли проверку'" th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form" >
 
             <div id="options">
                 <div class="form-group row">
@@ -364,8 +367,10 @@
         alert(temps + "...." + coords + ".." + corr + "...." + fileTemp.value + ".." + fileCoordinates.value)*/
             if ((fileTemp.value != 0 || temps !== "") && (fileCoordinates.value != 0 || coords !== "")) {
                 $('#submit').removeAttr('disabled');
+                $('#submit2').removeAttr('disabled');
             } else {
                 $('#submit').attr('disabled', 'disabled');
+                $('#submit2').attr('disabled', 'disabled');
             }
 
     }

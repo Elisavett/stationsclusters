@@ -227,6 +227,41 @@ public class MapAllocationController {
         if("true".equals(isModules)) return "resolve/resolveModules";
         else return "resolve/resolve";
     }
+    @PostMapping("/withNoCheck")
+    public String withNoCheck(Model model, @RequestParam(value = "fileTemp", required = false) MultipartFile fileTemp,
+                        @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,
+                        @RequestParam(value = "tempType", required = false) String tempType,
+                        @RequestParam(value = "isModules", required = false) String isModules,
+                        @RequestParam(value = "cordsType", required = false) String cordsType,
+                        @RequestParam(value = "dataType", required = false) String dataType,
+                        @RequestParam(value = "periodStart", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodStart,
+                        @RequestParam(value = "periodEnd", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodEnd) throws IOException {
+        ResolveForm.tempsIsStationsOnY = Boolean.parseBoolean(tempType);
+        ResolveForm.coordsIsStationsOnY = Boolean.parseBoolean(cordsType);
+        if (!fileTemp.getOriginalFilename().equals("")) {
+            ResolveForm.TempData = new double[(int) fileTemp.getSize()][];
+            ResolveForm.TempData = SplitInputFile.ReadFromFileSplitting(fileTemp, 't');
+            ResolveForm.tempFileName = fileTemp.getOriginalFilename();
+        }
+        if (!fileCoordinates.getOriginalFilename().equals("")) {
+            ResolveForm.coordData = new double[(int) fileCoordinates.getSize()][];
+            ResolveForm.coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates, 'c');
+            ResolveForm.coordFileName = fileCoordinates.getOriginalFilename();
+        }
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        ResolveForm.periodStart = formatter.format(periodStart);
+        ResolveForm.periodEnd = formatter.format(periodEnd);
+        ResolveForm.dataType = Integer.parseInt(dataType);
+
+        ResolveForm.windowCenter = ResolveForm.TempData[0].length / ResolveForm.dataType;
+
+        model.addAttribute("message", "Данные не прошли проверку");
+        model.addAttribute("minGroupSize", ResolveForm.minGroupSize);
+        ResolveForm.addAllToModel(model);
+        if("true".equals(isModules)) return "resolve/resolveModules";
+        else return "resolve/resolve";
+    }
 
     @GetMapping("/map")
     public String map() {
