@@ -1,7 +1,7 @@
 package net.codejava.Resolve;
 
 import net.codejava.Resolve.Clustering.CorrelationCalculation;
-import net.codejava.Resolve.Clustering.GroupAllocation;
+import net.codejava.Resolve.Clustering.GroupAllocation1;
 import net.codejava.Resolve.Model.Corr;
 import net.codejava.Resolve.Model.Group;
 import net.codejava.Resolve.Model.ResolveForm;
@@ -34,7 +34,7 @@ public class ClassesCalc {
         arrayCorr = executorService.invokeAll(corrThreadTasks);
 
         //блок выделения групп
-        GroupAllocation allocationThread = new GroupAllocation(true, stationCount, ResolveForm.classCoef, arrayCorr, executorService);
+        GroupAllocation1 allocationThread = new GroupAllocation1(true, stationCount, ResolveForm.classCoef, arrayCorr, executorService);
         ResolveForm.arrayGroup = allocationThread.run();
     }
 }

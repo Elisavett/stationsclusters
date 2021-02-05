@@ -108,8 +108,10 @@ public class CalcModulesController {
     }
     @GetMapping("/toMap")
     @ResponseStatus(value = HttpStatus.OK)
-    public void toMap(@RequestParam(value = "minGroupSize", required = false) String minGroupSize) throws InterruptedException, ExecutionException, IOException {
+    public void toMap(@RequestParam(value = "minGroupSize", required = false) String minGroupSize,
+                      @RequestParam(value = "groupCross", required = false) String groupCross) throws InterruptedException, ExecutionException, IOException {
         ResolveForm.minGroupSize = Integer.parseInt(minGroupSize);
+        ResolveForm.groupCross = groupCross.equals("true");
         ResolveForm.json = new ArrayList<>();
         ResolveForm.json.addAll(toMap.getGroups());
     }

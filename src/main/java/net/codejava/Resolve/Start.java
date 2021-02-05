@@ -1,9 +1,6 @@
 package net.codejava.Resolve;
 
-import net.codejava.Resolve.Clustering.CorrelationCalculation;
-import net.codejava.Resolve.Clustering.EndChecking;
-import net.codejava.Resolve.Clustering.GroupAllocation;
-import net.codejava.Resolve.Clustering.TypicalCalculation;
+import net.codejava.Resolve.Clustering.*;
 import net.codejava.Resolve.Model.*;
 import net.codejava.Resolve.PhaseCalc.AmplitudeCalculation;
 import net.codejava.Resolve.PhaseCalc.PhaseCalculation;
@@ -94,7 +91,7 @@ public class Start {
             //startExec = System.currentTimeMillis(); //время старта вычислений
 
             //блок выделения групп
-            GroupAllocation allocationThread = new GroupAllocation(false, stationCount, ResolveForm.corr, arrayCorr, executorService);
+            GroupAllocation1 allocationThread = new GroupAllocation1(false, stationCount, ResolveForm.corr, arrayCorr, executorService);
             arrayGroup = allocationThread.run();
             //finishExec = System.currentTimeMillis(); // время конца вычислений
             //System.out.println("Total group allocation time: " + (finishExec - startExec));
@@ -154,7 +151,7 @@ public class Start {
 
             //startExec = System.currentTimeMillis(); //время старта вычислений
             //блок выделения групп
-            GroupAllocation allocationThread = new GroupAllocation(true, stationCount, ResolveForm.corr, arrayCorr, executorService);
+            GroupAllocation1 allocationThread = new GroupAllocation1(true, stationCount, ResolveForm.corr, arrayCorr, executorService);
             arrayGroup = allocationThread.run();
         }
 

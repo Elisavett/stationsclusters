@@ -3,12 +3,10 @@ package net.codejava.Resolve;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.codejava.Resolve.Model.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -53,7 +51,7 @@ public class Merger1 {
         for (int i = 0; i < stationCount; i++) {
             Group group = (Group) arrayGroup.get(i).get();
             int[] array = group.getArray();
-            GroupLine groupLine = new GroupLine(array);
+            GroupLine groupLine = new GroupLine(array, group.getCorrs());
             groupList.add(groupLine);
         }
     }
@@ -64,17 +62,20 @@ public class Merger1 {
     public void sortGroups() {
         sortGroupLine = new TreeSet<GroupLine>();
         for (int i = 0; i < groupList.size(); i++) {
-            if (groupList.get(i).getGroup().size() >= minGroupsSize) {
+            /*if (groupList.get(i).getGroup().size() >= minGroupsSize) {
                 sortGroupLine.add(groupList.get(i));
             }
             else
             {
-                groupList.get(i).lessThenFive();
+                groupList.get(i).lessThenFive();*/
                 sortGroupLine.add(groupList.get(i));
-            }
-
+            //}
         }
-
+        if(!ResolveForm.groupCross) {
+            for (GroupLine gr : sortGroupLine) {
+                gr.deleteDoubles(sortGroupLine);
+            }
+        }
     }
 
     public void loadCoordinates() throws IOException {
@@ -92,31 +93,30 @@ public class Merger1 {
         ArrayList<String> json = new ArrayList<>();
         int numberGroup = 1;
         for (GroupLine gr : sortGroupLine) {
-            if(!gr.islessThenFive()) {
+            if(gr.getGroup().size() >= minGroupsSize) {
                 for (int j : gr.getGroup()) {
-                    groupAndCoordinates = new GroupAndCoordinates(
-                            coordinatesSourceTXT[0][j],
-                            coordinatesSourceTXT[1][j],
-                            coordinatesSourceTXT[2][j],
-                            numberGroup,
-                            gr.islessThenFive());
-                    String jsonData = GSON.toJson(groupAndCoordinates);
-                    json.add(jsonData);
-                }
+                        groupAndCoordinates = new GroupAndCoordinates(
+                                coordinatesSourceTXT[0][j],
+                                coordinatesSourceTXT[1][j],
+                                coordinatesSourceTXT[2][j],
+                                numberGroup,
+                                false);
+                        String jsonData = GSON.toJson(groupAndCoordinates);
+                        json.add(jsonData);
+                    }
                 numberGroup++;
             }
-
         }
         ResolveForm.groupNum = numberGroup-1;
         for (GroupLine gr : sortGroupLine) {
-            if(gr.islessThenFive()) {
+            if(gr.getGroup().size() < minGroupsSize) {
                 for (int j : gr.getGroup()) {
                     groupAndCoordinates = new GroupAndCoordinates(
                             coordinatesSourceTXT[0][j],
                             coordinatesSourceTXT[1][j],
                             coordinatesSourceTXT[2][j],
                             numberGroup,
-                            gr.islessThenFive());
+                            true);
                     String jsonData = GSON.toJson(groupAndCoordinates);
                     json.add(jsonData);
                 }

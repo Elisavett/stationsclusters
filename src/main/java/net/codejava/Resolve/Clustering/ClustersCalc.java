@@ -58,7 +58,7 @@ public class ClustersCalc {
             //startExec = System.currentTimeMillis(); //время старта вычислений
 
             //блок выделения групп
-            GroupAllocation allocationThread = new GroupAllocation(false, stationCount, ResolveForm.corr, arrayCorr, executorService);
+            GroupAllocation1 allocationThread = new GroupAllocation1(false, stationCount, ResolveForm.corr, arrayCorr, executorService);
             arrayGroup = allocationThread.run();
             //finishExec = System.currentTimeMillis(); // время конца вычислений
             //System.out.println("Total group allocation time: " + (finishExec - startExec));
