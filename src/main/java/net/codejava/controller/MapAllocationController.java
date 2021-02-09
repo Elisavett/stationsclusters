@@ -283,11 +283,13 @@ public class MapAllocationController {
                       @RequestParam(value = "isWindowManually", required = false) String isWindowManually,
                       @RequestParam(value = "isAccurate", required = false) String isAccurate,
                       @RequestParam(value = "windowCounted", required = false) Integer windowCounted,
-                      @RequestParam(value = "minGroupSize", required = false) Integer minGroupSize) throws IOException, ExecutionException, InterruptedException {
+                      @RequestParam(value = "minGroupSize", required = false) Integer minGroupSize,
+                      @RequestParam(value = "groupCross", required = false) String groupCross) throws IOException, ExecutionException, InterruptedException {
 
         ResolveForm.isPhasesCounted = false;
         ResolveForm.isAccurate = Boolean.parseBoolean(isAccurate);
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
+        ResolveForm.groupCross = "true".equals(groupCross);
         if("true".equals(classification)) {
             ResolveForm.classification = true;
         }

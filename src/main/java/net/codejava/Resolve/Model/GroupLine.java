@@ -7,7 +7,7 @@ public class GroupLine implements Comparable<GroupLine> {
     private int[] group;
     private double[] corrs;
     private boolean isLess5 = false;
-    private int index;
+    private final int index;
 
 
     public GroupLine(int[] group, double[] corrs, int index){
@@ -72,38 +72,8 @@ public class GroupLine implements Comparable<GroupLine> {
         }
     }
 
-    public boolean islessThenFive()
-    {
-        return isLess5;
-    }
-    public void lessThenFive()
-    {
-        isLess5 = true;
-    }
-
     public void setGroup(int[] group) {
         this.group = group;
-    }
-
-    public boolean containsAll(int[] group2)
-    {
-        for (int i = 0; i < group.length; i++) {
-            final int j = i;
-            if (!(IntStream.of(group).anyMatch(x -> x == group2[j]))) {
-                return false;
-            }
-        }
-        return true;
-    }
-    public boolean containedIn(int[] group2)
-    {
-        for (int i = 0; i < group2.length; i++) {
-            final int j = i;
-            if (!(IntStream.of(group2).anyMatch(x -> x == group[j]))) {
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override
