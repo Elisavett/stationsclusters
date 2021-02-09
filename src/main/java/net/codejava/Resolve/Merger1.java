@@ -51,7 +51,7 @@ public class Merger1 {
         for (int i = 0; i < stationCount; i++) {
             Group group = (Group) arrayGroup.get(i).get();
             int[] array = group.getArray();
-            GroupLine groupLine = new GroupLine(array, group.getCorrs());
+            GroupLine groupLine = new GroupLine(array, group.getCorrs(), i);
             groupList.add(groupLine);
         }
     }
@@ -62,14 +62,7 @@ public class Merger1 {
     public void sortGroups() {
         sortGroupLine = new TreeSet<GroupLine>();
         for (int i = 0; i < groupList.size(); i++) {
-            /*if (groupList.get(i).getGroup().size() >= minGroupsSize) {
-                sortGroupLine.add(groupList.get(i));
-            }
-            else
-            {
-                groupList.get(i).lessThenFive();*/
-                sortGroupLine.add(groupList.get(i));
-            //}
+            sortGroupLine.add(groupList.get(i));
         }
         if(!ResolveForm.groupCross) {
             for (GroupLine gr : sortGroupLine) {
@@ -80,7 +73,6 @@ public class Merger1 {
 
     public void loadCoordinates() throws IOException {
         //Получаю координаты каждой станции и записываю в coordinatesSourceTXT
-        //FileReader fr1 = new FileReader(pathCoordinates);
         coordinatesSourceTXT = new double[3][stationCount];
         coordinatesSourceTXT[0] = ResolveForm.coordData[1];
         coordinatesSourceTXT[1] = ResolveForm.coordData[2];

@@ -1,20 +1,19 @@
 package net.codejava.Resolve.Model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class GroupLine implements Comparable<GroupLine> {
     private int[] group;
     private double[] corrs;
     private boolean isLess5 = false;
+    private int index;
 
 
-    public GroupLine(int[] group, double[] corrs){
+    public GroupLine(int[] group, double[] corrs, int index){
         this.group = group;
         this.corrs = corrs;
+        this.index = index;
     }
 
     public ArrayList<Integer> getGroup() {
@@ -52,18 +51,20 @@ public class GroupLine implements Comparable<GroupLine> {
     }
 
     public void deleteDoubles(TreeSet<GroupLine> allStations){
-        for(GroupLine gr : allStations){
-            ArrayList<Integer> currGroup = gr.getGroup();
-            if(!Arrays.equals(group, currGroup.stream().mapToInt(q->q).toArray())) {
+        Iterator<GroupLine> iter = allStations.iterator();
+        while(iter.hasNext()){
+            GroupLine tempGroup = iter.next();
+            ArrayList<Integer> currGroup = tempGroup.getGroup();
+            if(index != tempGroup.index) {
                 for (int i = 0; i < group.length; i++) {
                     int idx = currGroup.indexOf(group[i]);
                     if (idx != -1) {
-                        if (gr.getCorrsForIdx(idx) > corrs[i]) {
+                        if (tempGroup.getCorrsForIdx(idx) > corrs[i]) {
                             removeIdx(i);
                         }
                         else{
                            currGroup.remove(idx);
-                           gr.removeIdx(idx);
+                            tempGroup.removeIdx(idx);
                         }
                     }
                 }
