@@ -47,6 +47,7 @@
                 success: function () {
                     $('#loaderClasses').attr("hidden", true);
                     $('#fileFinalGroupsDownload').attr("hidden", false);
+                    $('.showGroups').removeAttr('disabled');
                 }
             });
         }

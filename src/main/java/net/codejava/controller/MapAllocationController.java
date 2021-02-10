@@ -125,6 +125,7 @@ public class MapAllocationController {
             e.printStackTrace();
         }
         model.addAttribute("json", json);
+        model.addAttribute("groupNum", ResolveForm.groupNum);
         return "map1";
     }
     @GetMapping("/resolveHistory")
@@ -290,12 +291,7 @@ public class MapAllocationController {
         ResolveForm.isAccurate = Boolean.parseBoolean(isAccurate);
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
         ResolveForm.groupCross = "true".equals(groupCross);
-        if("true".equals(classification)) {
-            ResolveForm.classification = true;
-        }
-        else {
-            ResolveForm.classification = false;
-        }
+        ResolveForm.classification = "true".equals(classification);
         if(windowCounted!=null){
             ResolveForm.windowLeft = ResolveForm.windowCenter - windowCounted;
             ResolveForm.windowRight = ResolveForm.windowCenter + windowCounted;

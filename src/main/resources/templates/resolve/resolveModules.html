@@ -169,19 +169,19 @@
             <div id="phaseCalc"></div>
             <div class="form-group row">
                 <div class="col-sm-12">
-                    <input type="checkbox" name="clusters" class="clustersCalc" value="true">&nbsp;&nbsp;Кластеризация
+                    <input disabled type="checkbox" name="clusters" class="clustersCalc" value="true">&nbsp;&nbsp;Кластеризация
                 </div>
             </div>
             <div id="clustersCalc"></div>
             <div class="form-group row">
                 <div class="col-sm-12">
-                    <input type="checkbox" name="classification" class="classesCalc" value="true">&nbsp;&nbsp;Классификация
+                    <input disabled type="checkbox" name="classification" class="classesCalc" value="true">&nbsp;&nbsp;Классификация
                 </div>
             </div>
             <div id="classesCalc"></div>
             <div class="form-group row">
                 <div class="col-sm-12">
-                    <input type="checkbox" name="toMap" class="showGroups" value="true">&nbsp;&nbsp;Отображение на карте
+                    <input disabled type="checkbox" name="toMap" class="showGroups" value="true">&nbsp;&nbsp;Отображение на карте
                 </div>
             </div>
             <div id="showGroups"></div>
@@ -220,7 +220,11 @@
                 phaseCalc = false;
                 if(!isClusterizationEnd || !isGroopingEnd) $('#showOnMap').attr('disabled', 'disabled');
                 $('#phaseCalc').html('');
+                $('.clustersCalc').attr('disabled', 'disabled');
+                $('.classesCalc').attr('disabled', 'disabled');
+                $('.showGroups').attr('disabled', 'disabled');
             }
+
         });
 
         $('.clustersCalc').on('click', function() {
@@ -240,6 +244,7 @@
                 clustersCalc = false;
                 $('#clustersCalc').html('');
                 $('#showOnMap').attr('disabled', 'disabled');
+                $('.showGroups').attr('disabled', 'disabled');
             }
         });
 
@@ -259,6 +264,7 @@
             else{
                 classesCalc = false;
                 $('#classesCalc').html('');
+                $('.showGroups').attr('disabled', 'disabled');
                 if(!isClusterizationEnd || !isGroopingEnd) $('#showOnMap').attr('disabled', 'disabled');
             }
         });

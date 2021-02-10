@@ -163,6 +163,8 @@
             success: function () {
                 $('#loaderPhase').attr("hidden", true);
                 $('#fileDownload').attr("hidden", false);
+                $('.clustersCalc').removeAttr('disabled');
+                $('.classesCalc').removeAttr('disabled');
             }
         });
     });
