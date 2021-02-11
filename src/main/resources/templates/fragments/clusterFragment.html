@@ -1,5 +1,5 @@
 <div class="optional" xmlns:th="http://www.w3.org/1999/xhtml">
-    <div id="warning" th:text="${phaseWarning}" class="warningMessage"></div>
+    <div id="clusterWarning" th:text="${phaseWarning}" class="warningMessage"></div>
     <div class="form-group row">
         <label for="corr" class="col-sm-5 col-form-label">Коэффициент корреляции (от 0 до 1):
         </label>
@@ -82,6 +82,7 @@
                     $('#fileTypDownload').attr("hidden", false);
                     $('#fileGroupsDownload').attr("hidden", false);
                     $('.showGroups').removeAttr('disabled');
+                    $('#classesWarning').html('');
                     isClusterizationEnd = true;
                     if(isGroopingEnd === true) $('#showOnMap').removeAttr('disabled');
                 }
