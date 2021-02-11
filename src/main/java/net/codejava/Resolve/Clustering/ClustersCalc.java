@@ -32,6 +32,7 @@ public class ClustersCalc {
                 rewritePhases.add(phaseCalculation);
             }
             arrayPhase = executorService.invokeAll(rewritePhases);
+            ResolveForm.arrayPhase = arrayPhase;
         }
         ArrayData arrayTypicalPath = new ArrayData();
         List<Future<Group>> arrayGroup;

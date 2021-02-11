@@ -27,6 +27,9 @@ public class CalcModulesController {
     @GetMapping("/resolveModules")
     public String resolve(Model model) {
         ResolveForm.addAllToModel(model);
+        ResolveForm.arrayPhase = null;
+        ResolveForm.arrayTypical = null;
+        ResolveForm.arrayGroup = null;
         return "resolve/resolveModules";
     }
     @GetMapping("/getPhaseFragment")
@@ -34,15 +37,21 @@ public class CalcModulesController {
         return "fragments/phaseFragment";
     }
     @GetMapping("/getClusterFragment")
-    public String getClusterFragment() {
+    public String getClusterFragment(Model model) {
+        if (ResolveForm.arrayPhase == null)
+            model.addAttribute("phaseWarning", "Фазы/амплитуды не расчитаны. Данные из исходного файла будут использоваться, как данные фаз/амплитуд");
         return "fragments/clusterFragment";
     }
     @GetMapping("/getShowGrFragment")
-    public String getShowGrFragment() {
+    public String getShowGrFragment(Model model) {
+        if (ResolveForm.arrayGroup == null)
+            model.addAttribute("warning", "Нет данных для отображения. Необходимо выполнить расчеты последовательно");
         return "fragments/showGrFragment";
     }
     @GetMapping("/getClassesFragment")
-    public String getClassesFragment() {
+    public String getClassesFragment(Model model) {
+        if (ResolveForm.arrayTypical == null)
+            model.addAttribute("warning", "Перед данным расчетом необходимо выполнить кластеризацию");
         return "fragments/classesFragment";
     }
 

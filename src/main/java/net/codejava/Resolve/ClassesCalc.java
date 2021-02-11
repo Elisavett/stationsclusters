@@ -5,6 +5,7 @@ import net.codejava.Resolve.Clustering.GroupAllocation1;
 import net.codejava.Resolve.Model.Corr;
 import net.codejava.Resolve.Model.Group;
 import net.codejava.Resolve.Model.ResolveForm;
+import net.codejava.Resolve.PhaseCalc.RewritePhase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class ClassesCalc {
         stationCount = ResolveForm.TempData.length;
 
         List<Future<Corr>> arrayCorr;
+
 
         List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
         for (int i = 0; i < stationCount; i++) {
