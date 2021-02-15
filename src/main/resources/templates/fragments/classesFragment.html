@@ -46,9 +46,10 @@
                 url: '/countClasses',
                 data: "classCoef=" + classCoef,
                 success: function () {
+                    //Отображени файлы для скачивания
                     $('#loaderClasses').attr("hidden", true);
                     $('#fileFinalGroupsDownload').attr("hidden", false);
-                    $('.showGroups').removeAttr('disabled');
+                    //Расчет выполнен - убираем предупреждение
                     $('#groupWarning').html('');
                 }
             });

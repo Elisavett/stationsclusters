@@ -97,9 +97,9 @@
             $("#windowLeft").attr("value", null);
             $("#windowRight").attr("value",null);
 
-            //Не понимаю что дабивалась этой строчкой
+            //Не понимаю что добивалась этой строчкой
             // var type = $('#dataType').val();
-           // $('input[name="dataType"][value='+type+']').prop('checked', true);
+            // $('input[name="dataType"][value='+type+']').prop('checked', true);
         }
         else{
             $(".dataClass").attr("hidden",true);
@@ -161,10 +161,11 @@
                 + "&isWindowManually=" + isWindowManually + "&windowLeft=" + windowLeft
                 + "&windowRight=" + windowRight,
             success: function () {
+                //Скрываем значок загрузки
                 $('#loaderPhase').attr("hidden", true);
+                //Отображени файлы для скачивания
                 $('#fileDownload').attr("hidden", false);
-                $('.clustersCalc').removeAttr('disabled');
-                $('.classesCalc').removeAttr('disabled');
+                //Расчет выполнен - убираем предупреждение
                 $('#clusterWarning').html('');
             }
         });

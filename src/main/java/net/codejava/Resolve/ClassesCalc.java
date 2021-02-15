@@ -36,7 +36,7 @@ public class ClassesCalc {
         arrayCorr = executorService.invokeAll(corrThreadTasks);
 
         //блок выделения групп
-        GroupAllocation1 allocationThread = new GroupAllocation1(true, stationCount, ResolveForm.classCoef, arrayCorr, executorService);
+        GroupAllocation1 allocationThread = new GroupAllocation1(stationCount, ResolveForm.classCoef, arrayCorr, executorService);
         ResolveForm.arrayGroup = allocationThread.run();
     }
 }

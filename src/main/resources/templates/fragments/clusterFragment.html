@@ -72,18 +72,22 @@
             $('#error-element').attr("hidden", false);
         }
         else {
+            //Отображаем значок загузки
             $('#loaderCluster').attr("hidden", false);
             $.ajax({
                 url: '/countClusters',
                 data: "corr=" + corr + "&isAccurate=" + isAccurate
                     + "&sigma=" + sigma,
                 success: function () {
+                    //Скрываем значок загрузки
                     $('#loaderCluster').attr("hidden", true);
+                    //Отображени файлы для скачивания
                     $('#fileTypDownload').attr("hidden", false);
                     $('#fileGroupsDownload').attr("hidden", false);
-                    $('.showGroups').removeAttr('disabled');
+                    ////Расчет выполнен - убираем предупреждение
                     $('#classesWarning').html('');
                     isClusterizationEnd = true;
+                    //Управление кликабельностью кнопки для отображения карты
                     if(isGroopingEnd === true) $('#showOnMap').removeAttr('disabled');
                 }
             });

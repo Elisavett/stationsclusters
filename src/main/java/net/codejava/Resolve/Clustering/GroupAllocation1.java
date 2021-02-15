@@ -19,15 +19,13 @@ public class GroupAllocation1 {
     List<Future<Corr>> arrayCorr;
     ExecutorService executorService;
     double[] maxes;
-    boolean isClassification;
 
-    public GroupAllocation1(boolean isClassification, int stationCount, double g, List<Future<Corr>> arrayCorr, ExecutorService executorService) {
+    public GroupAllocation1(int stationCount, double g, List<Future<Corr>> arrayCorr, ExecutorService executorService) {
         this.stationCount = stationCount;
         this.g = g;
         this.arrayCorr = arrayCorr;
         this.executorService = executorService;
         this.maxes = new double[stationCount];
-        this.isClassification = isClassification;
     }
 
     public List<Future<Group>> run() throws ExecutionException, InterruptedException {
