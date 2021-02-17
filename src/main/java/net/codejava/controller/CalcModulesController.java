@@ -193,6 +193,24 @@ public class CalcModulesController {
                 .contentLength(stringPhase.length()) //
                 .body(stringPhase);
     }
+    @RequestMapping("/downloadGeographicCharacters")
+    public ResponseEntity<String> downloadGeographicCharacters() throws IOException, ExecutionException, InterruptedException {
+
+        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
+        String stringPhase = "";
+        for (int i = 0; i < ResolveForm.geoChars.size(); i++) {
+            stringPhase += (ResolveForm.geoChars.get(i) + "\n");
+        }
+
+        return ResponseEntity.ok()
+                // Content-Disposition
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "groupGeoCharacteristics.txt")
+                // Content-Type
+                .contentType(mediaType)
+                // Contet-Length
+                .contentLength(stringPhase.length()) //
+                .body(stringPhase);
+    }
 
 
 }

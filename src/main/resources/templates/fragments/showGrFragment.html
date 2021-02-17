@@ -24,6 +24,10 @@
             <div id="fileJSONDownload" class="col-sm-3" hidden="true" >
                 <a href="/downloadJSON">Скачать файл</a>
             </div>
+            <div id="fileGeoDownload" class="col-sm-3" hidden="true" >
+                <a href="/downloadGeographicCharacters">Геогр. хар-ки групп</a>
+            </div>
+
         </div>
 </div>
 
@@ -45,6 +49,7 @@
                     isGroopingEnd = true;
                     $('#loaderGroup').attr("hidden", true);
                     $('#fileJSONDownload').attr("hidden", false);
+                    $('#fileGeoDownload').attr("hidden", false);
                     if(isClusterizationEnd === true) $('#showOnMap').removeAttr('disabled');
                 }
             });

@@ -14,6 +14,7 @@ public class ResolveForm {
     public static List<Future<Phase>> arrayTypical;
     public static List<Future<Group>> arrayGroup;
     public static ArrayList<String> json;
+    public static ArrayList<String> geoChars;
     public static boolean groupCross = false;
     public static String stringPhase;
     public static int groupNum;

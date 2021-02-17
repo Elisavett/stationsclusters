@@ -157,7 +157,7 @@ public class Start {
 
         // объединяю станции в группы, дописываю координаты
         //Merger merger = new Merger(stationCount, arrayGroup, ResolveForm.minGroupSize);
-        Merger1 merger = new Merger1(stationCount, arrayGroup, ResolveForm.minGroupSize);
+        Merger merger = new Merger(stationCount, arrayGroup, ResolveForm.minGroupSize);
         ArrayList<String> groupAndCoordinates = merger.run();
 
 //        System.out.println(System.currentTimeMillis() - start);

@@ -16,7 +16,7 @@ import java.util.concurrent.Future;
  *
  * @version 1.0
  */
-public class Merger1 {
+public class Merger {
     private static final Gson GSON = new GsonBuilder().create();
     ArrayList<GroupLine> groupList = new ArrayList<>();
     TreeSet<GroupLine> sortGroupLine;
@@ -26,7 +26,7 @@ public class Merger1 {
     List<Future<Group>> arrayGroup;
     int minGroupsSize;
 
-    public Merger1(int stationCount, List<Future<Group>> arrayGroup, int minGroupsSize) {
+    public Merger(int stationCount, List<Future<Group>> arrayGroup, int minGroupsSize) {
         this.stationCount = stationCount;
         this.arrayGroup = arrayGroup;
         this.minGroupsSize = minGroupsSize;
@@ -83,22 +83,48 @@ public class Merger1 {
     public ArrayList<String> getJson() {
         //формирую json файл
         ArrayList<String> json = new ArrayList<>();
+        ArrayList<String> geoChars = new ArrayList<>();
         int numberGroup = 1;
         for (GroupLine gr : sortGroupLine) {
+            double max_lat = -90;
+            double max_long = -180;
+            double min_lat = 90;
+            double min_long = 180;
+            double center_lat = 0;
+            double center_long = 0;
             if(gr.getGroup().size() >= minGroupsSize) {
                 for (int j : gr.getGroup()) {
+                    double lat = coordinatesSourceTXT[0][j];
+                    double _long = coordinatesSourceTXT[1][j];
+                    //Для вывода географических характеристик
+                    if(lat > max_lat) max_lat = lat;
+                    if(lat < min_lat) min_lat = lat;
+                    if(_long > max_long) max_long = _long;
+                    if(_long < min_long) min_long = _long;
                         groupAndCoordinates = new GroupAndCoordinates(
-                                coordinatesSourceTXT[0][j],
-                                coordinatesSourceTXT[1][j],
+                                lat,
+                                _long,
                                 coordinatesSourceTXT[2][j],
                                 numberGroup,
                                 false);
                         String jsonData = GSON.toJson(groupAndCoordinates);
                         json.add(jsonData);
                     }
+                //Для вывода географических характеристик
+                GeographicCharacters geographicCharacters = new GeographicCharacters(
+                        Math.round(10*(min_lat+max_lat)/2)/10,
+                        Math.round(10*(min_long+max_long)/2)/10,
+                        max_lat,
+                        numberGroup,
+                        max_long,
+                        min_lat,
+                        min_long
+                );
+                geoChars.add(GSON.toJson(geographicCharacters));
                 numberGroup++;
             }
         }
+        ResolveForm.geoChars = geoChars;
         ResolveForm.groupNum = numberGroup-1;
         for (GroupLine gr : sortGroupLine) {
             if(gr.getGroup().size() < minGroupsSize) {
