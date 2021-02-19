@@ -4,7 +4,6 @@ import net.codejava.Resolve.ClassesCalc;
 import net.codejava.Resolve.Clustering.ClustersCalc;
 import net.codejava.Resolve.Model.Phase;
 import net.codejava.Resolve.Model.ResolveForm;
-import net.codejava.Resolve.PhaseCalc.FrequencyAnalysis;
 import net.codejava.Resolve.PhaseCalc.PhaseAmplCalc;
 import net.codejava.Resolve.PhaseCalc.WindowCalculation;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
@@ -73,7 +72,7 @@ public class CalcModulesController {
         model.addAttribute("window", ResolveForm.windowDelta);
         return "additionals/windowChart";
     }
-    @GetMapping("/frequencyAnalysis")
+    /*@GetMapping("/frequencyAnalysis")
     public String frequencyAnalysis(Model model) throws ExecutionException, InterruptedException {
         List<Future<Phase>> arrayWindows;
         int processors = Runtime.getRuntime().availableProcessors();
@@ -89,7 +88,7 @@ public class CalcModulesController {
         model.addAttribute("chartData", WindowChart.chartData);
         model.addAttribute("window", ResolveForm.windowDelta);
         return "additionals/windowChart";
-    }
+    }*/
 
     @GetMapping("/countPhase")
     @ResponseStatus(value = HttpStatus.OK)
