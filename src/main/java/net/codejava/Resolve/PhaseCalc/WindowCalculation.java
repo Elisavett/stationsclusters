@@ -62,32 +62,6 @@ public class WindowCalculation extends PhaseCalculationAbstract implements Calla
         }
 
     }
-    /*@Override
-    public Integer call(){
-        //int delta = 1;
-        LoadFunction();
-        FFTCalculation();
-        imagFTT = imag.clone();
-        realFTT = real.clone();
-        while (true) {
-            imag = imagFTT.clone();
-            real = realFTT.clone();
-            Filtration(leftLimit, rightLimit);
-            //Filtration(center-delta, center+delta);
-            IFFTCalculation();
-            phase = new double[realFTT.length];
-            PhaseCalculation();
-            PhaseLinking();
-            //if(isPhaseBroken()){
-            if (isPhaseUnbroken()) {
-                return (int)rightLimit-center;
-                //return delta-1;
-            }
-            leftLimit++;
-            rightLimit--;
-            //delta++;
-        }
-    }*/
 
 }
 

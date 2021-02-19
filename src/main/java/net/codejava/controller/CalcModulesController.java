@@ -2,8 +2,11 @@ package net.codejava.controller;
 
 import net.codejava.Resolve.ClassesCalc;
 import net.codejava.Resolve.Clustering.ClustersCalc;
+import net.codejava.Resolve.Model.Phase;
 import net.codejava.Resolve.Model.ResolveForm;
+import net.codejava.Resolve.PhaseCalc.FrequencyAnalysis;
 import net.codejava.Resolve.PhaseCalc.PhaseAmplCalc;
+import net.codejava.Resolve.PhaseCalc.WindowCalculation;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
 import net.codejava.Resolve.Start;
 import net.codejava.Resolve.toMap;
@@ -20,7 +23,11 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Controller
 public class CalcModulesController {
@@ -62,6 +69,23 @@ public class CalcModulesController {
         boolean assimetricWindow = false;
         if (Integer.parseInt(isWindowManually) == 2) assimetricWindow = true;
         WindowChart.getWindowsChartData(assimetricWindow);
+        model.addAttribute("chartData", WindowChart.chartData);
+        model.addAttribute("window", ResolveForm.windowDelta);
+        return "additionals/windowChart";
+    }
+    @GetMapping("/frequencyAnalysis")
+    public String frequencyAnalysis(Model model) throws ExecutionException, InterruptedException {
+        List<Future<Phase>> arrayWindows;
+        int processors = Runtime.getRuntime().availableProcessors();
+        ExecutorService executorService = Executors.newFixedThreadPool(processors);
+        List<FrequencyAnalysis> windowCalculationTasks = new ArrayList<>();
+        for (int i = 0; i < ResolveForm.TempData.length; i++) {
+            double[] temp = ResolveForm.TempData[i].clone();
+            FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis(temp);
+            windowCalculationTasks.add(frequencyAnalysis);
+        }
+        //выполняем все задачи. главный поток ждет
+        //arrayWindows = executorService.invokeAll(windowCalculationTasks);
         model.addAttribute("chartData", WindowChart.chartData);
         model.addAttribute("window", ResolveForm.windowDelta);
         return "additionals/windowChart";
@@ -197,9 +221,14 @@ public class CalcModulesController {
     public ResponseEntity<String> downloadGeographicCharacters() throws IOException, ExecutionException, InterruptedException {
 
         MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
-        String stringPhase = "";
+        String stringPhase = "1.номер_группы 2.широта_центра 3.долгота_центра 4.макс_широта 5.мин_широта 6.макс_долгота 7.мин_долгота  \n";
         for (int i = 0; i < ResolveForm.geoChars.size(); i++) {
-            stringPhase += (ResolveForm.geoChars.get(i) + "\n");
+            stringPhase += ((int)ResolveForm.geoChars.get(i)[0] + " ");
+            for(int j = 1; j < ResolveForm.geoChars.get(i).length; j++)
+            {
+                stringPhase += (ResolveForm.geoChars.get(i)[j] + " ");
+            }
+            stringPhase += "\n";
         }
 
         return ResponseEntity.ok()

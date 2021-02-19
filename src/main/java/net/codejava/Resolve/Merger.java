@@ -110,21 +110,21 @@ public class Merger {
                         String jsonData = GSON.toJson(groupAndCoordinates);
                         json.add(jsonData);
                     }
+                double[] geoChar = new double[7];
+                geoChar[1] = Math.round(10*(min_lat+max_lat)/2)/10.;
+                geoChar[2] = Math.round(10*(min_long+max_long)/2)/10.;
+                geoChar[3] = max_lat;
+                geoChar[4] = min_lat;
+                geoChar[5] = max_long;
+                geoChar[6] = min_long;
+                geoChar[0] = numberGroup;
+
                 //Для вывода географических характеристик
-                GeographicCharacters geographicCharacters = new GeographicCharacters(
-                        Math.round(10*(min_lat+max_lat)/2)/10,
-                        Math.round(10*(min_long+max_long)/2)/10,
-                        max_lat,
-                        numberGroup,
-                        max_long,
-                        min_lat,
-                        min_long
-                );
-                geoChars.add(GSON.toJson(geographicCharacters));
+                ResolveForm.geoChars.add(geoChar);
                 numberGroup++;
             }
         }
-        ResolveForm.geoChars = geoChars;
+
         ResolveForm.groupNum = numberGroup-1;
         for (GroupLine gr : sortGroupLine) {
             if(gr.getGroup().size() < minGroupsSize) {
