@@ -39,7 +39,8 @@ public class WindowChart {
         }
         windows.sort((o1, o2) -> o1-o2);
         int count = 1;
-        int j = 1;
+        int j = 0;
+        if(assimetric) j = 1;
         int stationsNum = stationCount;
         int prevCount = 0;
         int bestWindow = 0;
