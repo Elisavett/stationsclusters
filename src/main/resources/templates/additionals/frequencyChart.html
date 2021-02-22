@@ -1,0 +1,37 @@
+
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
+    var real_data = /*[[${chartData}]]*/'noValue';
+    var Title = /*[[${title}]]*/'noValue';
+    var X_name = /*[[${X_name}]]*/'noValue';
+    var Y_name = /*[[${Y_name}]]*/'noValue';
+    var id = /*[[${id}]]*/'noValue';
+
+    $(document).ready(function() {
+        google.charts.load('current', {
+            packages : [ 'corechart', 'bar' ]
+        });
+        google.charts.setOnLoadCallback(drawColumnChart);
+    });
+
+    function drawColumnChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', X_name);
+        data.addColumn('number', Y_name);
+        Object.keys(real_data).forEach(function(key) {
+            data.addRow([ key, real_data[key] ]);
+        });
+        var options = {
+            title : Title,
+            hAxis : {
+                title : X_name,
+            },
+            vAxis : {
+                title : Y_name
+            }
+        };
+        var chart = new google.visualization.ColumnChart(document
+            .getElementById(id+'Chart'));
+        chart.draw(data, options);
+    }
+
+</script>

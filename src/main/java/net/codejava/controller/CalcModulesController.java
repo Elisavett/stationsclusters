@@ -4,6 +4,7 @@ import net.codejava.Resolve.ClassesCalc;
 import net.codejava.Resolve.Clustering.ClustersCalc;
 import net.codejava.Resolve.Model.Phase;
 import net.codejava.Resolve.Model.ResolveForm;
+import net.codejava.Resolve.PhaseCalc.FrequencyAnalysis;
 import net.codejava.Resolve.PhaseCalc.PhaseAmplCalc;
 import net.codejava.Resolve.PhaseCalc.WindowCalculation;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -37,6 +40,11 @@ public class CalcModulesController {
         ResolveForm.arrayTypical = null;
         ResolveForm.arrayGroup = null;
         return "resolve/resolveModules";
+    }
+
+    @GetMapping("/getFrequencyFragment")
+    public String getFrequencyFragment() {
+        return "fragments/frequencyAnalysisFragment";
     }
     @GetMapping("/getPhaseFragment")
     public String getPhaseFragment() {
@@ -72,23 +80,49 @@ public class CalcModulesController {
         model.addAttribute("window", ResolveForm.windowDelta);
         return "additionals/windowChart";
     }
-    /*@GetMapping("/frequencyAnalysis")
-    public String frequencyAnalysis(Model model) throws ExecutionException, InterruptedException {
-        List<Future<Phase>> arrayWindows;
-        int processors = Runtime.getRuntime().availableProcessors();
-        ExecutorService executorService = Executors.newFixedThreadPool(processors);
-        List<FrequencyAnalysis> windowCalculationTasks = new ArrayList<>();
-        for (int i = 0; i < ResolveForm.TempData.length; i++) {
-            double[] temp = ResolveForm.TempData[i].clone();
-            FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis(temp);
-            windowCalculationTasks.add(frequencyAnalysis);
+
+    @GetMapping("/frequencyAnalysis")
+    public String frequencyAnalysis(Model model, @RequestParam Integer station) throws ExecutionException, InterruptedException {
+        double[] temp = ResolveForm.TempData[station].clone();
+        FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis(temp);
+        ResolveForm.frequencyAnalysis = frequencyAnalysis.spectorCalculation();
+        model.addAttribute("chartData", ResolveForm.frequencyAnalysis);
+        model.addAttribute("X_name", "Отсчеты");
+        model.addAttribute("Y_name", "Модуль спектра");
+        model.addAttribute("title", "Частотный спектр (станция №" + station + ")" );
+        model.addAttribute("id", "frequency");
+        return "additionals/frequencyChart";
+    }
+    @GetMapping("/SKOAnalysis")
+    public String SKOAnalysis(Model model) throws ExecutionException, InterruptedException {
+        //double[] temp = ResolveForm.TempData[station].clone();
+        ResolveForm.averageTemps = new double[ResolveForm.TempData.length];
+        for(int i = 0; i < ResolveForm.TempData.length; i++)
+        {
+            ResolveForm.averageTemps[i] = 0;
+            for(int j = 0; j < ResolveForm.TempData[i].length; j++){
+                ResolveForm.averageTemps[i] += ResolveForm.TempData[i][j];
+            }
+            ResolveForm.averageTemps[i] = ResolveForm.averageTemps[i] / ResolveForm.TempData[i].length;
         }
-        //выполняем все задачи. главный поток ждет
-        //arrayWindows = executorService.invokeAll(windowCalculationTasks);
-        model.addAttribute("chartData", WindowChart.chartData);
-        model.addAttribute("window", ResolveForm.windowDelta);
-        return "additionals/windowChart";
-    }*/
+        LinkedHashMap<String, Double> SKO = new LinkedHashMap<>();
+        for(int i = 0; i < ResolveForm.averageTemps.length; i++)
+        {
+            double sko_temp = 0;
+            for(int j = 0; j < ResolveForm.TempData[i].length; j++){
+                sko_temp =+ Math.pow((ResolveForm.TempData[i][j] - ResolveForm.averageTemps[i]), 2);
+            }
+            sko_temp = sko_temp / (ResolveForm.averageTemps.length - 1);
+            SKO.put(String.valueOf(i), Math.round(100*Math.sqrt(sko_temp))/100.);
+        }
+        model.addAttribute("X_name", "Станции");
+        model.addAttribute("Y_name", "Значение СКО");
+        model.addAttribute("title", "Среднеквадратическое отклонение по станциям");
+        model.addAttribute("id", "sko");
+        model.addAttribute("chartData", SKO);
+        ResolveForm.SKO = SKO;
+        return "additionals/frequencyChart";
+    }
 
     @GetMapping("/countPhase")
     @ResponseStatus(value = HttpStatus.OK)
@@ -233,6 +267,48 @@ public class CalcModulesController {
         return ResponseEntity.ok()
                 // Content-Disposition
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "groupGeoCharacteristics.txt")
+                // Content-Type
+                .contentType(mediaType)
+                // Contet-Length
+                .contentLength(stringPhase.length()) //
+                .body(stringPhase);
+    }
+    @RequestMapping("/downloadFrequency")
+    public ResponseEntity<String> downloadFrequency() throws IOException, ExecutionException, InterruptedException {
+
+        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
+        String stringPhase = "";
+
+        for(int i = 1; i< ResolveForm.frequencyAnalysis.size(); i++) {
+            stringPhase += i + " " + ResolveForm.frequencyAnalysis.get(String.valueOf(i));
+            stringPhase += "\n";
+        }
+
+
+        return ResponseEntity.ok()
+                // Content-Disposition
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "frequencyAnalysis.txt")
+                // Content-Type
+                .contentType(mediaType)
+                // Contet-Length
+                .contentLength(stringPhase.length()) //
+                .body(stringPhase);
+    }
+    @RequestMapping("/downloadSKO")
+    public ResponseEntity<String> downloadSKO() throws IOException, ExecutionException, InterruptedException {
+
+        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
+        String stringPhase = "";
+
+        for(int i = 1; i< ResolveForm.SKO.size(); i++) {
+            stringPhase += i + " " + ResolveForm.SKO.get(String.valueOf(i));
+            stringPhase += "\n";
+        }
+
+
+        return ResponseEntity.ok()
+                // Content-Disposition
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "SKO.txt")
                 // Content-Type
                 .contentType(mediaType)
                 // Contet-Length

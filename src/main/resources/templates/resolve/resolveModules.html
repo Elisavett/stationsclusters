@@ -162,6 +162,12 @@
         </form>
         <form th:if="${message}=='Период выбран верно' OR ${message}=='Данные не прошли проверку'" th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form" >
             <div class="form-group row">
+                <div class="col-sm-12">
+                    <input type="checkbox" name="frequencyAnalisis" class="frequencyAnalisis" value="true">&nbsp;&nbsp;Частотный анализ
+                </div>
+            </div>
+            <div id="frequencyAnalisis"></div>
+            <div class="form-group row">
                    <div class="col-sm-12">
                         <input type="checkbox" name="phaseCalc" class="phaseCalc" value="true">&nbsp;&nbsp;Расчет фазы / амплитуды
                    </div>
@@ -201,7 +207,28 @@
     var clustersCalc = false;
     var classesCalc = false;
     var showGroups = false;
+    var frequencyAnalisis = false;
+
     window.onload = function (){
+        $('.frequencyAnalisis').on('click', function() {
+            if(!frequencyAnalisis) {
+                frequencyAnalisis = true;
+                $.ajax({
+                    url: '/getFrequencyFragment',
+                    contentType: 'text/html',
+                    dataType: 'html',
+                    success: function(html){
+                        $('#frequencyAnalisis').append(html);
+                    }
+                });
+
+            }
+            else{
+                frequencyAnalisis = false;
+                $('#frequencyAnalisis').html('');
+            }
+
+        });
         $('.phaseCalc').on('click', function() {
             if(!phaseCalc) {
                 phaseCalc = true;

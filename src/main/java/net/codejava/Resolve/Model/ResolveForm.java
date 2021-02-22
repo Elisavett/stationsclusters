@@ -3,6 +3,8 @@ package net.codejava.Resolve.Model;
 import org.springframework.ui.Model;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -19,6 +21,7 @@ public class ResolveForm {
     public static String stringPhase;
     public static int groupNum;
     public static double[][] coordData;
+    public static double[] averageTemps;
     public static String tempFileName;
     public static String coordFileName;
     public static String periodStart = "1955-01-01";
@@ -38,6 +41,8 @@ public class ResolveForm {
     public static boolean isForPhases = true;
     public static boolean classification = false;
     public static boolean isAccurate = true;
+    public static LinkedHashMap<String, Double> frequencyAnalysis;
+    public static LinkedHashMap<String, Double> SKO;
 
     public static void addAllToModel(Model model){
         model.addAttribute("tempers", ResolveForm.tempFileName);

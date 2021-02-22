@@ -1,0 +1,95 @@
+<div class="optional">
+    <div class="dataClass">
+        <div class="form-group row">
+
+
+            <h6 class="col-sm-4"><u>Среднеквадратическое отклонение</u></h6>
+
+                <span id="skoChartButton" class="col-sm-3">
+                        <a class="btn btn-primary" href="#underSKOchart" role="button">Показать график</a>
+                    </span>
+
+
+            <div class="col-sm-12">
+                <div id="fileSKODownload" class="col-sm-3" hidden="true" >
+                    <a href="/downloadSKO">Скачать данные графика</a>
+                </div>
+            </div>
+        </div>
+
+        <div hidden="true" id="skoChartPlace" style="min-height: 240px">
+            <div class="frequencyLoader" style="margin: 0 auto;"></div>
+            <div id="skoChart"></div>
+        </div>
+    </div>
+    <a name="underSKOchart"></a>
+    <div class="dataClass">
+        <div class="form-group row">
+            <h6 class="col-sm-12 col-form-label"><u>Разложение в спектр:</u>
+            </h6>
+            <div style="color: red" hidden class="col-sm-5" id="nostationerror"></div>
+            <div class="col-sm-12">
+                    <label class="col-sm-2">Выберете станцию</label>
+                    <input required class="col-sm-1" type="number" name="station" min="1" id="station">
+                    <span id="frquencyChartButton" class="col-sm-3">
+                        <a class="btn btn-primary" href="#underFRchart" role="button">Показать график</a>
+                    </span>
+                <div id="fileFRDownload" class="col-sm-3" hidden="true" >
+                    <a href="/downloadFrequency">Скачать данные графика</a>
+                </div>
+            </div>
+        </div>
+
+        <div hidden="true" id="frequencyChartPlace" style="min-height: 280px">
+            <div class="frequencyLoader" style="margin: 0 auto;"></div>
+            <div id="frequencyChart"></div>
+        </div>
+
+        <a name="underFRchart"></a>
+    </div>
+</div>
+<a name="PhaseFile"></a>
+<script>
+    var real_data;
+    $('#skoChartButton').click(function() {
+        $('#skoChartPlace').attr("hidden", false);
+
+        $.ajax({
+            url: '/SKOAnalysis',
+            contentType: 'text/html',
+            dataType: 'html',
+            success: function (html) {
+                real_data = html;
+                $('#skoChart').append(html);
+                //Отображени файлы для скачивания
+                $('#fileSKODownload').attr("hidden", false);
+            }
+        })
+    });
+    $('#frquencyChartButton').click(function() {
+
+
+        var data = $("input[type=number][name=station]").val();
+        if (data!=='') {
+            $('#frequencyChartPlace').attr("hidden", false);
+            $.ajax({
+                url: '/frequencyAnalysis',
+                contentType: 'text/html',
+                dataType: 'html',
+                data: "station=" + data,
+                success: function (html) {
+                    real_data = html;
+                    $('#frequencyChart').append(html);
+                    //Отображени файлы для скачивания
+                    $('#fileFRDownload').attr("hidden", false);
+                    $('#nostationerror').html('');
+                    $("#nostationerror").attr("hidden",true);
+                }
+            })
+        }
+        else {
+            $('#nostationerror').html('необходимо выбрать станцию');
+            $("#nostationerror").attr("hidden",false);
+        }
+    });
+</script>
