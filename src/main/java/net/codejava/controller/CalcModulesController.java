@@ -91,6 +91,33 @@ public class CalcModulesController {
         model.addAttribute("Y_name", "Модуль спектра");
         model.addAttribute("title", "Частотный спектр (станция №" + station + ")" );
         model.addAttribute("id", "frequency");
+        model.addAttribute("chartType", "corechart");
+        return "additionals/frequencyChart";
+    }
+    @GetMapping("/temperatureChart")
+    public String temperatureChart(Model model, @RequestParam Integer station) throws ExecutionException, InterruptedException {
+        double[] temp = ResolveForm.TempData[station].clone();
+        LinkedHashMap<String, Double> temperatures = new LinkedHashMap<>();
+        double averageT = 0;
+        for(int i = 0; i < temp.length; i++)
+        {
+            temperatures.put(String.valueOf(i), Math.round(100*temp[i])/100.);
+            averageT += temp[i];
+        }
+        averageT = Math.round(100*averageT / temp.length)/100.;
+        double sko_temp = 0;
+        for (double v : temp) {
+            sko_temp =+ Math.pow((v - averageT), 2);
+        }
+        sko_temp = Math.round(100*Math.sqrt(sko_temp / (temp.length - 1)))/100.;
+        model.addAttribute("chartData", temperatures);
+        model.addAttribute("additionalData", new double[]{averageT, sko_temp});
+        model.addAttribute("X_name", "Отсчеты");
+        model.addAttribute("Y_name", "Значение температуры");
+        model.addAttribute("additionalY_names", new String[]{"Средняя", "СКО"});
+        model.addAttribute("title", "Температура" );
+        model.addAttribute("id", "temperature");
+        model.addAttribute("chartType", "line");
         return "additionals/frequencyChart";
     }
     @GetMapping("/SKOAnalysis")
@@ -120,6 +147,7 @@ public class CalcModulesController {
         model.addAttribute("title", "Среднеквадратическое отклонение по станциям");
         model.addAttribute("id", "sko");
         model.addAttribute("chartData", SKO);
+        model.addAttribute("chartType", "corechart");
         ResolveForm.SKO = SKO;
         return "additionals/frequencyChart";
     }
