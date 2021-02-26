@@ -10,13 +10,13 @@ public class FrequencyAnalysis extends PhaseCalculationAbstract {
     public FrequencyAnalysis(double[] temp){
         this.temp = temp;
     }
-    public LinkedHashMap<String, Double> spectorCalculation(){
+    public LinkedHashMap<Integer, Double> spectorCalculation(){
         LoadFunction();
         FFTCalculation();
-        LinkedHashMap<String, Double> graphData = new LinkedHashMap<>();
-        graphData.put("1", 0.);
+        LinkedHashMap<Integer, Double> graphData = new LinkedHashMap<>();
+        graphData.put(1, 0.);
         for (int i = 1; i < real.length; i++) {
-            graphData.put(String.valueOf(i+1), Math.round(100*Math.sqrt(imag[i]*imag[i] + real[i]*real[i]))/100.);
+            graphData.put(i+1, Math.round(100*Math.sqrt(imag[i]*imag[i] + real[i]*real[i]))/100.);
         }
         return graphData;
     }

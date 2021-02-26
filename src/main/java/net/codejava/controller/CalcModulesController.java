@@ -132,7 +132,7 @@ public class CalcModulesController {
             }
             ResolveForm.averageTemps[i] = ResolveForm.averageTemps[i] / ResolveForm.TempData[i].length;
         }
-        LinkedHashMap<String, Double> SKO = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Double> SKO = new LinkedHashMap<>();
         for(int i = 0; i < ResolveForm.averageTemps.length; i++)
         {
             double sko_temp = 0;
@@ -140,7 +140,7 @@ public class CalcModulesController {
                 sko_temp =+ Math.pow((ResolveForm.TempData[i][j] - ResolveForm.averageTemps[i]), 2);
             }
             sko_temp = sko_temp / (ResolveForm.averageTemps.length - 1);
-            SKO.put(String.valueOf(i), Math.round(100*Math.sqrt(sko_temp))/100.);
+            SKO.put(i+1, Math.round(100*Math.sqrt(sko_temp))/100.);
         }
         model.addAttribute("X_name", "Станции");
         model.addAttribute("Y_name", "Значение СКО");

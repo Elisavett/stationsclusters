@@ -18,7 +18,7 @@
 
     function drawColumnChart() {
         var data = new google.visualization.DataTable();
-        data.addColumn('string', X_name);
+        data.addColumn('number', X_name);
         data.addColumn('number', Y_name);
         if(additionalY_names !== 'noValue')
         {
@@ -27,14 +27,14 @@
             }
         }
         Object.keys(real_data).forEach(function(key) {
-            var dataArray = [key, real_data[key]];
+            var dataArray = [Number(key), Number(real_data[key])];
             if(additionalData!=='noValue') {
                 for(let i in additionalData){
                     if(typeof additionalData[i] == "object"){
-                       dataArray.push(additionalData[i][key]);
+                       dataArray.push(Number(additionalData[i][key]));
                     }
                     else {
-                        dataArray.push(additionalData[i]);
+                        dataArray.push(Number(additionalData[i]));
                     }
 
                 }
@@ -49,8 +49,9 @@
                 title : X_name,
             },
             explorer: {
-                maxZoomOut:2,
-                keepInBounds: true
+                //maxZoomOut:2,
+                keepInBounds: true,
+                axis: 'horizontal'
             }/*,
             vAxis : {
                 title : Y_name

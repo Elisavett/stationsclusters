@@ -41,8 +41,8 @@ public class ResolveForm {
     public static boolean isForPhases = true;
     public static boolean classification = false;
     public static boolean isAccurate = true;
-    public static LinkedHashMap<String, Double> frequencyAnalysis;
-    public static LinkedHashMap<String, Double> SKO;
+    public static LinkedHashMap<Integer, Double> frequencyAnalysis;
+    public static LinkedHashMap<Integer, Double> SKO;
 
     public static void addAllToModel(Model model){
         model.addAttribute("tempers", ResolveForm.tempFileName);
