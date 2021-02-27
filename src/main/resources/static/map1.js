@@ -328,10 +328,13 @@ window.onload = function () {
                     rects[coordinates[i].number_group][1] = coordinates[i].long;
                     rects[coordinates[i].number_group][2] = coordinates[i].lat;
                     rects[coordinates[i].number_group][3] = coordinates[i].long;
-                    clusterCordsSumm[coordinates[i].number_group] = [coordinates[i].lat, coordinates[i].long];
+                    clusterCordsSumm[coordinates[i].number_group] = [coordinates[i].lat, coordinates[i].lat, coordinates[i].long, coordinates[i].long];
                 } else {
-                    clusterCordsSumm[coordinates[i].number_group][0] += coordinates[i].lat;
-                    clusterCordsSumm[coordinates[i].number_group][1] += coordinates[i].long;
+                    if(coordinates[i].lat>clusterCordsSumm[coordinates[i].number_group][0]) clusterCordsSumm[coordinates[i].number_group][0]=coordinates[i].lat;
+                    else if(coordinates[i].lat<clusterCordsSumm[coordinates[i].number_group][1]) clusterCordsSumm[coordinates[i].number_group][1]=coordinates[i].lat;
+                    if(coordinates[i].long>clusterCordsSumm[coordinates[i].number_group][2]) clusterCordsSumm[coordinates[i].number_group][2]=coordinates[i].long;
+                    else if(coordinates[i].long<clusterCordsSumm[coordinates[i].number_group][3]) clusterCordsSumm[coordinates[i].number_group][3]=coordinates[i].long;
+
                     if (parseFloat(coordinates[i].lat) < parseFloat(rects[coordinates[i].number_group][0])) {
                         rects[coordinates[i].number_group][0] = coordinates[i].lat;
                     }
@@ -439,8 +442,8 @@ window.onload = function () {
             currentClusterNums.add(i);
 
             var trangleSize = 1.2;
-            var centerX = Math.floor(clusterCordsSumm[i][0]/circleClusters[i].getLength()*100)/100;
-            var centerY = Math.floor(clusterCordsSumm[i][1]/circleClusters[i].getLength()*100)/100;
+            var centerX = Math.floor((clusterCordsSumm[i][0]+clusterCordsSumm[i][1])/2*100)/100;
+            var centerY = Math.floor((clusterCordsSumm[i][2]+clusterCordsSumm[i][3])/2*100)/100;
             //Центры кластеров
             var centerTrangle = new ymaps.Polygon([[
                 // Координаты вершин внешней границы многоугольника.
