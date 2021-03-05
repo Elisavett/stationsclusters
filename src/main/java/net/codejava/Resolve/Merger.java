@@ -83,7 +83,7 @@ public class Merger {
     public ArrayList<String> getJson() {
         //формирую json файл
         ArrayList<String> json = new ArrayList<>();
-        ResolveForm.geoChars = new ArrayList<>();
+        ArrayList<String> geoChars = new ArrayList<>();
         int numberGroup = 1;
         for (GroupLine gr : sortGroupLine) {
             double max_lat = -90;
