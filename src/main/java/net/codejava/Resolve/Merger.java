@@ -83,15 +83,13 @@ public class Merger {
     public ArrayList<String> getJson() {
         //формирую json файл
         ArrayList<String> json = new ArrayList<>();
-        ArrayList<String> geoChars = new ArrayList<>();
+        ResolveForm.geoChars = new ArrayList<>();
         int numberGroup = 1;
         for (GroupLine gr : sortGroupLine) {
             double max_lat = -90;
             double max_long = -180;
             double min_lat = 90;
             double min_long = 180;
-            double center_lat = 0;
-            double center_long = 0;
             if(gr.getGroup().size() >= minGroupsSize) {
                 for (int j : gr.getGroup()) {
                     double lat = coordinatesSourceTXT[0][j];
