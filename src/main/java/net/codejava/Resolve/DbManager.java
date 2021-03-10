@@ -27,17 +27,18 @@ public class DbManager {
                                 "   t.temperature as temperature " +
                                 "from " +
                                 "   TemperatureFromBase as t " +
-                                "where (t.time) >= :weekAgo " +
+                                "where (t.time) >= :weekAgo and MOD(t.time, :period) = 0" +
                                 "order by t.time desc", Tuple.class)
                 .setParameter("weekAgo", ut)
+                .setParameter("period", period)
                 .getResultStream().collect(Collectors.toList());
         //Берем данные раз в час
         //list.removeIf(entry -> (long)entry.get(0)%3600!=0);
         Map<Date, Double> map = new TreeMap<>();
         for (Tuple item : list) {
-            if((long) item.get(0)%period==0) {
+           // if((long) item.get(0)%period==0) {
                 map.put(new Date((long) item.get(0) * 1000), (Double) item.get(1));
-            }
+            //}
         }
         return map;
     }
