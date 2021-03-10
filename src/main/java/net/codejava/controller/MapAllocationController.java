@@ -11,8 +11,10 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import com.google.gson.GsonBuilder;
 import net.codejava.Resolve.*;
@@ -28,6 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 
 /**
  *
@@ -49,7 +55,7 @@ public class MapAllocationController {
     }
 
     @GetMapping("/resolveAverage")
-    public String resolveAverage(Model model) {
+    public String resolveAverage() {
         return "resolve/resolveAverage";
     }
     @Transactional(timeout = 120)
@@ -58,7 +64,7 @@ public class MapAllocationController {
                                       @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,
                                       @RequestParam String radius,
                                       @RequestParam(value = "cordsType", required = false) String cordsType,
-                                      @RequestParam(value = "tempType", required = false) String tempType) throws IOException {
+                                      @RequestParam(value = "tempType", required = false) String tempType) {
 
 
         ResolveForm.tempsIsStationsOnY = Boolean.parseBoolean(tempType);
@@ -134,7 +140,7 @@ public class MapAllocationController {
         return "additionals/resolveHistory";
     }
     @RequestMapping("/downloadPhases")
-    public ResponseEntity<String> downloadFile1() throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<String> downloadFile1() throws ExecutionException, InterruptedException {
 
         MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
         String stringPhase = "";
@@ -161,7 +167,6 @@ public class MapAllocationController {
         ResolveForm.addAllToModel(model);
         return "resolve/resolve";
     }
-
     @PostMapping("/check")
     public String check(Model model, @RequestParam(value = "fileTemp", required = false) MultipartFile fileTemp,
                         @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,

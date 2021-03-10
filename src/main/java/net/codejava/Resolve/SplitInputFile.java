@@ -1,9 +1,7 @@
 package net.codejava.Resolve;
 
 import net.codejava.Exeptions.FileException;
-import net.codejava.Resolve.Model.ArrayData;
 import net.codejava.Resolve.Model.ResolveForm;
-import net.codejava.Resolve.Model.Temp;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -24,7 +22,7 @@ public class SplitInputFile {
     public static double[][] ReadFromFileSplitting(MultipartFile fileTemp, char filetype) throws FileException {
         try {
 
-            ArrayList<ArrayList<Double>> finalTemp = new ArrayList<ArrayList<Double>>();
+            ArrayList<ArrayList<Double>> finalTemp = new ArrayList<>();
             InputStream is = fileTemp.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             String line;
@@ -32,20 +30,20 @@ public class SplitInputFile {
 
             if(filetype == 't') isOnY = ResolveForm.tempsIsStationsOnY;
             if(filetype == 'c') isOnY = ResolveForm.coordsIsStationsOnY;
-            List<String> lines = new ArrayList<String>();
+            List<String> lines = new ArrayList<>();
             while ((line = reader.readLine()) != null) {
                 lines.add(line);
             }
 
             boolean flag = false;
-            for (int i = 0; i < lines.size(); i++) {
-                String[] parts = lines.get(i).split("\\s+");
+            for (String s : lines) {
+                String[] parts = s.split("\\s+");
                 int counter = 0;
                 for (int j = 0; j < parts.length; j++) {
                     if (!parts[j].equals("")) {
-                        if (!flag) finalTemp.add(new ArrayList<Double>());
+                        if (!flag) finalTemp.add(new ArrayList<>());
                         {
-                            if(parts[j].contains(",")) parts[j] = parts[j].replace(',', '.');
+                            if (parts[j].contains(",")) parts[j] = parts[j].replace(',', '.');
                             finalTemp.get(counter).add(Double.parseDouble(parts[j]));
                         }
                         counter++;
@@ -55,7 +53,7 @@ public class SplitInputFile {
                 counter = 0;
             }
             double[][] arrayTemp;
-            if (filetype=='t'?!isOnY:isOnY) {
+            if ((filetype == 't') != isOnY) {
                 arrayTemp = new double[finalTemp.size()][];
                 for (int k = 0; k < finalTemp.size(); k++) {
                     double[] tempArr = new double[finalTemp.get(k).size()];

@@ -20,7 +20,7 @@ public class AmplitudeCalculation extends PhaseCalculationAbstract implements Ca
         this.rightLimit = rightLimit;
     }
     @Override
-    public Phase call() throws Exception {
+    public Phase call(){
         LoadFunction();
         FFTCalculation();
         Filtration(leftLimit, rightLimit);

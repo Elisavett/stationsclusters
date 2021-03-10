@@ -19,7 +19,7 @@ public class PhaseCalculation extends PhaseCalculationAbstract implements Callab
         this.rightLimit = rightLimit;
     }
     @Override
-    public Phase call() throws Exception {
+    public Phase call() {
         LoadFunction();
         FFTCalculation();
         Filtration(leftLimit, rightLimit);

@@ -3,7 +3,6 @@ package net.codejava.Resolve.Model;
 import org.springframework.ui.Model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -18,7 +17,6 @@ public class ResolveForm {
     public static ArrayList<String> json;
     public static ArrayList<double[]> geoChars = new ArrayList<>();
     public static boolean groupCross = false;
-    public static String stringPhase;
     public static int groupNum;
     public static double[][] coordData;
     public static double[] averageTemps;

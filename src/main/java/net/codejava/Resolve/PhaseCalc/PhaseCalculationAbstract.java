@@ -52,12 +52,10 @@ public abstract class PhaseCalculationAbstract {
     protected void PhaseLinking() {
         double c = 0;
         double d = phase[1] - phase[0];
-        double dtest = d;
         double n = phase.length;
         for (int i = 1; i < n; i++) {
             double dd = d;
             if (i < n - 1) d = phase[i + 1] - phase[i];
-            dtest+=d;
             double cc = c;
             if (dd > Math.PI) cc = c - 2 * Math.PI;
             if (-dd > Math.PI) cc = c + 2 * Math.PI;
@@ -85,8 +83,8 @@ public abstract class PhaseCalculationAbstract {
      */
     protected void NormalizingToZero() {
         double a = phase[0];
-        for (int i = 0; i < phase.length; i++) {
-            if (phase[i] < a) a = phase[i];
+        for (double v : phase) {
+            if (v < a) a = v;
         }
         for (int i = 0; i < phase.length; i++) {
             phase[i] -= a;
@@ -102,8 +100,7 @@ public abstract class PhaseCalculationAbstract {
     }
 
     protected Phase saveFile(){
-        Phase phase = new Phase(finals);
-        return phase;
+        return new Phase(finals);
     }
 
     protected boolean isPhaseUnbroken(){

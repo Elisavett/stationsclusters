@@ -11,9 +11,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class TypicalCalculation {
-    ArrayList<ArrayList<Double>> phases = new ArrayList<ArrayList<Double>>();
-    ArrayList<Double> typical = new ArrayList<Double>();
-    ArrayList<Integer> members = new ArrayList<Integer>();
+    ArrayList<ArrayList<Double>> phases = new ArrayList<>();
+    ArrayList<Double> typical = new ArrayList<>();
+    ArrayList<Integer> members = new ArrayList<>();
     int stationCount;
     List<Future<Phase>> arrayPhase;
     Group groupIndex;
@@ -40,10 +40,10 @@ public class TypicalCalculation {
     //Добавляет для каждой станции из группы members фазу, соответствующую этой станции
     private void loadPhase() throws ExecutionException, InterruptedException {
         int counter = 0;
-        for (int k = 0; k < members.size(); k++) {
-            Phase phase = (Phase) arrayPhase.get(members.get(k)).get();
+        for (Integer member : members) {
+            Phase phase = arrayPhase.get(member).get();
             phase.getArray();
-            phases.add(new ArrayList<Double>());
+            phases.add(new ArrayList<>());
             for (int i = 0; i < phase.getArray().length; i++) {
                 phases.get(counter).add(phase.getArray()[i]);
             }
@@ -53,9 +53,7 @@ public class TypicalCalculation {
 
     private void calcTypical() {
         //Запись первого значения фаз в массив типовых
-        for (int i = 0; i < phases.get(0).size(); i++) {
-            typical.add(phases.get(0).get(i));
-        }
+        typical.addAll(phases.get(0));
         //цикл, который идет до количества членов в группе
         for (int i = 1; i < members.size(); i++) {
             //Цикл до количества фаз каждой стации
@@ -73,8 +71,7 @@ public class TypicalCalculation {
         for (int i = 0; i < typical.size(); i++) {
             typicalArr[i] = typical.get(i);
         }
-        TypicalPhase typicalPhase = new TypicalPhase(typicalArr);
-        return typicalPhase;
+        return new TypicalPhase(typicalArr);
     }
 }
 

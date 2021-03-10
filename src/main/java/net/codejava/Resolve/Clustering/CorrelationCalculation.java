@@ -34,8 +34,8 @@ public class CorrelationCalculation implements Callable<Corr> {
         return corr;
     }
 
-    public CorrelationCalculation(Future<Phase> station, int firstIndex, int totalNumber, List<Future<Phase>> arrayPhase) throws ExecutionException, InterruptedException {
-        this.firstStation = station.get().getArray();
+    public CorrelationCalculation(double[] station, int firstIndex, int totalNumber, List<Future<Phase>> arrayPhase) throws ExecutionException, InterruptedException {
+        this.firstStation = station;
         this.firstIndex = firstIndex;
         this.totalNumber = totalNumber;
         this.correlation = new double[totalNumber - firstIndex - 1];
@@ -45,7 +45,7 @@ public class CorrelationCalculation implements Callable<Corr> {
 
     private double[] loadStantion(int index) throws ExecutionException, InterruptedException {
         double[] array;
-        Phase phase = (Phase) arrayPhase.get(index).get();
+        Phase phase = arrayPhase.get(index).get();
         array = phase.getArray();
         return array;
     }

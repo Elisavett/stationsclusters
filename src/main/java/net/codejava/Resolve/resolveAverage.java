@@ -2,8 +2,6 @@ package net.codejava.Resolve;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.codejava.Resolve.Model.GroupAndCoordinates;
-import net.codejava.Resolve.Model.GroupLine;
 
 import java.util.ArrayList;
 
@@ -23,12 +21,12 @@ public class resolveAverage {
         Double[] conec_iterachii;//проверка конца итерации
         Double[] start_out = temps.clone();
 
-        source = metod_ymenshaemoe(quantity_line, temps, T_number);// Массив, из которого берутся значения по умолчанию
+        source = metod_ymenshaemoe(quantity_line, temps);// Массив, из которого берутся значения по умолчанию
 
         do
         {
-            ymenshaemoe = metod_ymenshaemoe(quantity_line, temps, T_number);
-            vichitaemoe = metod_vichitaemoe(quantity_line, temps, T_number);
+            ymenshaemoe = metod_ymenshaemoe(quantity_line, temps);
+            vichitaemoe = metod_vichitaemoe(quantity_line, temps);
             raznost = metod_raznost(quantity_line, ymenshaemoe, vichitaemoe, r, source);//Вычитаю из массива ymenshaemoe массив vichitaemoe, записываю в массив raznost
             sr = metod_srednee(quantity_line, raznost);
             conec_iterachii = metod_proverka(quantity_line, temps, sr, T_number);
@@ -59,7 +57,7 @@ public class resolveAverage {
 
         method_sotrirovka(quantity_column + 1, quantity_line, out_print, T_sr_index);
 
-        double[][] out_print_group = new double[quantity_line][quantity_column + 2];
+        double[][] out_print_group;
         out_print_group = method_number_group(quantity_column + 1, quantity_line, out_print, T_sr_index);
 
         //запись в фаил
@@ -67,7 +65,7 @@ public class resolveAverage {
 
         return getJson(out_print_group);
     }
-    public Double[][] metod_ymenshaemoe(int razmer, Double[] temp, int T_number)
+    public Double[][] metod_ymenshaemoe(int razmer, Double[] temp)
     {
         Double[][] ymenshaemoe = new Double[razmer][razmer];
         for (int i = 0; i < razmer; i++)
@@ -88,16 +86,12 @@ public class resolveAverage {
     }
     //------------------------------------------------------------------
     //-------------------------------------Заполняю массив vichitaemoe-----------------------------
-    public Double[][] metod_vichitaemoe(int razmer, Double[] temp, int T_number)
+    public Double[][] metod_vichitaemoe(int razmer, Double[] temp)
     {
         Double[][] vichitaemoe = new Double[razmer][razmer];
         for (int i = 0; i < razmer; i++)
         {
-            for (int j = 0; j < razmer; j++)
-            {
-                int var = j;
-                vichitaemoe[i][j] = temp[var];
-            }
+            System.arraycopy(temp, 0, vichitaemoe[i], 0, razmer);
         }
         return vichitaemoe;
     }

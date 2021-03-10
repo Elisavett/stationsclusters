@@ -2,34 +2,24 @@ package net.codejava.controller;
 
 import net.codejava.Resolve.ClassesCalc;
 import net.codejava.Resolve.Clustering.ClustersCalc;
-import net.codejava.Resolve.Model.Phase;
 import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.PhaseCalc.FrequencyAnalysis;
 import net.codejava.Resolve.PhaseCalc.PhaseAmplCalc;
-import net.codejava.Resolve.PhaseCalc.WindowCalculation;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
-import net.codejava.Resolve.Start;
 import net.codejava.Resolve.toMap;
-import org.apache.catalina.Cluster;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 @Controller
 public class CalcModulesController {
@@ -82,7 +72,7 @@ public class CalcModulesController {
     }
 
     @GetMapping("/frequencyAnalysis")
-    public String frequencyAnalysis(Model model, @RequestParam Integer station) throws ExecutionException, InterruptedException {
+    public String frequencyAnalysis(Model model, @RequestParam Integer station){
         double[] temp = ResolveForm.TempData[station].clone();
         FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis(temp);
         ResolveForm.frequencyAnalysis = frequencyAnalysis.spectorCalculation();
@@ -95,7 +85,7 @@ public class CalcModulesController {
         return "additionals/frequencyChart";
     }
     @GetMapping("/temperatureChart")
-    public String temperatureChart(Model model, @RequestParam Integer station) throws ExecutionException, InterruptedException {
+    public String temperatureChart(Model model, @RequestParam Integer station){
         double[] temp = ResolveForm.TempData[station].clone();
         LinkedHashMap<String, Double> temperatures = new LinkedHashMap<>();
         double averageT = 0;
@@ -109,19 +99,19 @@ public class CalcModulesController {
         for (double v : temp) {
             sko_temp =+ Math.pow((v - averageT), 2);
         }
-        sko_temp = Math.round(100*Math.sqrt(sko_temp / (temp.length - 1)))/100.;
+        sko_temp = Math.round(100*sko_temp / (temp.length - 1))/100.;
         model.addAttribute("chartData", temperatures);
-        model.addAttribute("additionalData", new double[]{averageT, sko_temp});
+        model.addAttribute("additionalData", new double[]{averageT, averageT+sko_temp, averageT-sko_temp});
         model.addAttribute("X_name", "Отсчеты");
         model.addAttribute("Y_name", "Значение температуры");
-        model.addAttribute("additionalY_names", new String[]{"Средняя", "СКО"});
+        model.addAttribute("additionalY_names", new String[]{"Средняя", "+СКО", "-СКО"});
         model.addAttribute("title", "Температура" );
         model.addAttribute("id", "temperature");
         model.addAttribute("chartType", "line");
         return "additionals/frequencyChart";
     }
     @GetMapping("/SKOAnalysis")
-    public String SKOAnalysis(Model model) throws ExecutionException, InterruptedException {
+    public String SKOAnalysis(Model model) {
         //double[] temp = ResolveForm.TempData[station].clone();
         ResolveForm.averageTemps = new double[ResolveForm.TempData.length];
         for(int i = 0; i < ResolveForm.TempData.length; i++)
@@ -140,7 +130,7 @@ public class CalcModulesController {
                 sko_temp =+ Math.pow((ResolveForm.TempData[i][j] - ResolveForm.averageTemps[i]), 2);
             }
             sko_temp = sko_temp / (ResolveForm.averageTemps.length - 1);
-            SKO.put(i+1, Math.round(100*Math.sqrt(sko_temp))/100.);
+            SKO.put(i+1, Math.round(100*sko_temp)/100.);
         }
         model.addAttribute("X_name", "Станции");
         model.addAttribute("Y_name", "Значение СКО");
@@ -162,7 +152,7 @@ public class CalcModulesController {
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
         //Отмечаем, что фаза считалась
         ResolveForm.isPhasesCounted = false;
-        if(windowCounted!=""){
+        if(!windowCounted.equals("")){
             ResolveForm.windowLeft = ResolveForm.windowCenter - Integer.parseInt(windowCounted);
             ResolveForm.windowRight = ResolveForm.windowCenter + Integer.parseInt(windowCounted);
         }
@@ -196,7 +186,7 @@ public class CalcModulesController {
     }
     @GetMapping("/countClasses")
     @ResponseStatus(value = HttpStatus.OK)
-    public void countClasses(@RequestParam(value = "classCoef", required = false) String classCoef) throws InterruptedException, ExecutionException, IOException {
+    public void countClasses(@RequestParam(value = "classCoef", required = false) String classCoef) throws InterruptedException, ExecutionException{
         ResolveForm.classCoef = Double.parseDouble(classCoef);
         ClassesCalc.calculation();
     }
@@ -217,7 +207,7 @@ public class CalcModulesController {
     }
 
     @RequestMapping("/downloadTypicals")
-    public ResponseEntity<String> downloadTypicals() throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<String> downloadTypicals() throws ExecutionException, InterruptedException {
 
         MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
         String stringPhase = "";
@@ -239,7 +229,7 @@ public class CalcModulesController {
                 .body(stringPhase);
     }
     @RequestMapping("/downloadGroups")
-    public ResponseEntity<String> downloadGroups() throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<String> downloadGroups() throws ExecutionException, InterruptedException {
 
         MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
         String stringPhase = "";
@@ -261,7 +251,7 @@ public class CalcModulesController {
                 .body(stringPhase);
     }
     @RequestMapping("/downloadJSON")
-    public ResponseEntity<String> downloadJSON() throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<String> downloadJSON(){
 
         MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
         String stringPhase = "";
@@ -279,7 +269,7 @@ public class CalcModulesController {
                 .body(stringPhase);
     }
     @RequestMapping("/downloadGeographicCharacters")
-    public ResponseEntity<String> downloadGeographicCharacters() throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<String> downloadGeographicCharacters(){
 
         MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
         String stringPhase = "1.номер_группы 2.широта_центра 3.долгота_центра 4.макс_широта 5.мин_широта 6.макс_долгота 7.мин_долгота  \n";
@@ -302,7 +292,7 @@ public class CalcModulesController {
                 .body(stringPhase);
     }
     @RequestMapping("/downloadFrequency")
-    public ResponseEntity<String> downloadFrequency() throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<String> downloadFrequency(){
 
         MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
         String stringPhase = "";
@@ -323,7 +313,7 @@ public class CalcModulesController {
                 .body(stringPhase);
     }
     @RequestMapping("/downloadSKO")
-    public ResponseEntity<String> downloadSKO() throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<String> downloadSKO(){
 
         MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
         String stringPhase = "";

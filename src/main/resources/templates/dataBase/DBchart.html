@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script type="text/javascript"
+            src="https://www.gstatic.com/charts/loader.js"></script>
+    <div th:replace="fragments/scripts :: scripts"></div>
+    <title>Расчет</title>
+</head>
+<header>
+    <div th:replace="fragments/navbar :: navbar (${'resolve'})"></div>
+</header>
+<body class="gradient">
+    <div class="container">
+        <div align="center" xmlns:th="http://www.w3.org/1999/xhtml">
+            <h2></h2>
+            <form action="/showData">
+                <div class="row">
+                    <select id="select" name="period"> <!--Supplement an id here instead of using 'name'-->
+                        <option value="3600">Часовые</option>
+                        <option value="86400">Дневные</option>
+                    </select>
+                    <input type="submit" value="Обновить">
+                </div>
+            </form>
+            <div id="chart_div" style="height: 450px"></div>
+
+        </div>
+    </div>
+</body>
+</html>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
+    var real_data = /*[[${chartData}]]*/'noValue';
+    var title = /*[[${title}]]*/'noValue';
+    var period = /*[[${period}]]*/'noValue';
+
+
+
+    $(document).ready(function() {
+        $('#select option').prop('selected', false);
+        $("#select option[value="+ period +"]").prop('selected', true);
+        google.charts.load('current', {
+            packages : [ 'corechart', 'bar' ],'language': 'ru'
+        });
+        google.charts.setOnLoadCallback(drawColumnChart);
+
+
+
+
+    });
+
+    function drawColumnChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'дата');
+        data.addColumn('number', 'температура');
+        Object.keys(real_data).forEach(function(key) {
+            data.addRow([ new Date(key), real_data[key] ]);
+        });
+        var options = {
+            title : title,
+            hAxis : {
+                title : 'дата',
+            },
+            explorer: {
+                //maxZoomOut:2,
+                axis: 'horizontal'
+            },
+            vAxis : {
+                title : 'темепература'
+            }
+        };
+        var chart = new google.visualization.LineChart(document
+            .getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+</script>

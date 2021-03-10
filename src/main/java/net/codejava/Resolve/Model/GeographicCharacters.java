@@ -1,7 +1,6 @@
 package net.codejava.Resolve.Model;
 
 
-import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
 

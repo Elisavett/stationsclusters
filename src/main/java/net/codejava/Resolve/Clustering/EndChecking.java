@@ -18,8 +18,8 @@ import java.util.concurrent.Future;
  * @version 1.0
  */
 public class EndChecking {
-    ArrayList<ArrayList<Double>> previousPhase = new ArrayList<ArrayList<Double>>();
-    ArrayList<ArrayList<Double>> nextPhase = new ArrayList<ArrayList<Double>>();
+    ArrayList<ArrayList<Double>> previousPhase = new ArrayList<>();
+    ArrayList<ArrayList<Double>> nextPhase = new ArrayList<>();
     boolean end = false;
     int stationCount;
     List<Future<Phase>> arrayPhase;
@@ -44,12 +44,12 @@ public class EndChecking {
 
     public void phaseLoading() throws ExecutionException, InterruptedException {
         for (int i = 0; i < stationCount; i++) {
-            Phase phase = (Phase) arrayPhase.get(i).get();
+            Phase phase = arrayPhase.get(i).get();
             double[] array;
             array = phase.getArray();
-            previousPhase.add(new ArrayList<Double>());
-            for (int j = 0; j < array.length; j++) {
-                previousPhase.get(i).add(array[j]);
+            previousPhase.add(new ArrayList<>());
+            for (double v : array) {
+                previousPhase.get(i).add(v);
             }
         }
 
@@ -57,9 +57,9 @@ public class EndChecking {
             TypicalPhase typicalPhase = (TypicalPhase) arrayTypicalPath.getData(i);
             double[] typicalArray;
             typicalArray = typicalPhase.getArray();
-            nextPhase.add(new ArrayList<Double>());
-            for (int j = 0; j < typicalArray.length; j++) {
-                nextPhase.get(i).add(typicalArray[j]);
+            nextPhase.add(new ArrayList<>());
+            for (double v : typicalArray) {
+                nextPhase.get(i).add(v);
             }
         }
     }
@@ -73,11 +73,7 @@ public class EndChecking {
                     max = temp;
             }
         }
-        if (max >= Double.parseDouble(ResolveForm.sigma)) {
-            return false;
-        } else {
-            return true;
-        }
+        return !(max >= Double.parseDouble(ResolveForm.sigma));
         /*if (!previousPhase.equals(nextPhase)) return false;
         else return true;*/
     }

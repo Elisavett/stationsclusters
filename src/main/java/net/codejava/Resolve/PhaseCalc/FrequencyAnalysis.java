@@ -1,9 +1,5 @@
 package net.codejava.Resolve.PhaseCalc;
-
-import net.codejava.Resolve.Model.Phase;
-
 import java.util.LinkedHashMap;
-import java.util.concurrent.Callable;
 
 public class FrequencyAnalysis extends PhaseCalculationAbstract {
 

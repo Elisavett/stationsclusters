@@ -1,12 +1,10 @@
 package net.codejava.Resolve.Model;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 public class GroupLine implements Comparable<GroupLine> {
     private int[] group;
     private double[] corrs;
-    private boolean isLess5 = false;
     private final int index;
 
 
@@ -17,18 +15,16 @@ public class GroupLine implements Comparable<GroupLine> {
     }
 
     public ArrayList<Integer> getGroup() {
-        ArrayList<Integer> al = new ArrayList<Integer>();
-        for(int i = 0; i < group.length; i++)
-        {
-            al.add(group[i]);
+        ArrayList<Integer> al = new ArrayList<>();
+        for (int j : group) {
+            al.add(j);
         }
         return al;
     }
     public ArrayList<Double> getCorr() {
-        ArrayList<Double> al = new ArrayList<Double>();
-        for(int i = 0; i < corrs.length; i++)
-        {
-            al.add(corrs[i]);
+        ArrayList<Double> al = new ArrayList<>();
+        for (double corr : corrs) {
+            al.add(corr);
         }
         return al;
     }
@@ -51,19 +47,16 @@ public class GroupLine implements Comparable<GroupLine> {
     }
 
     public void deleteDoubles(TreeSet<GroupLine> allStations){
-        Iterator<GroupLine> iter = allStations.iterator();
-        while(iter.hasNext()){
-            GroupLine tempGroup = iter.next();
+        for (GroupLine tempGroup : allStations) {
             ArrayList<Integer> currGroup = tempGroup.getGroup();
-            if(index != tempGroup.index) {
+            if (index != tempGroup.index) {
                 for (int i = 0; i < group.length; i++) {
                     int idx = currGroup.indexOf(group[i]);
                     if (idx != -1) {
                         if (tempGroup.getCorrsForIdx(idx) > corrs[i]) {
                             removeIdx(i);
-                        }
-                        else{
-                           currGroup.remove(idx);
+                        } else {
+                            currGroup.remove(idx);
                             tempGroup.removeIdx(idx);
                         }
                     }
@@ -78,12 +71,6 @@ public class GroupLine implements Comparable<GroupLine> {
 
     @Override
     public int compareTo(GroupLine anotherGroupLine) {
-        if (this.group[0] == anotherGroupLine.group[0]) {
-            return 0;
-        } else if (this.group[0] < anotherGroupLine.group[0]) {
-            return -1;
-        } else {
-            return 1;
-        }
+        return Integer.compare(this.group[0], anotherGroupLine.group[0]);
     }
 }

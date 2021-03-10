@@ -10,16 +10,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-public class GroupAllocation1 {
+public class GroupAllocate {
     double g;
     ArrayList<ArrayList<Double>> corrTable;
-    ArrayList[] groups;
+    ArrayList<Integer>[] groups;
     int stationCount;
     List<Future<Corr>> arrayCorr;
     ExecutorService executorService;
     double[] maxes;
 
-    public GroupAllocation1(int stationCount, double g, List<Future<Corr>> arrayCorr, ExecutorService executorService) {
+    public GroupAllocate(int stationCount, double g, List<Future<Corr>> arrayCorr, ExecutorService executorService) {
         this.stationCount = stationCount;
         this.g = g;
         this.arrayCorr = arrayCorr;
@@ -49,13 +49,13 @@ public class GroupAllocation1 {
             }
         }
     }
-    ArrayList[] groupsCorrs;
+    ArrayList<Double>[] groupsCorrs;
     private void allocateGroups() {
         groups = new ArrayList[corrTable.size()];
         groupsCorrs = new ArrayList[corrTable.size()];
         for (int i = 0; i < groups.length; i++) {
-            groups[i] = new ArrayList<Integer>();
-            groupsCorrs[i] = new ArrayList<Double>();
+            groups[i] = new ArrayList<>();
+            groupsCorrs[i] = new ArrayList<>();
         }
         try {
             for (int i = 0; i < groups.length; i++) {
@@ -67,13 +67,18 @@ public class GroupAllocation1 {
                     else {
                         if (j > i) {
                             if (corrTable.get(i).get(j - i - 1) >= g) {
-                                groups[i].add(j);
-                                groupsCorrs[i].add(corrTable.get(i).get(j - i - 1));
+                                if(corrTable.get(i).get(j - i - 1) == corrTable.get(i).stream().max(Double::compare).get()) {
+                                    groups[i].add(j);
+
+                                    groupsCorrs[i].add(corrTable.get(i).get(j - i - 1));
+                                }
                             }
                         } else {
                             if (corrTable.get(j).get(i - j - 1) >= g) {
-                                groups[i].add(j);
-                                groupsCorrs[i].add(corrTable.get(j).get(i - j - 1));
+                                if(corrTable.get(j).get(i - j - 1) == corrTable.get(j).stream().max(Double::compare).get()) {
+                                    groups[i].add(j);
+                                    groupsCorrs[i].add(corrTable.get(j).get(i - j - 1));
+                                }
                             }
                         }
                     }

@@ -12,13 +12,13 @@ import java.util.concurrent.Callable;
  */
 public class RewritePhase implements Callable<Phase> {
 
-    private  double[] phase;
+    private final double[] phase;
     public RewritePhase(double[] phase) {
 
         this.phase = phase;
     }
     @Override
-    public Phase call() throws Exception {
+    public Phase call() {
             return new Phase(phase);
     }
 

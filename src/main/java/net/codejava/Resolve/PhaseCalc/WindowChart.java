@@ -3,6 +3,7 @@ package net.codejava.Resolve.PhaseCalc;
 import net.codejava.Resolve.Model.ResolveForm;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -37,7 +38,7 @@ public class WindowChart {
             windows.add((int)Math.ceil(arrayWindows.get(i).get()));
 
         }
-        windows.sort((o1, o2) -> o1-o2);
+        windows.sort(Comparator.comparingInt(o -> o));
         int count = 1;
         int j = 0;
         if(assimetric) j = 1;

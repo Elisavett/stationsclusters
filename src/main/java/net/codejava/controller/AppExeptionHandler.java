@@ -10,7 +10,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 @ControllerAdvice
 public class AppExeptionHandler {
-    private static final String INCOMING_REQUEST_FAILED = "Incoming request failed:";
     //private static final Logger LOGGER = LoggerFactory.getLogger(AppExeptionHandler.class);
     private final MessageSource source;
 

@@ -79,7 +79,7 @@ public class Start {
             long startExec = System.currentTimeMillis(); //время старта вычислений
             List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
             for (int i = 0; i < stationCount; i++) {
-                CorrelationCalculation corrThread = new CorrelationCalculation(arrayPhase.get(i), i, stationCount, arrayPhase);
+                CorrelationCalculation corrThread = new CorrelationCalculation(arrayPhase.get(i).get().getArray(), i, stationCount, arrayPhase);
                 corrThreadTasks.add(corrThread);
             }
             //выполняем все задачи. главный поток ждет
@@ -141,7 +141,7 @@ public class Start {
 
             List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
             for (int i = 0; i < stationCount; i++) {
-                CorrelationCalculation corrThread = new CorrelationCalculation(ResolveForm.arrayPhase.get(i), i, stationCount, arrayPhase);
+                CorrelationCalculation corrThread = new CorrelationCalculation(ResolveForm.arrayPhase.get(i).get().getArray(), i, stationCount, arrayPhase);
                 corrThreadTasks.add(corrThread);
             }
             //выполняем все задачи. главный поток ждет

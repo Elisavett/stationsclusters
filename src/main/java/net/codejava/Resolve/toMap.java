@@ -9,7 +9,6 @@ import java.util.concurrent.ExecutionException;
 public class toMap {
     public static ArrayList<String> getGroups() throws InterruptedException, ExecutionException, IOException {
         Merger merger = new Merger(ResolveForm.TempData.length, ResolveForm.arrayGroup, ResolveForm.minGroupSize);
-        ArrayList<String> groupAndCoordinates = merger.run();
-        return groupAndCoordinates;
+        return merger.run();
     }
 }
