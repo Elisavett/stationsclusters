@@ -15,45 +15,58 @@
     <div th:replace="fragments/navbar :: navbar (${'resolve'})"></div>
 </header>
 <body class="gradient">
-    <div class="container">
-        <div align="center" xmlns:th="http://www.w3.org/1999/xhtml">
-            <h2></h2>
-            <form action="/showData">
-                <div class="row">
-                    <select id="select" name="period"> <!--Supplement an id here instead of using 'name'-->
-                        <option value="3600">Часовые</option>
-                        <option value="86400">Дневные</option>
-                    </select>
-                    <input type="submit" value="Обновить">
-                </div>
-            </form>
-            <div id="chart_div" style="height: 450px"></div>
 
+    <div align="center" xmlns:th="http://www.w3.org/1999/xhtml">
+        <h2></h2>
+        <div class="container">
+            <div class="optional">
+                <div class="row" style="margin: 0 5px">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Изменить периодичность данных
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <span class="dropdown-item" onclick="refresh(3600, 2002)">Часовые</span>
+                        <span class="dropdown-item" onclick="refresh(86400, 2002)">Дневные</span>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-3" style="margin: 5px 0">Температура один, 2 см</div>
+                </div>
+                <div id="2002" style="height: 300px"></div>
+            </div>
+            <div class="optional">
+                <div class="row" style="margin: 0 5px">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Изменить периодичность данных
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <span class="dropdown-item" onclick="refresh(3600, 4402)">Часовые</span>
+                        <span class="dropdown-item" onclick="refresh(86400, 4402)">Дневные</span>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-3" style="margin: 5px 0">Температура воздуха, 2 м</div>
+                </div>
+                <div id="4402" style="height: 300px"></div>
+            </div>
         </div>
-    </div>
+   </div>
+
 </body>
 </html>
 <script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
-    var real_data = /*[[${chartData}]]*/'noValue';
-    var title = /*[[${title}]]*/'noValue';
-    var period = /*[[${period}]]*/'noValue';
-
-
-
     $(document).ready(function() {
-        $('#select option').prop('selected', false);
-        $("#select option[value="+ period +"]").prop('selected', true);
         google.charts.load('current', {
             packages : [ 'corechart', 'bar' ],'language': 'ru'
         });
-        google.charts.setOnLoadCallback(drawColumnChart);
-
-
-
-
+        google.charts.setOnLoadCallback(function() { // Anonymous function that calls drawChart1 and drawChart2
+            drawChart("Датчик 2002", "2002", /*[[${chartData2002}]]*/'noValue');
+            drawChart("Датчик 4402", "4402", /*[[${chartData4402}]]*/'noValue');
+        });
     });
-
-    function drawColumnChart() {
+    function drawChart(title, id, real_data) {
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'дата');
         data.addColumn('number', 'температура');
@@ -71,10 +84,23 @@
             },
             vAxis : {
                 title : 'темепература'
-            }
-        };
+            }};
         var chart = new google.visualization.LineChart(document
-            .getElementById('chart_div'));
+            .getElementById(id));
         chart.draw(data, options);
+    }
+    function refresh(period, type) {
+        $.ajax({
+            url: '/showData' + type,
+            contentType: 'text/html',
+            dataType: 'html',
+            data: "period=" + period,
+            success: function (data) {
+                google.charts.setOnLoadCallback(function() { // Anonymous function that calls drawChart1 and drawChart2
+                    drawChart("Датчик " + type, type, JSON.parse(data));
+                });
+
+            }
+        });
     }
 </script>

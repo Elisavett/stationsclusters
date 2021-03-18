@@ -16,7 +16,12 @@ public class DbManager {
     @Autowired
     private EntityManagerFactory em;
 
-    public Map<Date, Double> getWeekTemperatures(int period) {
+    public Map<Date, Double> map2002;
+    public Map<Date, Double> map4402;
+
+    public void countWeekTemperatures(int period) {
+        map2002 = new TreeMap<>();
+        map4402 = new TreeMap<>();
         //Время сейчас отнимает количество секунд в неделе
         long ut = (Instant.now().getEpochSecond() - 604800L);
         EntityManager entityManager = em.createEntityManager();
@@ -24,7 +29,8 @@ public class DbManager {
                 .createQuery(
                         "select " +
                                 "   (t.time) as time, " +
-                                "   t.temperature as temperature " +
+                                "   t.temperature2002 as temperature2002, " +
+                                "   t.temperature4402 as temperature4402 " +
                                 "from " +
                                 "   TemperatureFromBase as t " +
                                 "where (t.time) >= :weekAgo and MOD(t.time, :period) = 0" +
@@ -34,12 +40,11 @@ public class DbManager {
                 .getResultStream().collect(Collectors.toList());
         //Берем данные раз в час
         //list.removeIf(entry -> (long)entry.get(0)%3600!=0);
-        Map<Date, Double> map = new TreeMap<>();
         for (Tuple item : list) {
            // if((long) item.get(0)%period==0) {
-                map.put(new Date((long) item.get(0) * 1000), (Double) item.get(1));
+                map2002.put(new Date((long) item.get(0) * 1000), (Double) item.get(1));
+                map4402.put(new Date((long) item.get(0) * 1000), (Double) item.get(2));
             //}
         }
-        return map;
     }
 }

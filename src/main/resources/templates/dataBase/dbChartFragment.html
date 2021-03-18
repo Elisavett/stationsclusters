@@ -1,0 +1,37 @@
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
+    var real_data = /*[[${chartData}]]*/'noValue';
+    var title = /*[[${title}]]*/'noValue';
+    var period = /*[[${period}]]*/'noValue';
+    var id = /*[[${id}]]*/'noValue';
+
+    $(document).ready(function() {
+        google.charts.load('current', {
+            packages : [ 'corechart', 'bar' ],'language': 'ru'
+        });
+        google.charts.setOnLoadCallback(drawColumnChart);
+    });
+
+    function drawColumnChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'дата');
+        data.addColumn('number', 'температура');
+        Object.keys(real_data).forEach(function(key) {
+            data.addRow([ new Date(key), real_data[key] ]);
+        });
+        var options = {
+            title : title,
+            hAxis : {
+                title : 'дата',
+            },
+            explorer: {
+                //maxZoomOut:2,
+                axis: 'horizontal'
+            },
+            vAxis : {
+                title : 'темепература'
+            }};
+        var chart = new google.visualization.LineChart(document
+            .getElementById(id));
+        chart.draw(data, options);
+    }
+</script>

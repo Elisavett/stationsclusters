@@ -3,6 +3,7 @@ package net.codejava.controller;
 import net.codejava.Resolve.DbManager;
 import net.codejava.Resolve.Model.ResolveForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +19,23 @@ public class DbController {
     @Autowired
     private DbManager dbManager;
     @GetMapping("/showData")
-    public String showData(@RequestParam(value = "period", required = false) String period, Model model) {
-        if(period == null) period = "3600";
-        Map<Date, Double> chartData = dbManager.getWeekTemperatures(Integer.parseInt(period));
-        model.addAttribute("chartData", chartData);
-        model.addAttribute("title", "Датчик 2002");
-        model.addAttribute("period", period);
+    public String showData(Model model) {
+        dbManager.countWeekTemperatures(3600);
+        model.addAttribute("chartData2002", dbManager.map2002);
+        model.addAttribute("chartData4402", dbManager.map4402);
         return "dataBase/DBchart";
     }
+    @GetMapping("/showData2002")
+    public ResponseEntity<Map<Date, Double>> showData2002(@RequestParam(value = "period", required = false) String period, Model model) {
+        if(period == null) period = "3600";
+        dbManager.countWeekTemperatures(Integer.parseInt(period));
+        return ResponseEntity.ok().body(dbManager.map2002);
+    }
+    @GetMapping("/showData4402")
+    public ResponseEntity<Map<Date, Double>> showData4402(@RequestParam(value = "period", required = false) String period, Model model) {
+        if(period == null) period = "3600";
+        dbManager.countWeekTemperatures(Integer.parseInt(period));
+        return ResponseEntity.ok().body(dbManager.map4402);
+    }
+
 }
