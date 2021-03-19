@@ -15,5 +15,7 @@ public class TemperatureFromBase {
     @Column(name = "timezone")
     int timezone;
     @Column(name = "2002")
-    double temperature;
+    double temperature2002;
+    @Column(name = "4402")
+    double temperature4402;
 }
