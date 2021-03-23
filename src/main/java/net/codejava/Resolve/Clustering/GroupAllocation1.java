@@ -11,7 +11,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 public class GroupAllocation1 {
-    double g;
+    double corrDOWN;
+    double corrUP;
     ArrayList<ArrayList<Double>> corrTable;
     ArrayList[] groups;
     int stationCount;
@@ -19,9 +20,10 @@ public class GroupAllocation1 {
     ExecutorService executorService;
     double[] maxes;
 
-    public GroupAllocation1(int stationCount, double g, List<Future<Corr>> arrayCorr, ExecutorService executorService) {
+    public GroupAllocation1(int stationCount, double corrDOWN, double corrUP, List<Future<Corr>> arrayCorr, ExecutorService executorService) {
         this.stationCount = stationCount;
-        this.g = g;
+        this.corrDOWN = corrDOWN;
+        this.corrUP = corrUP;
         this.arrayCorr = arrayCorr;
         this.executorService = executorService;
         this.maxes = new double[stationCount];
@@ -66,12 +68,12 @@ public class GroupAllocation1 {
                     }
                     else {
                         if (j > i) {
-                            if (corrTable.get(i).get(j - i - 1) >= g) {
+                            if (corrTable.get(i).get(j - i - 1) >= corrDOWN && corrTable.get(i).get(j - i - 1) <= corrUP ) {
                                 groups[i].add(j);
                                 groupsCorrs[i].add(corrTable.get(i).get(j - i - 1));
                             }
                         } else {
-                            if (corrTable.get(j).get(i - j - 1) >= g) {
+                            if (corrTable.get(j).get(i - j - 1) >= corrDOWN && corrTable.get(j).get(i - j - 1) <= corrUP) {
                                 groups[i].add(j);
                                 groupsCorrs[i].add(corrTable.get(j).get(i - j - 1));
                             }

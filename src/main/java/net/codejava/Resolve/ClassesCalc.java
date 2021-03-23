@@ -2,10 +2,7 @@ package net.codejava.Resolve;
 
 import net.codejava.Resolve.Clustering.CorrelationCalculation;
 import net.codejava.Resolve.Clustering.GroupAllocate;
-import net.codejava.Resolve.Model.Corr;
-import net.codejava.Resolve.Model.Group;
-import net.codejava.Resolve.Model.GroupLine;
-import net.codejava.Resolve.Model.ResolveForm;
+import net.codejava.Resolve.Model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +18,9 @@ public class ClassesCalc {
         TreeSet<GroupLine> sortGroupLine = new TreeSet<>();
         for (int i = 0; i < ResolveForm.arrayGroup.size(); i++) {
             Group group = ResolveForm.arrayGroup.get(i).get();
+            double[] phase = ResolveForm.arrayPhase.get(i).get().getArray();
             int[] array = group.getArray();
-            sortGroupLine.add(new GroupLine(array, group.getCorrs(), i));
+            sortGroupLine.add(new GroupLine(array, group.getCorrs(), phase, i));
         }
         if(!ResolveForm.groupCross) {
             for (GroupLine gr : sortGroupLine) {

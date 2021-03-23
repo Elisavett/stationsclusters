@@ -106,7 +106,7 @@ public class MapAllocationController {
         ResolveForm.tempsIsStationsOnY = Boolean.parseBoolean(tempType);
         ResolveForm.coordsIsStationsOnY = Boolean.parseBoolean(cordsType);
         ResolveForm.isPhasesCounted = true;
-        ResolveForm.corr = Double.parseDouble(corr);
+        ResolveForm.corrDOWN = Double.parseDouble(corr);
 
         if(!fileTemp.getOriginalFilename().equals("")) {
             ResolveForm.PhasesData = new double[(int)fileTemp.getSize()][];
@@ -303,7 +303,7 @@ public class MapAllocationController {
         }
         else {
             ResolveForm.minGroupSize = minGroupSize;
-            ResolveForm.corr = Double.parseDouble(corr);
+            ResolveForm.corrDOWN = Double.parseDouble(corr);
             ResolveForm.sigma = sigma;
 
 

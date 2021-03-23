@@ -6,12 +6,14 @@ public class GroupLine implements Comparable<GroupLine> {
     private int[] group;
     private double[] corrs;
     private final int index;
+    double[] typicals;
 
 
-    public GroupLine(int[] group, double[] corrs, int index){
+    public GroupLine(int[] group, double[] corrs, double[] typicals, int index){
         this.group = group;
         this.corrs = corrs;
         this.index = index;
+        this.typicals = typicals;
     }
 
     public ArrayList<Integer> getGroup() {
@@ -20,6 +22,9 @@ public class GroupLine implements Comparable<GroupLine> {
             al.add(j);
         }
         return al;
+    }
+    public double[] getTypicals() {
+        return typicals;
     }
     public ArrayList<Double> getCorr() {
         ArrayList<Double> al = new ArrayList<>();

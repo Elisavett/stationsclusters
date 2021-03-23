@@ -24,12 +24,14 @@ public class Merger {
     GroupAndCoordinates groupAndCoordinates;
     int stationCount;
     List<Future<Group>> arrayGroup;
+    List<Future<Phase>> arrayPhase;
     int minGroupsSize;
 
-    public Merger(int stationCount, List<Future<Group>> arrayGroup, int minGroupsSize) {
+    public Merger(int stationCount, List<Future<Group>> arrayGroup, List<Future<Phase>> arrayPhase, int minGroupsSize) {
         this.stationCount = stationCount;
         this.arrayGroup = arrayGroup;
         this.minGroupsSize = minGroupsSize;
+        this.arrayPhase = arrayPhase;
     }
 
     public ArrayList<String> run() throws IOException, ExecutionException, InterruptedException {
@@ -51,7 +53,7 @@ public class Merger {
         for (int i = 0; i < stationCount; i++) {
             Group group = (Group) arrayGroup.get(i).get();
             int[] array = group.getArray();
-            GroupLine groupLine = new GroupLine(array, group.getCorrs(), i);
+            GroupLine groupLine = new GroupLine(array, group.getCorrs(), arrayPhase.get(i).get().getArray(), i);
             groupList.add(groupLine);
         }
     }
@@ -69,6 +71,7 @@ public class Merger {
                 gr.deleteDoubles(sortGroupLine);
             }
         }
+        ResolveForm.clusters = sortGroupLine;
     }
 
     public void loadCoordinates() throws IOException {

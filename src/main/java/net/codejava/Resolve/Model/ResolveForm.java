@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.Future;
 
 public class ResolveForm {
@@ -12,8 +13,10 @@ public class ResolveForm {
     public static double[][] TempData;
     public static double[][] PhasesData;
     public static List<Future<Phase>> arrayPhase;
+    public static List<Future<Phase>> arrayAmplitude;
     public static List<Future<Phase>> arrayTypical;
     public static List<Future<Group>> arrayGroup;
+    public static TreeSet<GroupLine> clusters;
     public static ArrayList<String> json;
     public static ArrayList<double[]> geoChars = new ArrayList<>();
     public static boolean groupCross = false;
@@ -25,7 +28,8 @@ public class ResolveForm {
     public static String periodStart = "1955-01-01";
     public static String periodEnd = "2010-12-31";
     public static int minGroupSize = 5;
-    public static double corr = 0.8;
+    public static double corrDOWN = 0.8;
+    public static double corrUP = 1;
     public static double classCoef = 0.8;
     public static double windowLeft = 0;
     public static double windowRight = 0;
@@ -46,7 +50,7 @@ public class ResolveForm {
         model.addAttribute("tempers", ResolveForm.tempFileName);
         model.addAttribute("coords", ResolveForm.coordFileName);
         model.addAttribute("sigma", ResolveForm.sigma);
-        model.addAttribute("corr", ResolveForm.corr);
+        model.addAttribute("corr", ResolveForm.corrDOWN);
         model.addAttribute("dataType", ResolveForm.dataType);
         model.addAttribute("wleft", ResolveForm.windowLeft);
         model.addAttribute("wRight", ResolveForm.windowRight);

@@ -39,6 +39,7 @@ public class ClustersCalc {
         List<Future<Group>> arrayPrevGroup = new ArrayList<>();
         List<Future<Corr>> arrayCorr;
         boolean check = false;
+        int equalsCount = 0;
         //long cicleStartExec = System.currentTimeMillis(); //время старта вычислений
         do {
             //System.out.println("Cicle");
@@ -59,18 +60,20 @@ public class ClustersCalc {
             //startExec = System.currentTimeMillis(); //время старта вычислений
 
             //блок выделения групп
-            GroupAllocation1 allocationThread = new GroupAllocation1(stationCount, ResolveForm.corr, arrayCorr, executorService);
+            GroupAllocation1 allocationThread = new GroupAllocation1(stationCount, ResolveForm.corrDOWN, ResolveForm.corrUP, arrayCorr, executorService);
             arrayGroup = allocationThread.run();
             //finishExec = System.currentTimeMillis(); // время конца вычислений
             //System.out.println("Total group allocation time: " + (finishExec - startExec));
-            int equalsCount = 0;
+
+            int prevEqualsCount = equalsCount;
+            equalsCount = 0;
             if(count>0 && ResolveForm.isAccurate) {
                 for (int i = 0; i < stationCount; i++) {
                     if (Arrays.equals(arrayPrevGroup.get(i).get().getArray(), arrayGroup.get(i).get().getArray())) {
                         equalsCount++;
                     }
                 }
-                if (equalsCount == stationCount)
+                if (equalsCount == stationCount || prevEqualsCount > equalsCount)
                     break;
             }
             //System.out.println("Groups");
@@ -99,7 +102,7 @@ public class ClustersCalc {
 //            System.out.println(count);
         } while (!check);
         ResolveForm.arrayTypical = arrayPhase;
-        ResolveForm.arrayGroup = arrayGroup;
+        ResolveForm.arrayGroup = arrayPrevGroup;
         executorService.shutdown();
     }
 }

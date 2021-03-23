@@ -91,7 +91,7 @@ public class Start {
             //startExec = System.currentTimeMillis(); //время старта вычислений
 
             //блок выделения групп
-            GroupAllocation1 allocationThread = new GroupAllocation1(stationCount, ResolveForm.corr, arrayCorr, executorService);
+            GroupAllocation1 allocationThread = new GroupAllocation1(stationCount, ResolveForm.corrDOWN, ResolveForm.corrUP, arrayCorr, executorService);
             arrayGroup = allocationThread.run();
             //finishExec = System.currentTimeMillis(); // время конца вычислений
             //System.out.println("Total group allocation time: " + (finishExec - startExec));
@@ -151,13 +151,13 @@ public class Start {
 
             //startExec = System.currentTimeMillis(); //время старта вычислений
             //блок выделения групп
-            GroupAllocation1 allocationThread = new GroupAllocation1(stationCount, ResolveForm.corr, arrayCorr, executorService);
+            GroupAllocation1 allocationThread = new GroupAllocation1(stationCount, ResolveForm.corrDOWN, ResolveForm.corrUP, arrayCorr, executorService);
             arrayGroup = allocationThread.run();
         }
 
         // объединяю станции в группы, дописываю координаты
         //Merger merger = new Merger(stationCount, arrayGroup, ResolveForm.minGroupSize);
-        Merger merger = new Merger(stationCount, arrayGroup, ResolveForm.minGroupSize);
+        Merger merger = new Merger(stationCount, arrayGroup, arrayPhase, ResolveForm.minGroupSize);
         ArrayList<String> groupAndCoordinates = merger.run();
 
 //        System.out.println(System.currentTimeMillis() - start);

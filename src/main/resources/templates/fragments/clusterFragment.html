@@ -1,11 +1,19 @@
 <div class="optional" xmlns:th="http://www.w3.org/1999/xhtml">
     <div id="clusterWarning" th:text="${phaseWarning}" class="warningMessage"></div>
     <div class="form-group row">
-        <label for="corr" class="col-sm-5 col-form-label">Коэффициент корреляции (от 0 до 1):
+        <label class="col-sm-5 col-form-label">Нижняя граница корреляции (от 0 до 1):
         </label>
         <div class="col-sm-2">
-            <input class="form-control" type="text" name="corr" onkeyup="checkParams()" autocomplete="off"
-                   id="corr" value="0.8">
+            <input class="form-control" type="text" name="corrDOWN" onkeyup="checkParams()" autocomplete="off"
+                   id="corr1" value="0.8">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-sm-5 col-form-label">Верхняя граница корреляции (от 0 до 1):
+        </label>
+        <div class="col-sm-2">
+            <input class="form-control" type="text" name="corrUP" onkeyup="checkParams()" autocomplete="off"
+                   id="corr2" value="1">
         </div>
     </div>
     <div class="form-group row">
@@ -63,11 +71,12 @@
     $('#countClustersButton').click(function() {
         $('#error-element').attr("hidden", true);
 
-        var corr = $("input[type=text][name=corr]").val();
+        var corrUP = $("input[type=text][name=corrUP]").val();
+        var corrDOWN = $("input[type=text][name=corrDOWN]").val();
         var isAccurate = $("input[type=radio][name=isAccurate]:checked").val();
         var sigma = $("input[type=text][name=sigma]").val();
 
-        if(corr==="" || (isAccurate==="false" && sigma==="")){
+        if(corrUP==="" || (isAccurate==="false" && sigma==="")){
             $('#error-element').html('Заполните все поля');
             $('#error-element').attr("hidden", false);
         }
@@ -76,7 +85,7 @@
             $('#loaderCluster').attr("hidden", false);
             $.ajax({
                 url: '/countClusters',
-                data: "corr=" + corr + "&isAccurate=" + isAccurate
+                data: "corrUP=" + corrUP + "&corrDOWN=" + corrDOWN + "&isAccurate=" + isAccurate
                     + "&sigma=" + sigma,
                 success: function () {
                     //Скрываем значок загрузки
