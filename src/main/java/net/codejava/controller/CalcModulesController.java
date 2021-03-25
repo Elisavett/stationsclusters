@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +47,7 @@ public class CalcModulesController {
         return "fragments/phaseFragment";
     }
     @GetMapping("/getClusterFragment")
+
     public String getClusterFragment(Model model) {
         if (ResolveForm.arrayPhase == null)
             model.addAttribute("phaseWarning", "Фазы/амплитуды не расчитаны. Данные из исходного файла будут использоваться, как данные фаз/амплитуд");
@@ -178,8 +180,10 @@ public class CalcModulesController {
         }
         PhaseAmplCalc.calculation();
     }
+
     @GetMapping("/countClusters")
     @ResponseStatus(value = HttpStatus.OK)
+    @Transactional(timeout = 120)
     public void countClusters(@RequestParam(value = "corrUP", required = false) String corrUP,
                               @RequestParam(value = "corrDOWN", required = false) String corrDOWN,
                            @RequestParam(value = "isAccurate", required = false) String isAccurate,
