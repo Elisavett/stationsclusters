@@ -16,13 +16,13 @@ public class AppExeptionHandler {
     public AppExeptionHandler(final MessageSource messageSource) {
         source = messageSource;
     }
-    ModelAndView mw = new ModelAndView("error");
+    ModelAndView mw = new ModelAndView("additionals/error");
 
     @ExceptionHandler(value = FileException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ModelAndView fileError(final FileException ex) {
-        mw = new ModelAndView("error");
+        mw = new ModelAndView("additionals/error");
         mw.addObject("error", "Ошибка в исходных файлах");
         mw.addObject("reason", ex.exception.getMessage());
         ex.exception.printStackTrace();
@@ -32,7 +32,7 @@ public class AppExeptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ModelAndView internalServerError(final Exception ex) {
-        mw = new ModelAndView("error");
+        mw = new ModelAndView("additionals/error");
         mw.addObject("error", "Ошибка вычислений");
 
         ex.printStackTrace();

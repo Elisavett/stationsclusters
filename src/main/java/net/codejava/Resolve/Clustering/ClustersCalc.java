@@ -73,7 +73,7 @@ public class ClustersCalc {
                         equalsCount++;
                     }
                 }
-                if (equalsCount == stationCount || prevEqualsCount > equalsCount)
+                if (equalsCount == stationCount) //|| prevEqualsCount > equalsCount)
                     break;
             }
             //System.out.println("Groups");
