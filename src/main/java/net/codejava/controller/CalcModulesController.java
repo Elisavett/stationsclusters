@@ -182,8 +182,8 @@ public class CalcModulesController {
     }
 
     @GetMapping("/countClusters")
+    @Transactional(timeout = 200)
     @ResponseStatus(value = HttpStatus.OK)
-    @Transactional(timeout = 120)
     public void countClusters(@RequestParam(value = "corrUP", required = false) String corrUP,
                               @RequestParam(value = "corrDOWN", required = false) String corrDOWN,
                            @RequestParam(value = "isAccurate", required = false) String isAccurate,
