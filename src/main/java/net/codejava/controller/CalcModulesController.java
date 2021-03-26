@@ -2,7 +2,6 @@ package net.codejava.controller;
 
 import net.codejava.Resolve.ClassesCalc;
 import net.codejava.Resolve.Clustering.ClustersCalc;
-import net.codejava.Resolve.Clustering.ClustersCalc1;
 import net.codejava.Resolve.Model.GroupLine;
 import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.PhaseCalc.FrequencyAnalysis;
