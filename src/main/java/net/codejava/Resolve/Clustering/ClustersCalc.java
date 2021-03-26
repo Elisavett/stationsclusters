@@ -113,7 +113,7 @@ public class ClustersCalc {
             arrayPrevGroup.clear();
             arrayPrevGroup.addAll(arrayGroup);
 //            System.out.println(count);
-        }while (System.currentTimeMillis() - startExec < 15000 && !check);
+        }while (System.currentTimeMillis() - startExec < 10000 && !check);
         long end = System.currentTimeMillis() - startExec;
         System.out.println(end);
         ResolveForm.arrayTypical = arrayPhase;
