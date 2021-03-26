@@ -83,7 +83,17 @@
         else {
             //Отображаем значок загузки
             $('#loaderCluster').attr("hidden", false);
+
             $.ajax({
+                url: '/countClustersStart',
+                data: "corrUP=" + corrUP + "&corrDOWN=" + corrDOWN + "&isAccurate=" + isAccurate
+                    + "&sigma=" + sigma,
+                success: function () {
+                    do20SecQuery();
+                }
+
+            });
+            /*$.ajax({
                 url: '/countClusters',
                 data: "corrUP=" + corrUP + "&corrDOWN=" + corrDOWN + "&isAccurate=" + isAccurate
                     + "&sigma=" + sigma,
@@ -98,10 +108,33 @@
                     $('#groupWarning').html('');
                     isClusterizationEnd = true;
                     //Управление кликабельностью кнопки для отображения карты
-                    if(isGroopingEnd === true) $('#showOnMap').removeAttr('disabled');
+                    if (isGroopingEnd === true) $('#showOnMap').removeAttr('disabled');
                 }
-            });
+
+            });*/
         }
     });
-
+    function do20SecQuery(){
+        $.ajax({
+            url: '/countClusters20sec',
+            success: function (data) {
+                if(Boolean(data)) {
+                    //Скрываем значок загрузки
+                    $('#loaderCluster').attr("hidden", true);
+                    //Отображени файлы для скачивания
+                    $('#fileTypDownload').attr("hidden", false);
+                    $('#fileGroupsDownload').attr("hidden", false);
+                    ////Расчет выполнен - убираем предупреждение
+                    $('#classesWarning').html('');
+                    $('#groupWarning').html('');
+                    isClusterizationEnd = true;
+                    //Управление кликабельностью кнопки для отображения карты
+                    if (isGroopingEnd === true) $('#showOnMap').removeAttr('disabled');
+                }
+                else{
+                    do20SecQuery();
+                }
+            }
+        });
+    }
 </script>

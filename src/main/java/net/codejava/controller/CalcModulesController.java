@@ -2,6 +2,7 @@ package net.codejava.controller;
 
 import net.codejava.Resolve.ClassesCalc;
 import net.codejava.Resolve.Clustering.ClustersCalc;
+import net.codejava.Resolve.Clustering.ClustersCalc1;
 import net.codejava.Resolve.Model.GroupLine;
 import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.PhaseCalc.FrequencyAnalysis;
@@ -180,9 +181,8 @@ public class CalcModulesController {
         }
         PhaseAmplCalc.calculation();
     }
-
-    @GetMapping("/countClusters")
-    @Transactional(timeout = 200)
+    ClustersCalc clustersCalc = new ClustersCalc();
+    @GetMapping("/countClustersStart")
     @ResponseStatus(value = HttpStatus.OK)
     public void countClusters(@RequestParam(value = "corrUP", required = false) String corrUP,
                               @RequestParam(value = "corrDOWN", required = false) String corrDOWN,
@@ -193,8 +193,27 @@ public class CalcModulesController {
         ResolveForm.corrUP = Double.parseDouble(corrUP);
         ResolveForm.corrDOWN = Double.parseDouble(corrDOWN);
         ResolveForm.sigma = sigma;
-        ClustersCalc.calculation();
+        clustersCalc = new ClustersCalc();
+        clustersCalc.calculationStart();
     }
+    @GetMapping("/countClusters20sec")
+    public ResponseEntity<Boolean> countClusters20sec() throws InterruptedException, ExecutionException {
+        return ResponseEntity.ok().body(clustersCalc.calculation20seconds());
+    }
+    /*@GetMapping("/countClusters")
+    @Transactional(timeout = 200)
+    @ResponseStatus(value = HttpStatus.OK)
+    public void countClusters(@RequestParam(value = "corrUP", required = false) String corrUP,
+                              @RequestParam(value = "corrDOWN", required = false) String corrDOWN,
+                              @RequestParam(value = "isAccurate", required = false) String isAccurate,
+                              @RequestParam(value = "sigma", required = false) String sigma
+    ) throws InterruptedException, ExecutionException {
+        ResolveForm.isAccurate = Boolean.parseBoolean(isAccurate);
+        ResolveForm.corrUP = Double.parseDouble(corrUP);
+        ResolveForm.corrDOWN = Double.parseDouble(corrDOWN);
+        ResolveForm.sigma = sigma;
+        ClustersCalc1.calculation();
+    }*/
     @GetMapping("/countClasses")
     @ResponseStatus(value = HttpStatus.OK)
     public void countClasses(@RequestParam(value = "classCoef", required = false) String classCoef) throws InterruptedException, ExecutionException{

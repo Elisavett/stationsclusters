@@ -3,6 +3,7 @@ package net.codejava.Resolve.Clustering;
 import net.codejava.Resolve.Model.*;
 import net.codejava.Resolve.PhaseCalc.RewritePhase;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,10 +13,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class ClustersCalc {
-    public static void calculation() throws InterruptedException, ExecutionException {
-        int count = 0;
-        List<Future<Phase>> arrayPhase;
-        int stationCount = ResolveForm.TempData.length;
+    private List<Future<Phase>> arrayPhase;
+    public void calculationStart() throws InterruptedException, ExecutionException {
+
+        long start =  System.currentTimeMillis();
         int processors = Runtime.getRuntime().availableProcessors();
         ExecutorService executorService = Executors.newFixedThreadPool(processors);
         List<RewritePhase> rewritePhases = new ArrayList<>();
@@ -26,7 +27,7 @@ public class ClustersCalc {
             }
         arrayPhase = executorService.invokeAll(rewritePhases);
         }
-        else{
+        else {
             for (int i = 0; i < ResolveForm.TempData.length; i++) {
                 RewritePhase phaseCalculation = new RewritePhase(ResolveForm.TempData[i]);
                 rewritePhases.add(phaseCalculation);
@@ -34,9 +35,19 @@ public class ClustersCalc {
             arrayPhase = executorService.invokeAll(rewritePhases);
             ResolveForm.arrayPhase = arrayPhase;
         }
+        long end =  System.currentTimeMillis();
+        executorService.shutdown();
+    }
+    int count = 0;
+    public boolean calculation20seconds() throws InterruptedException, ExecutionException {
+        long startExec = System.currentTimeMillis();
+        int stationCount = ResolveForm.TempData.length;
+        int processors = Runtime.getRuntime().availableProcessors();
+        ExecutorService executorService = Executors.newFixedThreadPool(processors);
         ArrayData arrayTypicalPath = new ArrayData();
         List<Future<Group>> arrayGroup;
         List<Future<Group>> arrayPrevGroup = new ArrayList<>();
+        if(count > 0) arrayPrevGroup = ResolveForm.arrayGroup;
         List<Future<Corr>> arrayCorr;
         boolean check = false;
         int equalsCount = 0;
@@ -45,7 +56,7 @@ public class ClustersCalc {
             //System.out.println("Cicle");
             //блок вычисления таблицы корреляции
             // создаем лист задач
-            long startExec = System.currentTimeMillis(); //время старта вычислений
+             //время старта вычислений
             List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
             for (int i = 0; i < stationCount; i++) {
                 CorrelationCalculation corrThread = new CorrelationCalculation(arrayPhase.get(i).get().getArray(), i, stationCount, arrayPhase);
@@ -54,7 +65,6 @@ public class ClustersCalc {
             //выполняем все задачи. главный поток ждет
             arrayCorr = executorService.invokeAll(corrThreadTasks);
             //System.out.println("Corelation");
-            long finishExec = System.currentTimeMillis(); // время конца вычислений
             //System.out.println("Total corelation calculation time: " + (finishExec - startExec));
 
             //startExec = System.currentTimeMillis(); //время старта вычислений
@@ -73,10 +83,12 @@ public class ClustersCalc {
                         equalsCount++;
                     }
                 }
-                if (equalsCount == stationCount) //|| prevEqualsCount > equalsCount)
+                if (equalsCount == stationCount){//|| prevEqualsCount > equalsCount)
+                    check = true;
                     break;
+                }
             }
-            //System.out.println("Groups");
+            System.out.println(equalsCount);
             //блок вычисления типовых фаз
             arrayTypicalPath.clear();
             //startExec = System.currentTimeMillis(); //время старта вычислений
@@ -94,15 +106,19 @@ public class ClustersCalc {
             //блок проверки конца алгоритма
             EndChecking checkMethod = new EndChecking(stationCount, arrayPhase, arrayTypicalPath, executorService);
             arrayPhase = checkMethod.run();
-            if(!ResolveForm.isAccurate) check = checkMethod.check();
+            if(!ResolveForm.isAccurate)
+                check = checkMethod.check();
 
             count++;
             arrayPrevGroup.clear();
             arrayPrevGroup.addAll(arrayGroup);
 //            System.out.println(count);
-        } while (!check);
+        }while (System.currentTimeMillis() - startExec < 15000 && !check);
+        long end = System.currentTimeMillis() - startExec;
+        System.out.println(end);
         ResolveForm.arrayTypical = arrayPhase;
         ResolveForm.arrayGroup = arrayPrevGroup;
         executorService.shutdown();
+        return check;
     }
 }

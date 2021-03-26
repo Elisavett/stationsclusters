@@ -302,6 +302,52 @@ window.onload = function () {
             maxZoom: 12,
         });
 
+        //нннннннннннннннннннннннннннннннннннннннн обрезка карты
+
+        /*ymaps.borders.load('RU', {
+            lang: 'ru',
+            quality: 2
+        }).then(function (result) {
+
+            // Создадим многоугольник, который будет скрывать весь мир, кроме заданной страны.
+            var background = new ymaps.Polygon([
+                [
+                    [85, -100],
+                    [85, 0],
+                    [85, 100],
+                    [85, 180],
+                    [85, -110],
+                    [-85, -110],
+                    [-85, 180],
+                    [-85, 100],
+                    [-85, 0],
+                    [-85, -100],
+                    [85, -100]
+                ]
+            ], {}, {
+                fillColor: '#ffffff',
+                strokeWidth: 0,
+                // Для того чтобы полигон отобразился на весь мир, нам нужно поменять
+                // алгоритм пересчета координат геометрии в пиксельные координаты.
+                //coordRendering: 'straightPath'
+            });
+
+            // Найдём страну по её iso коду.
+            var region = result.features.filter(function (feature) { return feature.properties.iso3166 == 'RU-KYA'; })[0];
+
+            // Добавим координаты этой страны в полигон, который накрывает весь мир.
+            // В полигоне образуется полость, через которую будет видно заданную страну.
+            var masks = region.geometry.coordinates;
+            masks.forEach(function(mask){
+                background.geometry.insert(1, mask);
+            });
+
+            // Добавим многоугольник на карту.
+            map.geoObjects.add(background);
+        });*/
+
+        //нннннннннннннннннннннннннннннннннннннннн
+
         //массив
         //[0] - T
         //[1], [2] - координаты
