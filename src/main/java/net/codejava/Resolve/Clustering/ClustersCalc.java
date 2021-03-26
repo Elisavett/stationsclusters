@@ -52,7 +52,7 @@ public class ClustersCalc {
         boolean check = false;
         int equalsCount = 0;
         //long cicleStartExec = System.currentTimeMillis(); //время старта вычислений
-        do {
+        //do {
             //System.out.println("Cicle");
             //блок вычисления таблицы корреляции
             // создаем лист задач
@@ -85,7 +85,12 @@ public class ClustersCalc {
                 }
                 if (equalsCount == stationCount){//|| prevEqualsCount > equalsCount)
                     check = true;
-                    break;
+                    long end = System.currentTimeMillis() - startExec;
+                    System.out.println(end);
+                    ResolveForm.arrayTypical = arrayPhase;
+                    ResolveForm.arrayGroup = arrayPrevGroup;
+                    executorService.shutdown();
+                    return check;
                 }
             }
             System.out.println(equalsCount);
@@ -113,7 +118,7 @@ public class ClustersCalc {
             arrayPrevGroup.clear();
             arrayPrevGroup.addAll(arrayGroup);
 //            System.out.println(count);
-        }while (System.currentTimeMillis() - startExec < 10000 && !check);
+        //}while (System.currentTimeMillis() - startExec < 10000 && !check);
         long end = System.currentTimeMillis() - startExec;
         System.out.println(end);
         ResolveForm.arrayTypical = arrayPhase;
