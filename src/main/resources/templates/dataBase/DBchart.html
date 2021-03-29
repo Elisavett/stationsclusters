@@ -70,8 +70,22 @@
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'дата');
         data.addColumn('number', 'температура');
+        data.addColumn({'type': 'string', 'role': 'tooltip'});
         Object.keys(real_data).forEach(function(key) {
-            data.addRow([ new Date(key), real_data[key] ]);
+            let date = new Date(key);
+            let day = date.getDate();
+            if(day<10) day = "0" + day;
+            let month = date.getMonth();
+            if(month<10) month = "0" + month;
+            let hours = date.getHours();
+            if(hours<10) hours = "0" + hours;
+            let tooltip = day + "." +
+                month + "." +
+                date.getFullYear() + " " +
+                hours + ":" +
+                date.getMinutes() + "0\n" +
+                "температура: " + real_data[key];
+            data.addRow([ date, real_data[key], tooltip]);
         });
         var options = {
             title : title,
