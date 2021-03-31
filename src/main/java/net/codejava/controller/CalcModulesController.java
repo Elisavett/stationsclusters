@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,6 +90,27 @@ public class CalcModulesController {
         model.addAttribute("chartType", "corechart");
         return "additionals/frequencyChart";
     }
+    @RequestMapping("/downloadFrequency")
+    public ResponseEntity<String> downloadFrequency(){
+
+        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
+        StringBuilder stringPhase = new StringBuilder();
+
+        for(int i = 1; i< ResolveForm.frequencyAnalysis.size(); i++) {
+            stringPhase.append(i).append(" ").append(ResolveForm.frequencyAnalysis.get(i));
+            stringPhase.append("\n");
+        }
+
+
+        return ResponseEntity.ok()
+                // Content-Disposition
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "frequencyAnalysis.txt")
+                // Content-Type
+                .contentType(mediaType)
+                // Contet-Length
+                .contentLength(stringPhase.length()) //
+                .body(stringPhase.toString());
+    }
     @GetMapping("/temperatureChart")
     public String temperatureChart(Model model, @RequestParam Integer station){
         double[] temp = ResolveForm.TempData[station].clone();
@@ -106,7 +126,7 @@ public class CalcModulesController {
         for (double v : temp) {
             sko_temp =+ Math.pow((v - averageT), 2);
         }
-        sko_temp = Math.round(100*sko_temp / (temp.length - 1))/100.;
+        sko_temp = Math.round(100*Math.sqrt(sko_temp / (temp.length - 1)))/100.;
         model.addAttribute("chartData", temperatures);
         model.addAttribute("additionalData", new double[]{averageT, averageT+sko_temp, averageT-sko_temp});
         model.addAttribute("X_name", "Отсчеты");
@@ -130,6 +150,7 @@ public class CalcModulesController {
             ResolveForm.averageTemps[i] = ResolveForm.averageTemps[i] / ResolveForm.TempData[i].length;
         }
         LinkedHashMap<Integer, Double> SKO = new LinkedHashMap<>();
+
         for(int i = 0; i < ResolveForm.averageTemps.length; i++)
         {
             double sko_temp = 0;
@@ -137,7 +158,7 @@ public class CalcModulesController {
                 sko_temp =+ Math.pow((ResolveForm.TempData[i][j] - ResolveForm.averageTemps[i]), 2);
             }
             sko_temp = sko_temp / (ResolveForm.averageTemps.length - 1);
-            SKO.put(i+1, Math.round(100*sko_temp)/100.);
+            SKO.put(i+1, Math.round(100*Math.sqrt(sko_temp))/100.);
         }
         model.addAttribute("X_name", "Станции");
         model.addAttribute("Y_name", "Значение СКО");
@@ -377,36 +398,16 @@ public class CalcModulesController {
                 .contentType(mediaType)
                 .body(outputString.toString());
     }
-    @RequestMapping("/downloadFrequency")
-    public ResponseEntity<String> downloadFrequency(){
 
-        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
-        String stringPhase = "";
-
-        for(int i = 1; i< ResolveForm.frequencyAnalysis.size(); i++) {
-            stringPhase += i + " " + ResolveForm.frequencyAnalysis.get(String.valueOf(i));
-            stringPhase += "\n";
-        }
-
-
-        return ResponseEntity.ok()
-                // Content-Disposition
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "frequencyAnalysis.txt")
-                // Content-Type
-                .contentType(mediaType)
-                // Contet-Length
-                .contentLength(stringPhase.length()) //
-                .body(stringPhase);
-    }
     @RequestMapping("/downloadSKO")
     public ResponseEntity<String> downloadSKO(){
 
         MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
-        String stringPhase = "";
+        StringBuilder stringPhase = new StringBuilder();
 
         for(int i = 1; i< ResolveForm.SKO.size(); i++) {
-            stringPhase += i + " " + ResolveForm.SKO.get(String.valueOf(i));
-            stringPhase += "\n";
+            stringPhase.append(i).append(" ").append(ResolveForm.SKO.get(i));
+            stringPhase.append("\n");
         }
 
 
@@ -417,7 +418,7 @@ public class CalcModulesController {
                 .contentType(mediaType)
                 // Contet-Length
                 .contentLength(stringPhase.length()) //
-                .body(stringPhase);
+                .body(stringPhase.toString());
     }
 
 
