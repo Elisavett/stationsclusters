@@ -3,6 +3,7 @@ package net.codejava.Resolve.Clustering;
 import net.codejava.Resolve.Model.Corr;
 import net.codejava.Resolve.Model.Phase;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -16,16 +17,15 @@ import java.util.concurrent.Future;
  */
 public class CorrelationCalculation implements Callable<Corr> {
     private final int firstIndex;
-    private final int totalNumber;
     private final double[] correlation;
     private double[] firstStation;
     private double[] secondStation;
-    List<Future<Phase>> arrayPhase;
+    private Phase[] arrayPhase;
 
     @Override
     public Corr call() throws Exception {
         int counter = 0;
-        for (int i = firstIndex + 1; i < totalNumber; i++) {
+        for (int i = firstIndex + 1; i < arrayPhase.length; i++) {
             secondStation = loadStantion(i);
             correlation[counter] = correlationCalc();
             counter++;
@@ -37,17 +37,24 @@ public class CorrelationCalculation implements Callable<Corr> {
     public CorrelationCalculation(double[] station, int firstIndex, int totalNumber, List<Future<Phase>> arrayPhase) throws ExecutionException, InterruptedException {
         this.firstStation = station;
         this.firstIndex = firstIndex;
-        this.totalNumber = totalNumber;
-        this.correlation = new double[totalNumber - firstIndex - 1];
+        this.correlation = new double[arrayPhase.size() - firstIndex - 1];
+        this.arrayPhase = new Phase[arrayPhase.size()];
+        for (int i = 0; i < arrayPhase.size(); i++){
+            this.arrayPhase[i] = arrayPhase.get(i).get();
+        }
+
+    }
+
+    public CorrelationCalculation(double[] station, int firstIndex, int totalNumber, Phase[] arrayPhase) throws ExecutionException, InterruptedException {
+        this.firstStation = station;
+        this.firstIndex = firstIndex;
+        this.correlation = new double[arrayPhase.length - firstIndex - 1];
         this.arrayPhase = arrayPhase;
     }
 
 
     private double[] loadStantion(int index) throws ExecutionException, InterruptedException {
-        double[] array;
-        Phase phase = arrayPhase.get(index).get();
-        array = phase.getArray();
-        return array;
+        return arrayPhase[index].getArray();
     }
 //расчет взаимной корреляции между двумя хронологическими рядами
     private double correlationCalc() {

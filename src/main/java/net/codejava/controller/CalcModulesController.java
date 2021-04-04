@@ -1,28 +1,16 @@
 package net.codejava.controller;
 
-import net.codejava.Resolve.ClassesCalc;
-import net.codejava.Resolve.Clustering.ClustersCalc;
-import net.codejava.Resolve.Model.GroupLine;
 import net.codejava.Resolve.Model.ResolveForm;
+import net.codejava.Resolve.ModulesCalc;
 import net.codejava.Resolve.PhaseCalc.FrequencyAnalysis;
-import net.codejava.Resolve.PhaseCalc.PhaseAmplCalc;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
-import net.codejava.Resolve.toMap;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ExecutionException;
 
@@ -90,27 +78,7 @@ public class CalcModulesController {
         model.addAttribute("chartType", "corechart");
         return "additionals/frequencyChart";
     }
-    @RequestMapping("/downloadFrequency")
-    public ResponseEntity<String> downloadFrequency(){
 
-        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
-        StringBuilder stringPhase = new StringBuilder();
-
-        for(int i = 1; i< ResolveForm.frequencyAnalysis.size(); i++) {
-            stringPhase.append(i).append(" ").append(ResolveForm.frequencyAnalysis.get(i));
-            stringPhase.append("\n");
-        }
-
-
-        return ResponseEntity.ok()
-                // Content-Disposition
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "frequencyAnalysis.txt")
-                // Content-Type
-                .contentType(mediaType)
-                // Contet-Length
-                .contentLength(stringPhase.length()) //
-                .body(stringPhase.toString());
-    }
     @GetMapping("/temperatureChart")
     public String temperatureChart(Model model, @RequestParam Integer station){
         double[] temp = ResolveForm.TempData[station].clone();
@@ -199,26 +167,20 @@ public class CalcModulesController {
                 ResolveForm.windowRight = Double.parseDouble(windowRight);
             }
         }
-        PhaseAmplCalc.calculation();
+        ModulesCalc.PhaseAmplCalc();;
     }
-    ClustersCalc clustersCalc = new ClustersCalc();
-    @GetMapping("/countClustersStart")
+    @GetMapping("/countClusters")
     @ResponseStatus(value = HttpStatus.OK)
     public void countClusters(@RequestParam(value = "corrUP", required = false) String corrUP,
                               @RequestParam(value = "corrDOWN", required = false) String corrDOWN,
-                           @RequestParam(value = "isAccurate", required = false) String isAccurate,
-                           @RequestParam(value = "sigma", required = false) String sigma
-                           ) throws InterruptedException, ExecutionException {
+                              @RequestParam(value = "isAccurate", required = false) String isAccurate,
+                              @RequestParam(value = "sigma", required = false) String sigma
+    ) throws InterruptedException, ExecutionException {
         ResolveForm.isAccurate = Boolean.parseBoolean(isAccurate);
         ResolveForm.corrUP = Double.parseDouble(corrUP);
         ResolveForm.corrDOWN = Double.parseDouble(corrDOWN);
         ResolveForm.sigma = sigma;
-        clustersCalc = new ClustersCalc();
-        clustersCalc.calculationStart();
-    }
-    @GetMapping("/countClusters20sec")
-    public ResponseEntity<Boolean> countClusters20sec() throws InterruptedException, ExecutionException {
-        return ResponseEntity.ok().body(clustersCalc.calculation20seconds());
+        ModulesCalc.ClustersCalc();
     }
     /*@GetMapping("/countClusters")
     @Transactional(timeout = 200)
@@ -238,7 +200,7 @@ public class CalcModulesController {
     @ResponseStatus(value = HttpStatus.OK)
     public void countClasses(@RequestParam(value = "classCoef", required = false) String classCoef) throws InterruptedException, ExecutionException{
         ResolveForm.classCoef = Double.parseDouble(classCoef);
-        ClassesCalc.calculation();
+        ModulesCalc.ClassesCalc();
     }
     @GetMapping("/toMap")
     @ResponseStatus(value = HttpStatus.OK)
@@ -247,7 +209,7 @@ public class CalcModulesController {
         ResolveForm.minGroupSize = Integer.parseInt(minGroupSize);
         ResolveForm.groupCross = groupCross.equals("true");
         ResolveForm.json = new ArrayList<>();
-        ResolveForm.json.addAll(toMap.getGroups());
+        ResolveForm.json.addAll(ModulesCalc.JsonCalc());
     }
     @RequestMapping("/showMap")
     public String showMap(Model model){
@@ -256,170 +218,7 @@ public class CalcModulesController {
         return "map1";
     }
 
-    @RequestMapping("/downloadTypicals")
-    public ResponseEntity<String> downloadTypicals() throws ExecutionException, InterruptedException {
 
-        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
-        String stringPhase = "";
-        for (int i = 0; i < ResolveForm.arrayTypical.get(0).get().getArray().length; i++) {
-            String output = "";
-            for (int j = 0; j < ResolveForm.arrayTypical.size(); j++) {
-                output += ResolveForm.arrayTypical.get(j).get().getArray()[i] + " ";
-            }
-            stringPhase += (output + "\n");
-        }
-
-        return ResponseEntity.ok()
-                // Content-Disposition
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "typicals.txt")
-                // Content-Type
-                .contentType(mediaType)
-                // Contet-Length
-                .contentLength(stringPhase.length()) //
-                .body(stringPhase);
-    }
-    @RequestMapping("/downloadGroups")
-    public ResponseEntity<String> downloadGroups() throws ExecutionException, InterruptedException {
-
-        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
-        String stringPhase = "";
-        for (int i = 0; i < ResolveForm.arrayGroup.get(0).get().getArray().length; i++) {
-            String output = "";
-            for (int j = 0; j < ResolveForm.arrayGroup.size(); j++) {
-                output += ResolveForm.arrayGroup.get(j).get().getArray()[i] + " ";
-            }
-            stringPhase += (output + "\n");
-        }
-
-        return ResponseEntity.ok()
-                // Content-Disposition
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "groups.txt")
-                // Content-Type
-                .contentType(mediaType)
-                // Contet-Length
-                .contentLength(stringPhase.length()) //
-                .body(stringPhase);
-    }
-    @RequestMapping("/downloadJSON")
-    public ResponseEntity<String> downloadJSON(){
-
-        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
-        String stringPhase = "";
-        for (int i = 0; i < ResolveForm.json.size(); i++) {
-            stringPhase += (ResolveForm.json.get(i) + "\n");
-        }
-
-        return ResponseEntity.ok()
-                // Content-Disposition
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "groups.txt")
-                // Content-Type
-                .contentType(mediaType)
-                // Contet-Length
-                .contentLength(stringPhase.length()) //
-                .body(stringPhase);
-    }
-    @RequestMapping("/downloadGeographicCharacters")
-    public ResponseEntity<String> downloadGeographicCharacters() throws ExecutionException, InterruptedException {
-
-        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
-        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-        StringBuilder outputString = new StringBuilder("Дата расчета: " + dateFormat.format(Calendar.getInstance().getTime()) + "\n");
-        outputString.append("Рассчетный период: с ").append(ResolveForm.periodStart).append(" по ").append(ResolveForm.periodEnd).append("\n");
-        outputString.append("Расчет выполнялся по ").append(ResolveForm.isForPhases ? "фазе" : "амплитуде").append("\n");
-        outputString.append("Размер окна: нач. частота ").append(ResolveForm.windowLeft).append(", конеч. частота : ").append(ResolveForm.windowRight).append(", несущая частота: ").append(ResolveForm.windowCenter).append("\n");
-        outputString.append("Коэффициент корреляции: минимальный ").append(ResolveForm.corrDOWN).append(", максимальный ").append(ResolveForm.corrUP).append("\n");
-        outputString.append("Минимальное кол-во эл. в кластере: ").append(ResolveForm.minGroupSize).append("\n");
-        outputString.append("\nТиповые температуры" + "\n");
-        StringBuilder stringPhase = new StringBuilder(ResolveForm.isForPhases ? "\nТиповые фазы" : "\nТиповые амплитуды" + "\n");
-        StringBuilder stringAmpl = new StringBuilder(ResolveForm.isForPhases ? "\nТиповые амплитуды" : "\nТиповые фазы" + "\n");
-        StringBuilder stringClusters = new StringBuilder("\nСтанции в кластерах " + "\n");
-        int l = 0;
-        for (GroupLine cluster : ResolveForm.clusters) {
-
-
-            ArrayList<Integer> group = cluster.getGroup();
-            if(group.size() > ResolveForm.minGroupSize) {
-                l++;
-
-                stringClusters.append("Кластер_").append(l + " ");
-                for (double station:group) {
-                    stringClusters.append((int)station + " ");
-                }
-                stringClusters.append("\n");
-
-                stringPhase.append("Кластер_").append(l + " ");
-                for (double phase:cluster.getTypicals()) {
-                    stringPhase.append(Math.round(phase*1000)/1000.0 + " ");
-                }
-                stringPhase.append("\n");
-
-                stringAmpl.append("Кластер_").append(l);
-                for (int j = 0; j < ResolveForm.arrayAmplitude.get(0).get().getArray().length; j++) {
-                    double average = 0;
-                    for (Integer station : group) {
-                        average += ResolveForm.arrayAmplitude.get(station).get().getArray()[j];
-                    }
-                    stringAmpl.append(" ").append(Math.round(average/group.size()*1000)/1000.0).append(" ");
-                }
-                stringAmpl.append("\n");
-
-                outputString.append("Кластер_").append(l);
-                for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
-                    double average = 0;
-                    for (Integer station : group) {
-                        average += ResolveForm.TempData[station][j];
-                    }
-                    outputString.append(" ").append(Math.round(average/group.size()*1000)/1000.0).append(" ");
-                }
-                outputString.append("\n");
-            }
-        }
-        outputString.append(stringAmpl);
-        outputString.append(stringPhase);
-        outputString.append(stringClusters);
-
-
-        outputString.append("\nГеографические характеристики\n");
-        outputString.append("1.номер_кластера 2.широта_центра 3.долгота_центра 4.макс_широта 5.мин_широта 6.макс_долгота 7.мин_долгота  \n");
-
-        for (int i = 0; i < ResolveForm.geoChars.size(); i++) {
-            outputString.append((int) ResolveForm.geoChars.get(i)[0]).append(" ");
-            for(int j = 1; j < ResolveForm.geoChars.get(i).length; j++)
-            {
-                outputString.append(ResolveForm.geoChars.get(i)[j]).append(" ");
-            }
-            outputString.append("\n");
-        }
-
-        return ResponseEntity.ok()
-                // Content-Disposition
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "groupGeoCharacteristics.txt")
-                // Content-Type
-                .contentType(mediaType)
-                .body(outputString.toString());
-    }
-
-    @RequestMapping("/downloadSKO")
-    public ResponseEntity<String> downloadSKO(){
-
-        MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
-        StringBuilder stringPhase = new StringBuilder();
-
-        for(int i = 1; i< ResolveForm.SKO.size(); i++) {
-            stringPhase.append(i).append(" ").append(ResolveForm.SKO.get(i));
-            stringPhase.append("\n");
-        }
-
-
-        return ResponseEntity.ok()
-                // Content-Disposition
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + "SKO.txt")
-                // Content-Type
-                .contentType(mediaType)
-                // Contet-Length
-                .contentLength(stringPhase.length()) //
-                .body(stringPhase.toString());
-    }
 
 
 }

@@ -299,7 +299,7 @@ window.onload = function () {
             //restrictMapArea: true,
             //restrictMapArea: [[-40, -159], [80, 200]],
             minZoom: 2,
-            maxZoom: 12,
+            maxZoom: 17,
         });
 
         //нннннннннннннннннннннннннннннннннннннннн обрезка карты
@@ -486,12 +486,39 @@ window.onload = function () {
 
             rectangleClusters[i].add(myRectangle);
             currentClusterNums.add(i);
-
             var trangleSize = 1.2;
             var centerX = Math.floor((clusterCordsSumm[i][0]+clusterCordsSumm[i][1])/2*100)/100;
             var centerY = Math.floor((clusterCordsSumm[i][2]+clusterCordsSumm[i][3])/2*100)/100;
+
+            var clasterCenter= new ymaps.Circle([
+                    // Координаты центра круга.
+                    [centerX, centerY],
+                    // Радиус круга в метрах.
+                    40500
+                ],
+                {
+                    // Содержимое балуна. //
+                    balloonContentBody:
+                        " Центр кластера: " + "<br \/>" +
+                        " Координаты: " + centerX + "; " + centerY + "<br \/>"
+                    // Содержимое хинта.
+                    //hintContent: "Подвинь меня"
+                }, {
+                    fillColor: "#ffffff",
+                    // Цвет обводки.
+                    fillOpacity: 1,
+                    // Stroke colors.
+                    strokeColor: colors[(i - 1) % colors.length],
+                    // Stroke transparency.
+                    strokeOpacity: 0.9,
+
+                    strokeWidth: 2,
+                    geodesic: true,
+
+
+                });
             //Центры кластеров
-            var centerTrangle = new ymaps.Polygon([[
+            /*var centerTrangle = new ymaps.Polygon([[
                 // Координаты вершин внешней границы многоугольника.
                 [centerX + (trangleSize-0.1)/Math.log(centerX/22), centerY],
                 [centerX - 0.5*trangleSize, centerY - 0.866*trangleSize],
@@ -516,9 +543,9 @@ window.onload = function () {
                     strokeOpacity: 0.9,
 
                     strokeWidth: 2,
-                });
+                });*/
 
-            centerClusters[i].add(centerTrangle);
+            centerClusters[i].add(clasterCenter);
 
         }
         setObjectType('rect');

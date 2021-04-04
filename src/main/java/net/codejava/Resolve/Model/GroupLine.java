@@ -6,7 +6,7 @@ public class GroupLine implements Comparable<GroupLine> {
     private int[] group;
     private double[] corrs;
     private final int index;
-    double[] typicals;
+    private double[] typicals;
 
 
     public GroupLine(int[] group, double[] corrs, double[] typicals, int index){

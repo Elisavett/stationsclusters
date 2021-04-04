@@ -50,7 +50,7 @@ public class Merger {
      */
     public void loadGroups() throws ExecutionException, InterruptedException {
         //Записываю группы в groupList
-        for (int i = 0; i < stationCount; i++) {
+        for (int i = 0; i < arrayGroup.size(); i++) {
             Group group = (Group) arrayGroup.get(i).get();
             int[] array = group.getArray();
             GroupLine groupLine = new GroupLine(array, group.getCorrs(), arrayPhase.get(i).get().getArray(), i);
