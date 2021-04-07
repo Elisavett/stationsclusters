@@ -17,6 +17,20 @@ import java.util.concurrent.ExecutionException;
 
 @Controller
 public class DownloadFilesController {
+    @RequestMapping("/downloadPhases")
+    public ResponseEntity<String> downloadFile1() throws ExecutionException, InterruptedException {
+
+        StringBuilder stringPhase = new StringBuilder();
+        for (int i = 0; i < ResolveForm.arrayPhase.get(0).get().getArray().length; i++) {
+            StringBuilder output = new StringBuilder();
+            for (int j = 0; j < ResolveForm.arrayPhase.size(); j++) {
+                output.append(ResolveForm.arrayPhase.get(j).get().getArray()[i]).append(" ");
+            }
+            stringPhase.append(output).append("\n");
+        }
+
+        return getFile("phases", stringPhase.toString());
+    }
     @RequestMapping("/downloadFrequency")
     public ResponseEntity<String> downloadFrequency(){
 

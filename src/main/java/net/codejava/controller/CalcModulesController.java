@@ -2,7 +2,6 @@ package net.codejava.controller;
 
 import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.ModulesCalc;
-import net.codejava.Resolve.PhaseCalc.FrequencyAnalysis;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.concurrent.ExecutionException;
 
 @Controller
@@ -53,7 +51,6 @@ public class CalcModulesController {
         return "fragments/classesFragment";
     }
 
-
     @GetMapping("/showChart")
     public String showChart(Model model,
                             @RequestParam(value = "isWindowManually") String isWindowManually) throws ExecutionException, InterruptedException {
@@ -64,80 +61,6 @@ public class CalcModulesController {
         model.addAttribute("window", ResolveForm.windowDelta);
         return "additionals/windowChart";
     }
-
-    @GetMapping("/frequencyAnalysis")
-    public String frequencyAnalysis(Model model, @RequestParam Integer station){
-        double[] temp = ResolveForm.TempData[station].clone();
-        FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis(temp);
-        ResolveForm.frequencyAnalysis = frequencyAnalysis.spectorCalculation();
-        model.addAttribute("chartData", ResolveForm.frequencyAnalysis);
-        model.addAttribute("X_name", "Отсчеты");
-        model.addAttribute("Y_name", "Модуль спектра");
-        model.addAttribute("title", "Частотный спектр (станция №" + station + ")" );
-        model.addAttribute("id", "frequency");
-        model.addAttribute("chartType", "corechart");
-        return "additionals/frequencyChart";
-    }
-
-    @GetMapping("/temperatureChart")
-    public String temperatureChart(Model model, @RequestParam Integer station){
-        double[] temp = ResolveForm.TempData[station].clone();
-        LinkedHashMap<String, Double> temperatures = new LinkedHashMap<>();
-        double averageT = 0;
-        for(int i = 0; i < temp.length; i++)
-        {
-            temperatures.put(String.valueOf(i), Math.round(100*temp[i])/100.);
-            averageT += temp[i];
-        }
-        averageT = Math.round(100*averageT / temp.length)/100.;
-        double sko_temp = 0;
-        for (double v : temp) {
-            sko_temp =+ Math.pow((v - averageT), 2);
-        }
-        sko_temp = Math.round(100*Math.sqrt(sko_temp / (temp.length - 1)))/100.;
-        model.addAttribute("chartData", temperatures);
-        model.addAttribute("additionalData", new double[]{averageT, averageT+sko_temp, averageT-sko_temp});
-        model.addAttribute("X_name", "Отсчеты");
-        model.addAttribute("Y_name", "Значение температуры");
-        model.addAttribute("additionalY_names", new String[]{"Средняя", "+СКО", "-СКО"});
-        model.addAttribute("title", "Температура" );
-        model.addAttribute("id", "temperature");
-        model.addAttribute("chartType", "line");
-        return "additionals/frequencyChart";
-    }
-    @GetMapping("/SKOAnalysis")
-    public String SKOAnalysis(Model model) {
-        //double[] temp = ResolveForm.TempData[station].clone();
-        ResolveForm.averageTemps = new double[ResolveForm.TempData.length];
-        for(int i = 0; i < ResolveForm.TempData.length; i++)
-        {
-            ResolveForm.averageTemps[i] = 0;
-            for(int j = 0; j < ResolveForm.TempData[i].length; j++){
-                ResolveForm.averageTemps[i] += ResolveForm.TempData[i][j];
-            }
-            ResolveForm.averageTemps[i] = ResolveForm.averageTemps[i] / ResolveForm.TempData[i].length;
-        }
-        LinkedHashMap<Integer, Double> SKO = new LinkedHashMap<>();
-
-        for(int i = 0; i < ResolveForm.averageTemps.length; i++)
-        {
-            double sko_temp = 0;
-            for(int j = 0; j < ResolveForm.TempData[i].length; j++){
-                sko_temp =+ Math.pow((ResolveForm.TempData[i][j] - ResolveForm.averageTemps[i]), 2);
-            }
-            sko_temp = sko_temp / (ResolveForm.averageTemps.length - 1);
-            SKO.put(i+1, Math.round(100*Math.sqrt(sko_temp))/100.);
-        }
-        model.addAttribute("X_name", "Станции");
-        model.addAttribute("Y_name", "Значение СКО");
-        model.addAttribute("title", "Среднеквадратическое отклонение по станциям");
-        model.addAttribute("id", "sko");
-        model.addAttribute("chartData", SKO);
-        model.addAttribute("chartType", "corechart");
-        ResolveForm.SKO = SKO;
-        return "additionals/frequencyChart";
-    }
-
     @GetMapping("/countPhase")
     @ResponseStatus(value = HttpStatus.OK)
     public void countPhase(@RequestParam(value = "isForPhase", required = false) String isForPhase,
@@ -145,29 +68,41 @@ public class CalcModulesController {
                            @RequestParam(value = "isWindowManually", required = false) String isWindowManually,
                            @RequestParam(value = "windowLeft", required = false) String windowLeft,
                            @RequestParam(value = "windowRight", required = false) String  windowRight) throws InterruptedException, ExecutionException {
+        //Рассчет по фазе или по амплитуде
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
-        //Отмечаем, что фаза считалась
+        //Отмечаем, что фаза не считалась
         ResolveForm.isPhasesCounted = false;
+        //Если окно уже было подсчитано (через вывод графика)
         if(!windowCounted.equals("")){
-            ResolveForm.windowLeft = ResolveForm.windowCenter - Integer.parseInt(windowCounted);
-            ResolveForm.windowRight = ResolveForm.windowCenter + Integer.parseInt(windowCounted);
+            //Устанавливаем граныцы окна
+            setWindowLimits(Integer.parseInt(windowCounted));
         }
+        //Окно не подсчитано (автоматический расчет или задание границ окна вручную)
         else {
+            //Если окно вручную не задано
             if ((windowLeft.equals("0.0") && windowRight.equals("0.0")) ||
                     (windowLeft.equals("") && windowRight.equals(""))) {
-
+                    //Выбран режим автоматического расчета
                     if (Integer.parseInt(isWindowManually) == 0) {
+                        //Считаем симметричное окно
                         WindowChart.getWindowsChartData(false);
-                        ResolveForm.windowLeft = ResolveForm.windowCenter - ResolveForm.windowDelta;
-                        ResolveForm.windowRight = ResolveForm.windowCenter + ResolveForm.windowDelta;
+                        //Устанавливаем границы окна
+                        setWindowLimits(ResolveForm.windowDelta);
                     }
                 }
+            //Иначе - окно задано вручную
             else{
-                ResolveForm.windowLeft = Double.parseDouble(windowLeft);
-                ResolveForm.windowRight = Double.parseDouble(windowRight);
+                double left = Double.parseDouble(windowLeft);
+                double right = Double.parseDouble(windowRight);
+                ResolveForm.windowCenter = (left + right)/2;
+                setWindowLimits((int)(ResolveForm.windowCenter - left));
             }
         }
-        ModulesCalc.PhaseAmplCalc();;
+        ModulesCalc.PhaseAmplCalc();
+    }
+    private void setWindowLimits(int delta){
+        ResolveForm.windowLeft = ResolveForm.windowCenter - delta;
+        ResolveForm.windowRight = ResolveForm.windowCenter + delta;
     }
     @GetMapping("/countClusters")
     @ResponseStatus(value = HttpStatus.OK)
@@ -182,20 +117,6 @@ public class CalcModulesController {
         ResolveForm.sigma = sigma;
         ModulesCalc.ClustersCalc();
     }
-    /*@GetMapping("/countClusters")
-    @Transactional(timeout = 200)
-    @ResponseStatus(value = HttpStatus.OK)
-    public void countClusters(@RequestParam(value = "corrUP", required = false) String corrUP,
-                              @RequestParam(value = "corrDOWN", required = false) String corrDOWN,
-                              @RequestParam(value = "isAccurate", required = false) String isAccurate,
-                              @RequestParam(value = "sigma", required = false) String sigma
-    ) throws InterruptedException, ExecutionException {
-        ResolveForm.isAccurate = Boolean.parseBoolean(isAccurate);
-        ResolveForm.corrUP = Double.parseDouble(corrUP);
-        ResolveForm.corrDOWN = Double.parseDouble(corrDOWN);
-        ResolveForm.sigma = sigma;
-        ClustersCalc1.calculation();
-    }*/
     @GetMapping("/countClasses")
     @ResponseStatus(value = HttpStatus.OK)
     public void countClasses(@RequestParam(value = "classCoef", required = false) String classCoef) throws InterruptedException, ExecutionException{
