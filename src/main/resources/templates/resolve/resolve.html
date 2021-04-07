@@ -2,6 +2,13 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <div th:replace="fragments/scripts :: scripts"></div>
+    <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script type="text/javascript"
+            src="https://www.gstatic.com/charts/loader.js"></script>
     <title>Расчет</title>
 </head>
 <header>
@@ -61,12 +68,12 @@
                     <div class="col-sm-5 row">
                         <label class="col-sm-4 pl-3">Отсчеты:</label>
                             <div class="col-sm-4">
-                                <input class="form-check-input" checked type="radio" name="tempType" id="tempsLine" value="true">
+                                <input class="form-check-input" type="radio" name="tempType" id="tempsLine" value="false">
                                 <label class="form-check-label">В строку</label>
                                 <img data-toggle="tooltip" title="<img src='/img/TempsStrEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
                             </div>
                             <div class="col-sm-4">
-                                <input class="form-check-input" type="radio" name="tempType" id="tempsCol" value="false">
+                                <input class="form-check-input" checked type="radio" name="tempType" id="tempsCol" value="true">
                                 <label class="form-check-label">В столбец</label>
                                 <img data-toggle="tooltip" title="<img src='/img/TempsColEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
                             </div>
@@ -90,13 +97,13 @@
                     <div class="col-sm-5 row">
                         <label class="col-sm-4 pl-3">Координаты:</label>
                         <div class="col-sm-4">
-                            <input class="form-check-input" checked type="radio" name="cordsType" id="cordsLine" value="false">
+                            <input class="form-check-input" type="radio" name="cordsType" id="cordsLine" value="false">
                             <label class="form-check-label">В строку</label>
                             <img data-toggle="tooltip" title="<img src='/img/CordsStrEx.jpg' width='185' height='180'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
 
                         </div>
                         <div class="col-sm-4">
-                            <input class="form-check-input" type="radio" name="cordsType" id="cordsCol" value="true">
+                            <input class="form-check-input" checked  type="radio" name="cordsType" id="cordsCol" value="true">
                             <label class="form-check-label">В столбец</label>
                             <img data-toggle="tooltip" title="<img src='/img/CordsColEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
 
@@ -241,20 +248,28 @@
                             </label>
                             <div class="col-sm-12">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" checked type="radio" name="isWindowManually" id="automaticWindow" value="0">
+                                    <input class="form-check-input" checked type="radio" name="isWindowManually" id="automaticWindow" value="0" onclick="modeChanged('NOTmanually')">
                                     <label class="form-check-label" >Автоматически</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyWindow" value="1">
+                                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyWindow" value="1" onclick="modeChanged('manually')">
                                     <label class="form-check-label" >Вручную</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyAsimetricWindow" value="2">
+                                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyAsimetricWindow" value="2" onclick="modeChanged('manually')">
                                     <label class="form-check-label" >Вручную (несимметричное)</label>
+                                </div>
+                                <div id="chartButton" class="form-check form-check-inline" hidden="true">
+                                    <a class="btn btn-primary" href="#underchart" role="button">Показать график</a>
                                 </div>
                             </div>
                         </div>
+                        <div hidden="true" id="chartPlace" style="min-height: 350px">
+                            <div id="chartLoader" class="loader" style="margin: 0 auto;"></div>
+                            <div id="chart"></div>
+                        </div>
                     </div>
+
 
                     <div hidden="true" class="windowClass">
                         <div class="form-group row">
@@ -379,6 +394,46 @@
             }
 
     }
+    function modeChanged(mode){
+        if(mode === 'manually'){
+            $('#chartButton').attr('hidden',false);
+            $('#countPhaseButton').attr('hidden',true);
+        }
+        else{
+            $('#chartButton').attr('hidden',true);
+            $('#countPhaseButton').attr('hidden',false);
+
+        }
+        $('#fileDownload').attr("hidden", true);
+        $('#chart').html('');
+        $('#chartPlace').attr("hidden", true);
+        $("#chartLoader").attr("hidden", false);
+    }
+    $('#chartButton').click(function() {
+        $('#chartPlace').attr("hidden", false);
+
+        var data;
+        if(!$('#chartButton').attr("hidden")){
+            if($('input[name="isWindowManually"][value="1"]').prop('checked'))
+            {
+                data=1;
+            }
+            else{
+                data=2;
+            }
+            $.ajax({
+                url: '/showChart',
+                contentType: 'text/html',
+                dataType: 'html',
+                data: "isWindowManually="+data,
+                success: function (html) {
+                    $(".loader").attr("hidden", true);
+                    $('#chart').append(html);
+                    $('#countPhaseButton').attr('hidden',false);
+                }
+            })
+        }
+    });
 
 </script>
 </body>
