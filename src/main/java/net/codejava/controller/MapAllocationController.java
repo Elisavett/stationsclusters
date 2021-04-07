@@ -98,19 +98,20 @@ public class MapAllocationController {
             ResolveForm.sigma = sigma;
             int manuallyWindow = Integer.parseInt(isWindowManually);
 
-
             if ((windowLeft.equals("0.0") && windowRight.equals("0.0")) ||
                     (windowLeft.equals("") && windowRight.equals(""))) {
-                if (manuallyWindow != 0) {
-                    boolean asymmetricWindow = false;
-                    if (manuallyWindow == 2) asymmetricWindow = true;
-                    WindowChart.getWindowsChartData(asymmetricWindow);
+                boolean asymmetricWindow = false;
+                if(manuallyWindow == 2) asymmetricWindow=true;
+                WindowChart.getWindowsChartData(asymmetricWindow);
+                if (manuallyWindow > 0) {
                     model.addAttribute("chartData", WindowChart.chartData);
                     model.addAttribute("window", ResolveForm.windowDelta);
                     return "resolve/chartForPlaneCalc";
                 } else {
-                    ResolveForm.windowLeft = ResolveForm.windowCenter - ResolveForm.windowDelta;
-                    ResolveForm.windowRight = ResolveForm.windowCenter + ResolveForm.windowDelta;
+                    if (manuallyWindow == 0) {
+                        ResolveForm.windowLeft = ResolveForm.windowCenter - ResolveForm.windowDelta;
+                        ResolveForm.windowRight = ResolveForm.windowCenter + ResolveForm.windowDelta;
+                    }
                 }
             }
             else{
@@ -126,7 +127,7 @@ public class MapAllocationController {
         try {
             Start start = new Start();
             json = start.run();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             return "resolve/resolve";
         } catch (NumberFormatException e) {
             String error = "Проверьте правильность данных";

@@ -43,7 +43,7 @@
         </div>
 
         <div hidden="true" id="chartPlace" style="min-height: 350px">
-            <div class="loader" style="margin: 0 auto;"></div>
+            <div id="chartLoader" class="loader" style="margin: 0 auto;"></div>
             <div id="chart"></div>
         </div>
         <a name="underchart"></a>
@@ -88,7 +88,7 @@
         $('#fileDownload').attr("hidden", true);
         $('#chart').html('');
         $('#chartPlace').attr("hidden", true);
-        $(".loader").attr("hidden", false);
+        $("#chartLoader").attr("hidden", false);
     }
     $('#additional2').click(function() {
         if($('.dataClass').attr("hidden"))
