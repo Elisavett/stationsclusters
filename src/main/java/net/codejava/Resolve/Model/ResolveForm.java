@@ -38,7 +38,7 @@ public class ResolveForm {
     public static String sigma = "0.0001";
     public static int dataType = 12;
     public static boolean isPhasesCounted = true;
-    public static boolean tempsIsStationsOnY = true;
+    public static boolean tempsIsStationsOnY = false;
     public static boolean coordsIsStationsOnY = true;
     public static boolean isForPhases = true;
     public static boolean classification = false;
