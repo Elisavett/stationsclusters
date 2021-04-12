@@ -24,9 +24,8 @@ public class DataAnalysis{
     public static double getStationAvgTemp(int station){
         double[] temp = ResolveForm.TempData[station].clone();
         double averageT = 0;
-        for(int i = 0; i < temp.length; i++)
-        {
-            averageT += temp[i];
+        for (double v : temp) {
+            averageT += v;
         }
         return averageT / temp.length;
     }

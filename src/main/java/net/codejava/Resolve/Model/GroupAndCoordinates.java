@@ -2,52 +2,22 @@ package net.codejava.Resolve.Model;
 
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 
+@Getter
 public class GroupAndCoordinates {
-    private double lat;
+    private final double lat;
     @SerializedName("long")
-    private double long_ ;
-    private double number_station;
-    private double number_group;
-    boolean isLessThenFive;
+    private final double long_ ;
+    private final double number_station;
+    private final double number_group;
+    private final boolean isLessThenMinGroupMembers;
 
-    public GroupAndCoordinates(double lat, double long_, double number_station, double number_group, boolean isLessThen5) {
+    public GroupAndCoordinates(double number_station, double lat, double long_, double number_group, boolean isLessThenN) {
         this.lat = lat;
         this.long_ = long_;
         this.number_station = number_station;
         this.number_group = number_group;
-        this.isLessThenFive = isLessThen5;
-    }
-
-    public double getLat() {
-        return lat;
-    }
-
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    public double getLong_() {
-        return long_;
-    }
-
-    public void setLong_(double long_) {
-        this.long_ = long_;
-    }
-
-    public double getNumber_station() {
-        return number_station;
-    }
-
-    public void setNumber_station(double number_station) {
-        this.number_station = number_station;
-    }
-
-    public double getNumber_group() {
-        return number_group;
-    }
-
-    public void setNumber_group(double number_group) {
-        this.number_group = number_group;
+        this.isLessThenMinGroupMembers = isLessThenN;
     }
 }

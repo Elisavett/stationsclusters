@@ -123,12 +123,11 @@ anychart.onDocumentReady(function () {
 
     // прохожусь столько раз сколько номеров групп
     let json_lenght = data[data.length - 1].number_group;
-    let j = 1;
-    let grouped = new Array();
-    let notGruped = crashesDataSet.filter('isLessThenFive', filter_function(true));
+    let grouped = [];
+    let notGruped = crashesDataSet.filter('isLessThenMinGroupMembers', filter_function(true));
     for (let i = 0; i < json_lenght; i++) {
 
-        if(!crashesDataSet.get(crashesDataSet.find('number_group', i + 1), 'isLessThenFive'))
+        if(!crashesDataSet.get(crashesDataSet.find('number_group', i + 1), 'isLessThenMinGroupMembers'))
             grouped.push(crashesDataSet.filter('number_group', filter_function(i + 1)));
     }
     for (let i = 0; i < grouped.length; i++) {
@@ -153,7 +152,7 @@ anychart.onDocumentReady(function () {
             //if (this.getData('summary') == 'null') summary = '';
             return '<span style="font-size: 15px">' +
                 '<span style="color: #bfbfbf">№Станции: ' + '</span>' + this.getData('number_station') + '<br/>' +
-                '<span style="color: #bfbfbf">№Группы: ' + '</span>' + (this.getData('isLessThenFive')===true ? "не группы" : this.getData('number_group')) + '</span>';
+                '<span style="color: #bfbfbf">№Группы: ' + '</span>' + (this.getData('isLessThenMinGroupMembers')===true ? "не группы" : this.getData('number_group')) + '</span>';
         });
 
     // Включает легенду
@@ -188,13 +187,13 @@ function update() {
     marker_update(name, color, 'circle', index - 1, '4');
 
     let element = $('#'+index);
-    let nameElement = $('#'+index).parent().children(".div2");
+    let nameElement = element.parent().children(".div2");
     colors[index] = color;
     rectangleClusters[index].get(0).options.set('fillColor', color);
     rectangleClusters[index].get(0).options.set('strokeColor', color);
     element.css('background-color', color);
 
-    circleClusters[index].each(function (el, i) {
+    circleClusters[index].each(function (el) {
         el.options.set('fillColor', color);
         el.options.set('strokeColor', color);
     });
@@ -205,7 +204,7 @@ function update() {
 
 function filter_function(val1) {
     return function (fieldVal) {
-        return val1 == fieldVal;
+        return val1 === fieldVal;
     };
 }
 
@@ -359,11 +358,9 @@ window.onload = function () {
         var rects = [];
         circlesToShow[0] = [];
         circleClusters[0] = new ymaps.GeoObjectCollection();
-        let Xsumm = 0;
-        let Ysumm = 0;
         for (let i = 0; i < coordinates.length; i++) {
             // Создаем круг.
-            if (coordinates[i].isLessThenFive === false) {
+            if (coordinates[i].isLessThenMinGroupMembers === false) {
                 if (rects[coordinates[i].number_group] === undefined) {
                     rectangleClusters[coordinates[i].number_group] = new ymaps.GeoObjectCollection();
                     circleClusters[coordinates[i].number_group] = new ymaps.GeoObjectCollection();
@@ -486,7 +483,6 @@ window.onload = function () {
 
             rectangleClusters[i].add(myRectangle);
             currentClusterNums.add(i);
-            var trangleSize = 1.2;
             var centerX = Math.floor((clusterCordsSumm[i][0]+clusterCordsSumm[i][1])/2*100)/100;
             var centerY = Math.floor((clusterCordsSumm[i][2]+clusterCordsSumm[i][3])/2*100)/100;
 

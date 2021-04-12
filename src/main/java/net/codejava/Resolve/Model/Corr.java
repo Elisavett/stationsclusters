@@ -1,15 +1,13 @@
 package net.codejava.Resolve.Model;
 
-import java.io.Serializable;
+import lombok.Getter;
 
-public class Corr extends Data implements Serializable {
-    private final double[] data;
+import java.util.List;
 
-    public Corr(double[] corr) {
-        this.data = corr;
-    }
+public class Corr{
+    @Getter private final List<Double> correlationArray;
 
-    public double[] getArray() {
-        return data;
+    public Corr(List<Double> corr) {
+        this.correlationArray = corr;
     }
 }

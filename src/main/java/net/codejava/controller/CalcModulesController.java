@@ -1,7 +1,7 @@
 package net.codejava.controller;
 
 import net.codejava.Resolve.Model.ResolveForm;
-import net.codejava.Resolve.ModulesCalc;
+import net.codejava.Resolve.Modules.ModulesCalc;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -20,6 +20,7 @@ public class CalcModulesController {
         ResolveForm.arrayPhase = null;
         ResolveForm.arrayTypical = null;
         ResolveForm.arrayGroup = null;
+        ResolveForm.isPhasesCounted = true;
         return "resolve/resolveModules";
     }
 
@@ -70,7 +71,7 @@ public class CalcModulesController {
                            @RequestParam(value = "windowRight", required = false) String  windowRight) throws InterruptedException, ExecutionException {
         //Рассчет по фазе или по амплитуде
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
-        //Отмечаем, что фаза не считалась
+        //Отмечаем, что фаза считалась
         ResolveForm.isPhasesCounted = false;
         //Если окно уже было подсчитано (через вывод графика)
         if(!windowCounted.equals("")){
@@ -126,7 +127,7 @@ public class CalcModulesController {
     @GetMapping("/toMap")
     @ResponseStatus(value = HttpStatus.OK)
     public void toMap(@RequestParam(value = "minGroupSize", required = false) String minGroupSize,
-                      @RequestParam(value = "groupCross", required = false) String groupCross) throws InterruptedException, ExecutionException, IOException {
+                      @RequestParam(value = "groupCross", required = false) String groupCross) {
         ResolveForm.minGroupSize = Integer.parseInt(minGroupSize);
         ResolveForm.groupCross = groupCross.equals("true");
         ResolveForm.json = new ArrayList<>();

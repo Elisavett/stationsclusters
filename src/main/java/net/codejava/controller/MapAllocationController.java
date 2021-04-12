@@ -5,7 +5,6 @@
  */
 package net.codejava.controller;
 
-import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -13,7 +12,6 @@ import java.util.concurrent.ExecutionException;
 import net.codejava.Resolve.*;
 import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Controller
 public class MapAllocationController {
-    @Value("${upload.resolve}")
-    private String uploadPath;
 
     @GetMapping("/")
     public String index() {
@@ -65,7 +61,7 @@ public class MapAllocationController {
     }
 
     @GetMapping("/resolveFunction")
-    public String resolveFunction(Model model) {
+    public String resolveFunction() {
         return "resolve/resolveFunction";
     }
     @PostMapping("/map")
@@ -81,7 +77,7 @@ public class MapAllocationController {
                       @RequestParam(value = "isAccurate", required = false) String isAccurate,
                       @RequestParam(value = "windowCounted", required = false) Integer windowCounted,
                       @RequestParam(value = "minGroupSize", required = false) Integer minGroupSize,
-                      @RequestParam(value = "groupCross", required = false) String groupCross) throws IOException, ExecutionException, InterruptedException {
+                      @RequestParam(value = "groupCross", required = false) String groupCross) throws ExecutionException, InterruptedException {
 
         ResolveForm.isPhasesCounted = false;
         ResolveForm.isAccurate = Boolean.parseBoolean(isAccurate);
@@ -127,8 +123,6 @@ public class MapAllocationController {
         try {
             Start start = new Start();
             json = start.run();
-        } catch (IOException e) {
-            return "resolve/resolve";
         } catch (NumberFormatException e) {
             String error = "Проверьте правильность данных";
             model.addAttribute("error", error);
@@ -147,7 +141,7 @@ public class MapAllocationController {
                                        @RequestParam MultipartFile fileCoordinates,
                                        @RequestParam(value = "tempType", required = false) String tempType,
                                        @RequestParam(value = "cordsType", required = false) String cordsType,
-                                       @RequestParam(value = "corr", required = false) String corr) throws IOException {
+                                       @RequestParam(value = "corr", required = false) String corr){
 
         ResolveForm.isPhasesCounted = true;
         ResolveForm.corrDOWN = Double.parseDouble(corr);
@@ -176,7 +170,7 @@ public class MapAllocationController {
                         @RequestParam(value = "cordsType", required = false) String cordsType,
                         @RequestParam(value = "dataType", required = false) String dataType,
                         @RequestParam(value = "periodStart", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodStart,
-                        @RequestParam(value = "periodEnd", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodEnd) throws IOException {
+                        @RequestParam(value = "periodEnd", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodEnd) {
         saveParamsFromCheck(Boolean.parseBoolean(tempType), Boolean.parseBoolean(cordsType),
                 fileTemp, fileCoordinates,
                 Integer.parseInt(dataType),
@@ -197,7 +191,7 @@ public class MapAllocationController {
                         @RequestParam(value = "cordsType", required = false) String cordsType,
                         @RequestParam(value = "dataType", required = false) String dataType,
                         @RequestParam(value = "periodStart", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodStart,
-                        @RequestParam(value = "periodEnd", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodEnd) throws IOException {
+                        @RequestParam(value = "periodEnd", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodEnd){
 
         saveParamsFromCheck(Boolean.parseBoolean(tempType), Boolean.parseBoolean(cordsType),
                 fileTemp, fileCoordinates,
@@ -235,12 +229,12 @@ public class MapAllocationController {
                                MultipartFile fileTemp, MultipartFile fileCoordinates) {
         ResolveForm.tempsIsStationsOnY = tempType;
         ResolveForm.coordsIsStationsOnY = cordsType;
-        if (!fileTemp.getOriginalFilename().equals("")) {
+        if (!"".equals(fileTemp.getOriginalFilename())) {
             ResolveForm.TempData = new double[(int) fileTemp.getSize()][];
             ResolveForm.TempData = SplitInputFile.ReadFromFileSplitting(fileTemp, 't');
             ResolveForm.tempFileName = fileTemp.getOriginalFilename();
         }
-        if (!fileCoordinates.getOriginalFilename().equals("")) {
+        if (!"".equals(fileCoordinates.getOriginalFilename())) {
             ResolveForm.coordData = new double[(int) fileCoordinates.getSize()][];
             ResolveForm.coordData = SplitInputFile.ReadFromFileSplitting(fileCoordinates, 'c');
             ResolveForm.coordFileName = fileCoordinates.getOriginalFilename();
@@ -254,7 +248,7 @@ public class MapAllocationController {
         //Добавляем 1 день, чтобы сопоставить даты
         date2.add(Calendar.DATE, 1);
 
-        int yearsBetween = 0;
+        int yearsBetween;
         String message;
         //Сопоставляем номер месяца и день месяца
         if(date1.get(Calendar.DAY_OF_MONTH) == date2.get(Calendar.DAY_OF_MONTH) && date1.get(Calendar.MONTH) == date2.get(Calendar.MONTH))

@@ -1,5 +1,6 @@
 package net.codejava.Resolve.PhaseCalc;
 
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 public class WindowCalculation extends PhaseCalculationAbstract implements Callable<Integer> {
@@ -40,7 +41,7 @@ public class WindowCalculation extends PhaseCalculationAbstract implements Calla
             else
                 Filtration(center - delta, center + delta);
             IFFTCalculation();
-            phase = new double[realFTT.length];
+            phase = new ArrayList<>();
             PhaseCalculation();
             PhaseLinking();
             if(assimetric){

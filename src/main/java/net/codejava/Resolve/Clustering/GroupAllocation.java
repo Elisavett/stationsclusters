@@ -6,7 +6,6 @@ import net.codejava.Resolve.Model.Group;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -17,10 +16,10 @@ public class GroupAllocation {
     List<List<Integer>> groups;
     List<List<Double>> groupsCorrs;
     int stationCount;
-    List<Future<Corr>> arrayCorr;
+    List<Corr> arrayCorr;
     ExecutorService executorService;
 
-    public GroupAllocation(int stationCount, double corrDOWN, double corrUP, List<Future<Corr>> arrayCorr, ExecutorService executorService)
+    public GroupAllocation(int stationCount, double corrDOWN, double corrUP, List<Corr> arrayCorr, ExecutorService executorService)
     {
         this(executorService);
         this.stationCount = stationCount;
@@ -38,24 +37,20 @@ public class GroupAllocation {
         this.executorService = executorService;
     }
 
-    public List<Future<Group>> clustersCalc() throws ExecutionException, InterruptedException {
+    public List<Future<Group>> clustersCalc() throws InterruptedException {
         loadCorrelationTable();
         allocateGroups();
         return saveGroups();
     }
-    public List<Future<Group>> classesCalc() throws ExecutionException, InterruptedException {
+    public List<Future<Group>> classesCalc() throws InterruptedException {
         return saveGroups();
     }
 
-    private void loadCorrelationTable() throws ExecutionException, InterruptedException {
+    private void loadCorrelationTable(){
         corrTable = new ArrayList<>();
         for (int i = 0; i < stationCount; i++) {
-            Corr corr = arrayCorr.get(i).get();
-            double[] array = corr.getArray();
-            corrTable.add(new ArrayList<>());
-            for (int j = 0; j < array.length; j++) {
-                corrTable.get(i).add(array[j]);
-            }
+            Corr corr = arrayCorr.get(i);
+            corrTable.add(corr.getCorrelationArray());
         }
     }
 
@@ -111,20 +106,20 @@ public class GroupAllocation {
         List<List<Double>> coords;
 
         public MyCallable(int position, List<List<Integer>> groups, List<List<Double>> coords) {
-            this.position = position;// i = position
+            this.position = position;
             this.groups = groups;
             this.coords = coords;
         }
 
         @Override
         public Group call() {
-            int[] groupsArray = new int[groups.get(position).size()];
-            double[] corrsArray = new double[groups.get(position).size()];
+            List<Integer> groupMembers = new ArrayList<>();
+            List<Double> corrs= new ArrayList<>();
             for (int j = 0; j < groups.get(position).size(); j++) {
-                groupsArray[j] = groups.get(position).get(j);
-                corrsArray[j] = groups.get(position).get(j);
+                groupMembers.add(groups.get(position).get(j));
+                corrs.add((double)groups.get(position).get(j));
             }
-            return new Group(groupsArray, corrsArray);
+            return new Group(groupMembers, corrs, position);
         }
     }
 }

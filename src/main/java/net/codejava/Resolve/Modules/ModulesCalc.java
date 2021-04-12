@@ -1,14 +1,11 @@
-package net.codejava.Resolve;
+package net.codejava.Resolve.Modules;
 
 import net.codejava.Resolve.Clustering.*;
+import net.codejava.Resolve.GroupsForMap;
 import net.codejava.Resolve.Model.*;
 import net.codejava.Resolve.PhaseCalc.AmplitudeCalculation;
 import net.codejava.Resolve.PhaseCalc.PhaseCalculation;
-import net.codejava.Resolve.PhaseCalc.RewritePhase;
-
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
@@ -17,7 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class ModulesCalc {
-    public static void PhaseAmplCalc() throws InterruptedException {
+    public static void PhaseAmplCalc() throws InterruptedException, ExecutionException {
         List<Future<Phase>> arrayPhase;
         List<Future<Phase>> arrayAmplitude;
         //получаем количество процессоров
@@ -50,98 +47,76 @@ public class ModulesCalc {
 
         arrayAmplitude = executorService.invokeAll(amplitudeCalculationTasks);
         if (ResolveForm.isForPhases) {
-            ResolveForm.arrayPhase = arrayPhase;
-            ResolveForm.arrayAmplitude = arrayAmplitude;
+            ResolveForm.arrayPhase = ResolveForm.FutureToPlaneObj(arrayPhase);
+            ResolveForm.arrayAmplitude = ResolveForm.FutureToPlaneObj(arrayAmplitude);
         } else {
-
-            ResolveForm.arrayPhase = arrayAmplitude;
-            ResolveForm.arrayAmplitude = arrayPhase;
+            ResolveForm.arrayPhase = ResolveForm.FutureToPlaneObj(arrayAmplitude);
+            ResolveForm.arrayAmplitude = ResolveForm.FutureToPlaneObj(arrayPhase);
         }
         executorService.shutdown();
     }
 
     public static void ClustersCalc() throws InterruptedException, ExecutionException {
         int count = 0;
-        List<Future<Phase>> arrayPhase;
+        List<Phase> arrayPhase;
         int stationCount = ResolveForm.TempData.length;
         int processors = Runtime.getRuntime().availableProcessors();
         ExecutorService executorService = Executors.newFixedThreadPool(processors);
-        List<RewritePhase> rewritePhases = new ArrayList<>();
         if (!ResolveForm.isPhasesCounted){
-            for (int i = 0; i < ResolveForm.arrayPhase.size(); i++) {
-                RewritePhase phaseCalculation = new RewritePhase(ResolveForm.arrayPhase.get(i).get().getArray());
-                rewritePhases.add(phaseCalculation);
-            }
-            arrayPhase = executorService.invokeAll(rewritePhases);
+            arrayPhase = ResolveForm.arrayPhase;
         }
         else{
+            arrayPhase = new ArrayList<>();
             for (int i = 0; i < ResolveForm.TempData.length; i++) {
-                RewritePhase phaseCalculation = new RewritePhase(ResolveForm.TempData[i]);
-                rewritePhases.add(phaseCalculation);
+                Phase phase = new Phase(ResolveForm.TempData[i]);
+                arrayPhase.add(phase);
             }
-            arrayPhase = executorService.invokeAll(rewritePhases);
             ResolveForm.arrayPhase = arrayPhase;
         }
-        ArrayData arrayTypicalPath = new ArrayData();
-        List<Future<Group>> arrayGroup;
-        List<Future<Group>> arrayPrevGroup = new ArrayList<>();
-        List<Future<Corr>> arrayCorr;
+        List<Phase> typicalPhases = new ArrayList<>();
+        List<Group> arrayGroup;
+        List<Group> arrayPrevGroup = new ArrayList<>();
+        List<Corr> arrayCorr;
         boolean check = false;
-        int equalsCount = 0;
-        //long cicleStartExec = System.currentTimeMillis(); //время старта вычислений
+        int equalsCount;
         do {
-            //System.out.println("Cicle");
             //блок вычисления таблицы корреляции
             // создаем лист задач
-            long startExec = System.currentTimeMillis(); //время старта вычислений
             List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
             for (int i = 0; i < stationCount; i++) {
-                CorrelationCalculation corrThread = new CorrelationCalculation(arrayPhase.get(i).get().getArray(), i, stationCount, arrayPhase);
+                CorrelationCalculation corrThread = new CorrelationCalculation(arrayPhase.get(i), i, arrayPhase);
                 corrThreadTasks.add(corrThread);
             }
             //выполняем все задачи. главный поток ждет
-            arrayCorr = executorService.invokeAll(corrThreadTasks);
-            //System.out.println("Corelation");
-            long finishExec = System.currentTimeMillis(); // время конца вычислений
-            //System.out.println("Total corelation calculation time: " + (finishExec - startExec));
-
-            //startExec = System.currentTimeMillis(); //время старта вычислений
+            arrayCorr = ResolveForm.FutureToPlaneObj(executorService.invokeAll(corrThreadTasks));
 
             //блок выделения групп
             GroupAllocation allocationThread = new GroupAllocation(stationCount, ResolveForm.corrDOWN, ResolveForm.corrUP, arrayCorr, executorService);
-            arrayGroup = allocationThread.clustersCalc();
-            //finishExec = System.currentTimeMillis(); // время конца вычислений
-            //System.out.println("Total group allocation time: " + (finishExec - startExec));
+            arrayGroup = ResolveForm.FutureToPlaneObj(allocationThread.clustersCalc());
 
-            int prevEqualsCount = equalsCount;
             equalsCount = 0;
             if(count>0 && ResolveForm.isAccurate) {
                 for (int i = 0; i < stationCount; i++) {
-                    if (Arrays.equals(arrayPrevGroup.get(i).get().getArray(), arrayGroup.get(i).get().getArray())) {
+                    if (arrayPrevGroup.get(i).equals(arrayGroup.get(i))) {
                         equalsCount++;
                     }
                 }
                 if (equalsCount == stationCount) //|| prevEqualsCount > equalsCount)
                     break;
             }
-            //System.out.println("Groups");
             //блок вычисления типовых фаз
-            arrayTypicalPath.clear();
-            //startExec = System.currentTimeMillis(); //время старта вычислений
+            typicalPhases.clear();
             for (int i = 0; i < stationCount; i++) {
-                Group groupIndex = (Group) arrayGroup.get(i).get();
+                Group groupIndex = arrayGroup.get(i);
                 TypicalCalculation typical = new TypicalCalculation(stationCount, arrayPhase, groupIndex);
-                TypicalPhase typicalPhase = typical.run();
-                arrayTypicalPath.addData(typicalPhase);
+                Phase typicalPhase = typical.run();
+                groupIndex.setPhases(typicalPhase);
+                typicalPhases.add(typicalPhase);
             }
 
-            //finishExec = System.currentTimeMillis(); // время конца вычислений
-            //System.out.println("Total typical calculation time: " + (finishExec - startExec));
-            //System.out.println("Typicals");
-
             //блок проверки конца алгоритма
-            EndChecking checkMethod = new EndChecking(stationCount, arrayPhase, arrayTypicalPath, executorService);
-            arrayPhase = checkMethod.run();
+            EndChecking checkMethod = new EndChecking(arrayPhase, typicalPhases, executorService);
+            arrayPhase = ResolveForm.FutureToPlaneObj(checkMethod.run());
             if(!ResolveForm.isAccurate) check = checkMethod.check();
 
             count++;
@@ -154,16 +129,10 @@ public class ModulesCalc {
         executorService.shutdown();
     }
     public static void ClassesCalc() throws InterruptedException, ExecutionException {
-        TreeSet<GroupLine> sortGroupLine = new TreeSet<>();
-        for (int i = 0; i < ResolveForm.arrayGroup.size(); i++) {
-            Group group = ResolveForm.arrayGroup.get(i).get();
-            double[] phase = ResolveForm.arrayPhase.get(i).get().getArray();
-            int[] array = group.getArray();
-            sortGroupLine.add(new GroupLine(array, group.getCorrs(), phase, i));
-        }
+        TreeSet<Group> sortGroups = new TreeSet<>(ResolveForm.arrayGroup);
         if(!ResolveForm.groupCross) {
-            for (GroupLine gr : sortGroupLine) {
-                gr.deleteDoubles(sortGroupLine);
+            for (Group gr : sortGroups) {
+                gr.deleteDoubles(sortGroups);
             }
         }
         //получаем количество процессоров
@@ -171,24 +140,31 @@ public class ModulesCalc {
         //создаем пул на количество процессоров
         ExecutorService executorService = Executors.newFixedThreadPool(processors);
 
-        Object[] groupLines = sortGroupLine.toArray();
+        Object[] groupMas = sortGroups.toArray();
 
         //Получаем типовую фазу первой станции в группе и записываем её как фазу группы
-        List<double[]> groupStartPhases = new ArrayList<>();
-        for (Object line : groupLines) {
-            GroupLine groupLine = (GroupLine) line;
-            Phase phase = ResolveForm.arrayTypical.get(groupLine.getGroup().get(0)).get();
-            groupStartPhases.add(phase.getArray());
+        Phase[] groupStartPhases = new Phase[groupMas.length];
+        for (int i = 0; i < groupMas.length; i++) {
+            Group group = (Group) groupMas[i];
+            Phase phase = ResolveForm.arrayTypical.get(group.getGroupMembers().get(0));
+            groupStartPhases[i] = phase;
         }
 
         //Считаем корреляцию начальной фазы с каждой груповой фазой
         List<List<Double>> groupCorrs = new ArrayList<>();
-        for (int i = 0; i < groupStartPhases.size(); i++) {
-            groupCorrs.add(new ArrayList<>());
-            for(int j = 0; j < ResolveForm.arrayPhase.size(); j++){
-                double[] phase = ResolveForm.arrayPhase.get(j).get().getArray();
-                groupCorrs.get(i).add(correlationCalc(groupStartPhases.get(i), phase));
-            }
+        List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
+        List<Future<Corr>> arrayCorr;
+        for (int i = 0; i < groupStartPhases.length; i++) {
+                Phase phase = ResolveForm.arrayPhase.get(i);
+                CorrelationCalculation corrThread = new CorrelationCalculation(phase, i, groupStartPhases);
+                corrThreadTasks.add(corrThread);
+
+            //выполняем все задачи. главный поток ждет
+        }
+        arrayCorr = executorService.invokeAll(corrThreadTasks);
+        for (Future<Corr> corrFuture : arrayCorr) {
+            List<Double> correlations = corrFuture.get().getCorrelationArray();
+            groupCorrs.add(correlations);
         }
         //Находим наибольшую корреляцию для станции по всем группам. Остальные обращаются в 0
         for (int i = 0; i < groupCorrs.size(); i++) {
@@ -234,11 +210,13 @@ public class ModulesCalc {
             }
         }
         GroupAllocation allocationThread = new GroupAllocation(groups, corrs, executorService);
-        ResolveForm.arrayGroup = allocationThread.classesCalc();
+        ResolveForm.arrayGroup = ResolveForm.FutureToPlaneObj(allocationThread.classesCalc());
     }
-    public static ArrayList<String> JsonCalc() throws InterruptedException, ExecutionException, IOException {
-        Merger merger = new Merger(ResolveForm.TempData.length, ResolveForm.arrayGroup, ResolveForm.arrayTypical, ResolveForm.minGroupSize);
-        return merger.run();
+    public static ArrayList<String> JsonCalc() {
+        GroupsForMap.loadGroups();
+        GroupsForMap.sortGroups();
+
+        return GroupsForMap.getJson();
     }
     private static double correlationCalc(double[] firstStation, double[] secondStation) {
         double average1 = 0, average2 = 0;

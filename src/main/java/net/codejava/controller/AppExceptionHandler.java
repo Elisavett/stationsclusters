@@ -1,6 +1,5 @@
 package net.codejava.controller;
 import net.codejava.Exeptions.FileException;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,13 +8,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 @ControllerAdvice
-public class AppExeptionHandler {
-    //private static final Logger LOGGER = LoggerFactory.getLogger(AppExeptionHandler.class);
-    private final MessageSource source;
+public class AppExceptionHandler {
 
-    public AppExeptionHandler(final MessageSource messageSource) {
-        source = messageSource;
-    }
     ModelAndView mw = new ModelAndView("additionals/error");
 
     @ExceptionHandler(value = FileException.class)

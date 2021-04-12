@@ -6,8 +6,6 @@ import net.codejava.Resolve.Model.Phase;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 
 /**
@@ -17,52 +15,49 @@ import java.util.concurrent.Future;
  */
 public class CorrelationCalculation implements Callable<Corr> {
     private final int firstIndex;
-    private final double[] correlation;
-    private double[] firstStation;
-    private double[] secondStation;
-    private Phase[] arrayPhase;
+    private final List<Double> correlation;
+    private final List<Double> firstStation;
+    private List<Double> secondStation;
+    private final Phase[] arrayPhase;
 
     @Override
-    public Corr call() throws Exception {
-        int counter = 0;
+    public Corr call(){
         for (int i = firstIndex + 1; i < arrayPhase.length; i++) {
             secondStation = loadStantion(i);
-            correlation[counter] = correlationCalc();
-            counter++;
+            correlation.add(correlationCalc());
         }
-        Corr corr = new Corr(correlation);
-        return corr;
+        return new Corr(correlation);
     }
 
-    public CorrelationCalculation(double[] station, int firstIndex, int totalNumber, List<Future<Phase>> arrayPhase) throws ExecutionException, InterruptedException {
-        this.firstStation = station;
+    public CorrelationCalculation(Phase station, int firstIndex, List<Phase> arrayPhase) {
+        this.firstStation = station.getPhase();
         this.firstIndex = firstIndex;
-        this.correlation = new double[arrayPhase.size() - firstIndex - 1];
+        this.correlation = new ArrayList<>();
         this.arrayPhase = new Phase[arrayPhase.size()];
         for (int i = 0; i < arrayPhase.size(); i++){
-            this.arrayPhase[i] = arrayPhase.get(i).get();
+            this.arrayPhase[i] = arrayPhase.get(i);
         }
 
     }
 
-    public CorrelationCalculation(double[] station, int firstIndex, int totalNumber, Phase[] arrayPhase) throws ExecutionException, InterruptedException {
-        this.firstStation = station;
+    public CorrelationCalculation(Phase station, int firstIndex, Phase[] arrayPhase){
+        this.firstStation = station.getPhase();
         this.firstIndex = firstIndex;
-        this.correlation = new double[arrayPhase.length - firstIndex - 1];
+        this.correlation = new ArrayList<>();
         this.arrayPhase = arrayPhase;
     }
 
 
-    private double[] loadStantion(int index) throws ExecutionException, InterruptedException {
-        return arrayPhase[index].getArray();
+    private List<Double> loadStantion(int index){
+        return arrayPhase[index].getPhase();
     }
 //расчет взаимной корреляции между двумя хронологическими рядами
     private double correlationCalc() {
         double average1 = 0, average2 = 0;
-        int num = firstStation.length;
+        int num = firstStation.size();
         for (int i = 0; i < num; i++) {
-            average1 += firstStation[i];
-            average2 += secondStation[i];
+            average1 += firstStation.get(i);
+            average2 += secondStation.get(i);
         }
         if(average1 == 0 || average2 == 0)
             return 0;
@@ -73,8 +68,8 @@ public class CorrelationCalculation implements Callable<Corr> {
         double part2 = 0;
         double part3 = 0;
         for (int i = 0; i < num; i++) {
-            double dif1 = firstStation[i] - average1;
-            double dif2 = secondStation[i] - average2;
+            double dif1 = firstStation.get(i) - average1;
+            double dif2 = secondStation.get(i) - average2;
             part1 += dif1 * dif2;
             part2 += dif1 * dif1;
             part3 += dif2 * dif2;

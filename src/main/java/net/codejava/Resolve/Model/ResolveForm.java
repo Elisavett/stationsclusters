@@ -6,19 +6,18 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class ResolveForm {
 
     public static double[][] TempData;
-    public static double[][] PhasesData;
-    public static List<Future<Phase>> arrayPhase;
-    public static List<Future<Phase>> arrayAmplitude;
-    public static List<Future<Phase>> arrayTypical;
-    public static List<Future<Group>> arrayGroup;
-    public static TreeSet<GroupLine> clusters;
+    public static List<Phase> arrayPhase;
+    public static List<Phase> arrayAmplitude;
+    public static List<Phase> arrayTypical;
+    public static List<Group> arrayGroup;
+    public static TreeSet<Group> clusters;
     public static ArrayList<String> json;
-    public static ArrayList<double[]> geoChars = new ArrayList<>();
     public static boolean groupCross = false;
     public static int groupNum;
     public static double[][] coordData;
@@ -60,5 +59,12 @@ public class ResolveForm {
         model.addAttribute("tempType", ResolveForm.tempsIsStationsOnY);
         model.addAttribute("isForPhase", ResolveForm.isForPhases);
         model.addAttribute("classification", ResolveForm.classification);
+    }
+    public static  <T> List<T> FutureToPlaneObj(List<Future<T>> futureObject) throws ExecutionException, InterruptedException {
+        List<T> planeObject = new ArrayList<>();
+         for(Future<T> item: futureObject){
+            planeObject.add(item.get());
+        }
+        return planeObject;
     }
 }

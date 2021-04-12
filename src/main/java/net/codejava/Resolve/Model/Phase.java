@@ -1,15 +1,20 @@
 package net.codejava.Resolve.Model;
 
-import java.io.Serializable;
+import lombok.Getter;
 
-public class Phase extends Data implements Serializable {
-    private final double[] data;
+import java.util.ArrayList;
+import java.util.List;
 
-    public Phase(double[] phase) {
-        this.data = phase;
+public class Phase{
+    @Getter private final List<Double> phase;
+
+    public Phase(List<Double> phase) {
+        this.phase = phase;
     }
-
-    public double[] getArray() {
-        return data;
+    public Phase(double[] phase){
+        this.phase = new ArrayList<>();
+        for(double phasePart : phase){
+            this.phase.add(phasePart);
+        }
     }
 }

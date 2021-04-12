@@ -2,6 +2,8 @@ package net.codejava.Resolve.PhaseCalc;
 
 import net.codejava.Resolve.Model.Phase;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 
@@ -27,10 +29,10 @@ public class AmplitudeCalculation extends PhaseCalculationAbstract implements Ca
         IFFTCalculation();
         return new Phase(amplitudeCalculation());
     }
-    public double[] amplitudeCalculation(){
-        phase = new double[real.length];
-        for (int i = 0; i < real.length; i++) {
-            phase[i] = Math.sqrt(imag[i]*imag[i] + real[i]*real[i]);
+    public List<Double> amplitudeCalculation(){
+        phase = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
+            phase.add(Math.sqrt(imag[i]*imag[i] + real[i]*real[i]));
         }
         return phase;
     }

@@ -17,7 +17,6 @@ public class SplitInputFile {
     /**
      * Разделяет полученный файл по строчкам и помещает каждую строку в новый файл в переданный путь
      *
-     * @throws IOException если файл не существует, это каталог, а не обычный файл, или по какой-либо другой причине не может быть открыт для чтения.
      */
     public static double[][] ReadFromFileSplitting(MultipartFile fileTemp, char filetype) throws FileException {
         try {
@@ -50,7 +49,6 @@ public class SplitInputFile {
                     }
                 }
                 flag = true;
-                counter = 0;
             }
             double[][] arrayTemp;
             if ((filetype == 't') != isOnY) {

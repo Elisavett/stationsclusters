@@ -9,7 +9,6 @@ public class resolveAverage {
     private static final Gson GSON = new GsonBuilder().create();
     public ArrayList<String> resolve(Double r, Double[] temps, double[][] coords){
 
-        int T_number = 0;
         int T_sr_index = 4;
         int  quantity_column = coords.length + 1;
         int quantity_line = temps.length;
@@ -19,7 +18,6 @@ public class resolveAverage {
         Double[][] raznost;//разность массивов ymenshaemoe и chastnoe
         Double[] sr;//сюда записываю среднее значение
         Double[] conec_iterachii;//проверка конца итерации
-        Double[] start_out = temps.clone();
 
         source = metod_ymenshaemoe(quantity_line, temps);// Массив, из которого берутся значения по умолчанию
 
@@ -29,7 +27,7 @@ public class resolveAverage {
             vichitaemoe = metod_vichitaemoe(quantity_line, temps);
             raznost = metod_raznost(quantity_line, ymenshaemoe, vichitaemoe, r, source);//Вычитаю из массива ymenshaemoe массив vichitaemoe, записываю в массив raznost
             sr = metod_srednee(quantity_line, raznost);
-            conec_iterachii = metod_proverka(quantity_line, temps, sr, T_number);
+            conec_iterachii = metod_proverka(quantity_line, temps, sr);
             temps = sr;
 
             double endt = 0;
@@ -98,7 +96,7 @@ public class resolveAverage {
     public double[][] method_number_group(int razmer, int num_string, Double[][] nums, int index_Tc)
     {
         double[][] ddd = new double[num_string][razmer + 1];
-        Double k = 1.0;
+        double k = 1.0;
         for (int i = 0; i < num_string - 1; i++)
         {
             for (int j = 0; j < razmer; j++)
@@ -151,8 +149,8 @@ public class resolveAverage {
         {
             for (int j = 0; j < razmer; j++)
             {
-                Double znachenie_raznosti = ymenshaemoe[i][j] - vichitaemoe[i][j];
-                if (Math.abs((double)znachenie_raznosti) > radius)
+                double znachenie_raznosti = ymenshaemoe[i][j] - vichitaemoe[i][j];
+                if (Math.abs(znachenie_raznosti) > radius)
                 {
                     raznost[i][j] = null;
                 }
@@ -199,7 +197,7 @@ public class resolveAverage {
     //------------------------------------------------------------------
 
     //---------------------------------------Проверка---------------------
-    public Double[] metod_proverka(int razmer, Double[] temp, Double[] sr, int T_number)
+    public Double[] metod_proverka(int razmer, Double[] temp, Double[] sr)
     {
         Double[] conec_iterachii = new Double[razmer];
         for (int i = 0; i < razmer; i++)
@@ -210,21 +208,19 @@ public class resolveAverage {
     }
     //------------------------------------------------------------------
 
-    public ArrayList<String> getJson(double mas[][]) {
+    public ArrayList<String> getJson(double[][] mas) {
         //формирую json файл
         ArrayList<String> json = new ArrayList<>();
-        int numberGroup = 1;
-        for (int i = 0; i<mas.length; i++) {
-            String jsonData = GSON.toJson(new String[] {String.valueOf(mas[i][1]),
-                    String.valueOf(mas[i][2]),
-                    String.valueOf(mas[i][0]),
-                    String.valueOf((int)mas[i][5]),
+        for (double[] ma : mas) {
+            String jsonData = GSON.toJson(new String[]{String.valueOf(ma[1]),
+                    String.valueOf(ma[2]),
+                    String.valueOf(ma[0]),
+                    String.valueOf((int) ma[5]),
                     String.valueOf(false)});
             json.add(jsonData);
 
         }
 
-//        System.out.println(json);
         return json;
 
     }

@@ -2,23 +2,28 @@ package net.codejava.Resolve.PhaseCalc;
 
 import net.codejava.Resolve.Model.Phase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class PhaseCalculationAbstract {
     double[] real;
     double[] imag;
-    double[] phase;
-    double[] finals;
+    List<Double> phase;
+    List<Double> finals;
     double[] temp;
     double leftLimit;
     double rightLimit;
+    int N;
 
 
     public void LoadFunction(){
         real = temp.clone();
+        N = real.length;
     }
 
 
     public void FFTCalculation() {
-        imag = new double[real.length];
+        imag = new double[N];
         FFT.transform(real, imag);
     }
 
@@ -33,7 +38,7 @@ public abstract class PhaseCalculationAbstract {
      * @param b Правая граница
      */
     public void Filtration(double a, double b) {
-        for (int i = 0; i < real.length; i++) {
+        for (int i = 0; i < N; i++) {
             if (i < a || i > b) {
                 real[i] = 0;
                 imag[i] = 0;
@@ -42,60 +47,45 @@ public abstract class PhaseCalculationAbstract {
     }
 
     public void PhaseCalculation() {
-        phase = new double[real.length];
-        for (int i = 0; i < real.length; i++) {
-            phase[i] = Math.atan2(imag[i], real[i]);
+        phase = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
+            phase.add(Math.atan2(imag[i], real[i]));
         }
 
     }
 
     protected void PhaseLinking() {
         double c = 0;
-        double d = phase[1] - phase[0];
-        double n = phase.length;
-        for (int i = 1; i < n; i++) {
+        double d = phase.get(1) - phase.get(0);
+        for (int i = 1; i < N; i++) {
             double dd = d;
-            if (i < n - 1) d = phase[i + 1] - phase[i];
+            if (i < N - 1) d = phase.get(i+1) - phase.get(i);
             double cc = c;
             if (dd > Math.PI) cc = c - 2 * Math.PI;
             if (-dd > Math.PI) cc = c + 2 * Math.PI;
-            phase[i] = (phase[i] + cc);
+            phase.set(i, phase.get(i) + cc);
             c = cc;
         }
     }
-    /*public void saveChart(){
-        String chartName = index + ".jpg";
-        final XYSeries series1 = new XYSeries("Phase");
-        for (int i = 0; i < finals.length; i++){
-            series1.add(i,finals[i]);
-        }
-        final XYSeriesCollection dataset = new XYSeriesCollection();
-        dataset.addSeries(series1);
-        final JFreeChart chart = ChartFactory.createXYLineChart("Chart", "X", "Y", dataset, PlotOrientation.HORIZONTAL, true, true, false);
-        try {
-            ChartUtilities.saveChartAsJPEG(new File(chartName), chart, 500, 300);
-        } catch (IOException ex) {
-           }
-    }*/
 
     /**
      * Нормализует фазу
      */
     protected void NormalizingToZero() {
-        double a = phase[0];
+        double a = phase.get(0);
         for (double v : phase) {
             if (v < a) a = v;
         }
-        for (int i = 0; i < phase.length; i++) {
-            phase[i] -= a;
+        for (int i = 0; i < N; i++) {
+            phase.set(i, phase.get(i) - a);
         }
     }
 
     protected void RemoveLinear() {
-        finals = new double[phase.length];
-        double k = (phase[phase.length - 1] - phase[0]) / (phase.length - 1);
-        for (int i = 1; i <= phase.length; i++) {
-            finals[i - 1] = phase[i - 1] - k * (i - 1) - phase[0];
+        finals = new ArrayList<>();
+        double k = (phase.get(N - 1) - phase.get(0)) / (N - 1);
+        for (int i = 1; i <= N; i++) {
+            finals.add(phase.get(i - 1) - k * (i - 1) - phase.get(0));
         }
     }
 
@@ -104,15 +94,9 @@ public abstract class PhaseCalculationAbstract {
     }
 
     protected boolean isPhaseUnbroken(){
-        for (int i = 1; i < phase.length-1; i++) {
-            if ((phase[i + 1] - phase[i])<0) return false;
+        for (int i = 1; i < N-1; i++) {
+            if ((phase.get(i+1) - phase.get(i))<0) return false;
         }
         return true;
-    }
-    protected boolean isPhaseBroken(){
-        for (int i = 1; i < phase.length-1; i++) {
-            if ((phase[i + 1] - phase[i])<0) return true;
-        }
-        return false;
     }
 }

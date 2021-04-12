@@ -1,6 +1,8 @@
 package net.codejava.Resolve.PhaseCalc;
 
 import net.codejava.Resolve.Model.Phase;
+
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 
@@ -17,6 +19,7 @@ public class PhaseCalculation extends PhaseCalculationAbstract implements Callab
         this.temp = temp;
         this.leftLimit = leftLimit;
         this.rightLimit = rightLimit;
+        this.N = temp.length;
     }
     @Override
     public Phase call() {
@@ -36,9 +39,9 @@ public class PhaseCalculation extends PhaseCalculationAbstract implements Callab
         }
     }
     private Phase phaseToZero(){
-        finals = new double[phase.length];
-        for (int i = 0; i < phase.length; i++) {
-            finals[i] = 0;
+        finals = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
+            finals.add(0.0);
         }
         return new Phase(finals);
     }
