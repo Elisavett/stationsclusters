@@ -187,13 +187,13 @@ function update() {
     marker_update(name, color, 'circle', index - 1, '4');
 
     let element = $('#'+index);
-    let nameElement = $('#'+index).parent().children(".div2");
+    let nameElement = element.parent().children(".div2");
     colors[index] = color;
     rectangleClusters[index].get(0).options.set('fillColor', color);
     rectangleClusters[index].get(0).options.set('strokeColor', color);
     element.css('background-color', color);
 
-    circleClusters[index].each(function (el, i) {
+    circleClusters[index].each(function (el) {
         el.options.set('fillColor', color);
         el.options.set('strokeColor', color);
     });
@@ -288,11 +288,16 @@ window.onload = function () {
         var rects = [];
         circlesToShow[0] = [];
         circleClusters[0] = new ymaps.GeoObjectCollection();
-        let Xsumm = 0;
-        let Ysumm = 0;
+        let max_lat = -90;
+        let max_long = -180;
+        let min_lat = 90;
+        let min_long = 180;
         for (let i = 0; i < coordinates.length; i++) {
-            // Создаем круг.
-            if (coordinates[i].isLessThenFive === false) {
+            if(coordinates[i].lat > max_lat) max_lat = coordinates[i].lat;
+            else if(coordinates[i].lat < min_lat) min_lat = coordinates[i].lat;
+            if(coordinates[i].long > max_long) max_long = coordinates[i].long;
+            else if(coordinates[i].long < min_long) min_long = coordinates[i].long;
+            if (coordinates[i].isLessThenMinGroupMembers === false) {
                 if (rects[coordinates[i].number_group] === undefined) {
                     rectangleClusters[coordinates[i].number_group] = new ymaps.GeoObjectCollection();
                     circleClusters[coordinates[i].number_group] = new ymaps.GeoObjectCollection();
@@ -379,6 +384,81 @@ window.onload = function () {
                 //map.geoObjects.add(myCircle);
             }
         }
+
+
+        // Создание экземпляра карты и его привязка к контейнеру с
+        // заданным id ("map").
+        let delta = 1;
+        alert(min_lat + " " + min_long + " " + max_lat + " " + max_long)
+        map = new ymaps.Map('map', {
+            // При инициализации карты обязательно нужно указать
+            // её центр и коэффициент масштабирования.
+            center: [(min_lat+max_lat)/2, (min_long+max_long)/2],
+            zoom: 1,
+            controls: ['zoomControl']
+        }, {
+            //searchControlProvider: 'yandex#search',
+            //restrictMapArea: true,
+            restrictMapArea: [[min_lat + delta, min_long + delta], [max_lat + delta, max_long+ delta]],
+            minZoom: 1,
+            maxZoom: 20,
+        });
+
+        //нннннннннннннннннннннннннннннннннннннннн обрезка карты
+
+        /*ymaps.borders.load('RU', {
+            lang: 'ru',
+            quality: 2
+        }).then(function (result) {
+
+            // Создадим многоугольник, который будет скрывать весь мир, кроме заданной страны.
+            var background = new ymaps.Polygon([
+                [
+                    [85, -100],
+                    [85, 0],
+                    [85, 100],
+                    [85, 180],
+                    [85, -110],
+                    [-85, -110],
+                    [-85, 180],
+                    [-85, 100],
+                    [-85, 0],
+                    [-85, -100],
+                    [85, -100]
+                ]
+            ], {}, {
+                fillColor: '#ffffff',
+                strokeWidth: 0,
+                // Для того чтобы полигон отобразился на весь мир, нам нужно поменять
+                // алгоритм пересчета координат геометрии в пиксельные координаты.
+                //coordRendering: 'straightPath'
+            });
+
+            // Найдём страну по её iso коду.
+            var region = result.features.filter(function (feature) { return feature.properties.iso3166 == 'RU-KYA'; })[0];
+
+            // Добавим координаты этой страны в полигон, который накрывает весь мир.
+            // В полигоне образуется полость, через которую будет видно заданную страну.
+            var masks = region.geometry.coordinates;
+            masks.forEach(function(mask){
+                background.geometry.insert(1, mask);
+            });
+
+            // Добавим многоугольник на карту.
+            map.geoObjects.add(background);
+        });*/
+
+        //нннннннннннннннннннннннннннннннннннннннн
+
+        //массив
+        //[0] - T
+        //[1], [2] - координаты
+        //[3] - №станции
+        //[4] - Tc
+        //[5] - №группы
+
+
+
         currentClusterNums.add(0);
         for (let i = 1; i < rects.length; i++)
         {
