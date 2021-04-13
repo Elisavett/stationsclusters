@@ -123,12 +123,11 @@ anychart.onDocumentReady(function () {
 
     // прохожусь столько раз сколько номеров групп
     let json_lenght = data[data.length - 1].number_group;
-    let j = 1;
-    let grouped = new Array();
-    let notGruped = crashesDataSet.filter('isLessThenFive', filter_function(true));
+    let grouped = [];
+    let notGruped = crashesDataSet.filter('isLessThenMinGroupMembers', filter_function(true));
     for (let i = 0; i < json_lenght; i++) {
 
-        if(!crashesDataSet.get(crashesDataSet.find('number_group', i + 1), 'isLessThenFive'))
+        if(!crashesDataSet.get(crashesDataSet.find('number_group', i + 1), 'isLessThenMinGroupMembers'))
             grouped.push(crashesDataSet.filter('number_group', filter_function(i + 1)));
     }
     for (let i = 0; i < grouped.length; i++) {
@@ -153,7 +152,7 @@ anychart.onDocumentReady(function () {
             //if (this.getData('summary') == 'null') summary = '';
             return '<span style="font-size: 15px">' +
                 '<span style="color: #bfbfbf">№Станции: ' + '</span>' + this.getData('number_station') + '<br/>' +
-                '<span style="color: #bfbfbf">№Группы: ' + '</span>' + (this.getData('isLessThenFive')===true ? "не группы" : this.getData('number_group')) + '</span>';
+                '<span style="color: #bfbfbf">№Группы: ' + '</span>' + (this.getData('isLessThenMinGroupMembers')===true ? "не группы" : this.getData('number_group')) + '</span>';
         });
 
     // Включает легенду
@@ -205,7 +204,7 @@ function update() {
 
 function filter_function(val1) {
     return function (fieldVal) {
-        return val1 == fieldVal;
+        return val1 === fieldVal;
     };
 }
 
@@ -285,76 +284,6 @@ window.onload = function () {
     //преобразую в число с плавающей точкой
     ymaps.ready(init);
     function init() {
-
-        // Создание экземпляра карты и его привязка к контейнеру с
-        // заданным id ("map").
-        map = new ymaps.Map('map', {
-            // При инициализации карты обязательно нужно указать
-            // её центр и коэффициент масштабирования.
-            center: [58.846573, 80.930432],
-            zoom: 2,
-            controls: ['zoomControl']
-        }, {
-            //searchControlProvider: 'yandex#search',
-            //restrictMapArea: true,
-            //restrictMapArea: [[-40, -159], [80, 200]],
-            minZoom: 2,
-            maxZoom: 12,
-        });
-
-        //нннннннннннннннннннннннннннннннннннннннн обрезка карты
-
-        /*ymaps.borders.load('RU', {
-            lang: 'ru',
-            quality: 2
-        }).then(function (result) {
-
-            // Создадим многоугольник, который будет скрывать весь мир, кроме заданной страны.
-            var background = new ymaps.Polygon([
-                [
-                    [85, -100],
-                    [85, 0],
-                    [85, 100],
-                    [85, 180],
-                    [85, -110],
-                    [-85, -110],
-                    [-85, 180],
-                    [-85, 100],
-                    [-85, 0],
-                    [-85, -100],
-                    [85, -100]
-                ]
-            ], {}, {
-                fillColor: '#ffffff',
-                strokeWidth: 0,
-                // Для того чтобы полигон отобразился на весь мир, нам нужно поменять
-                // алгоритм пересчета координат геометрии в пиксельные координаты.
-                //coordRendering: 'straightPath'
-            });
-
-            // Найдём страну по её iso коду.
-            var region = result.features.filter(function (feature) { return feature.properties.iso3166 == 'RU-KYA'; })[0];
-
-            // Добавим координаты этой страны в полигон, который накрывает весь мир.
-            // В полигоне образуется полость, через которую будет видно заданную страну.
-            var masks = region.geometry.coordinates;
-            masks.forEach(function(mask){
-                background.geometry.insert(1, mask);
-            });
-
-            // Добавим многоугольник на карту.
-            map.geoObjects.add(background);
-        });*/
-
-        //нннннннннннннннннннннннннннннннннннннннн
-
-        //массив
-        //[0] - T
-        //[1], [2] - координаты
-        //[3] - №станции
-        //[4] - Tc
-        //[5] - №группы
-
 
         var rects = [];
         circlesToShow[0] = [];
@@ -486,12 +415,38 @@ window.onload = function () {
 
             rectangleClusters[i].add(myRectangle);
             currentClusterNums.add(i);
-
-            var trangleSize = 1.2;
             var centerX = Math.floor((clusterCordsSumm[i][0]+clusterCordsSumm[i][1])/2*100)/100;
             var centerY = Math.floor((clusterCordsSumm[i][2]+clusterCordsSumm[i][3])/2*100)/100;
+
+            var clasterCenter= new ymaps.Circle([
+                    // Координаты центра круга.
+                    [centerX, centerY],
+                    // Радиус круга в метрах.
+                    40500
+                ],
+                {
+                    // Содержимое балуна. //
+                    balloonContentBody:
+                        " Центр кластера: " + "<br \/>" +
+                        " Координаты: " + centerX + "; " + centerY + "<br \/>"
+                    // Содержимое хинта.
+                    //hintContent: "Подвинь меня"
+                }, {
+                    fillColor: "#ffffff",
+                    // Цвет обводки.
+                    fillOpacity: 1,
+                    // Stroke colors.
+                    strokeColor: colors[(i - 1) % colors.length],
+                    // Stroke transparency.
+                    strokeOpacity: 0.9,
+
+                    strokeWidth: 2,
+                    geodesic: true,
+
+
+                });
             //Центры кластеров
-            var centerTrangle = new ymaps.Polygon([[
+            /*var centerTrangle = new ymaps.Polygon([[
                 // Координаты вершин внешней границы многоугольника.
                 [centerX + (trangleSize-0.1)/Math.log(centerX/22), centerY],
                 [centerX - 0.5*trangleSize, centerY - 0.866*trangleSize],
@@ -516,9 +471,9 @@ window.onload = function () {
                     strokeOpacity: 0.9,
 
                     strokeWidth: 2,
-                });
+                });*/
 
-            centerClusters[i].add(centerTrangle);
+            centerClusters[i].add(clasterCenter);
 
         }
         setObjectType('rect');
