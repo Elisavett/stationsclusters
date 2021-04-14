@@ -388,20 +388,22 @@ window.onload = function () {
 
         // Создание экземпляра карты и его привязка к контейнеру с
         // заданным id ("map").
-        let delta = 1;
-        alert(min_lat + " " + min_long + " " + max_lat + " " + max_long)
+        let delta = 2;
         map = new ymaps.Map('map', {
             // При инициализации карты обязательно нужно указать
             // её центр и коэффициент масштабирования.
+            bounds: ([[min_lat - delta, min_long - delta], [max_lat + delta, max_long+ delta]]),
             center: [(min_lat+max_lat)/2, (min_long+max_long)/2],
             zoom: 1,
             controls: ['zoomControl']
         }, {
             //searchControlProvider: 'yandex#search',
             //restrictMapArea: true,
-            restrictMapArea: [[min_lat + delta, min_long + delta], [max_lat + delta, max_long+ delta]],
+            //restrictMapArea: [[min_lat - delta, min_long - delta], [max_lat + delta, max_long+ delta]],
             minZoom: 1,
             maxZoom: 20,
+            maxAnimationZoomDifference: 1,
+            avoidFractionalZoom: false
         });
 
         //нннннннннннннннннннннннннннннннннннннннн обрезка карты
@@ -630,10 +632,12 @@ window.onload = function () {
                     }
                 }
                 else if (mode === 'circ') {
-                    map.geoObjects.add(circleClusters[index]);
+                    //if(circleClusters[index].getLength() > 0)
+                        map.geoObjects.add(circleClusters[index]);
                 } else {
                     if (index > 0) map.geoObjects.add(rectangleClusters[index]);
-                    map.geoObjects.add(circleClusters[index]);
+                    //if(circleClusters[index].getLength() > 0)
+                        map.geoObjects.add(circleClusters[index]);
                 }
                 if(index==0){
                     element.css('background', 'url(/img/cross.png) no-repeat center /cover');

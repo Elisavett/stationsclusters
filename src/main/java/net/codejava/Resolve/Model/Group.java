@@ -77,8 +77,8 @@ public class Group implements Comparable<Group> {
     }
     @Override
     public int compareTo(Group anotherGroupLine) {
-        if(this.groupMembers.size() > anotherGroupLine.getGroupMembers().size()) return 1;
+        if(this.groupMembers.size() > anotherGroupLine.getGroupMembers().size()) return -1;
         if(this.groupMembers.equals(anotherGroupLine.getGroupMembers())) return 0;
-        return -1;
+        return 1;
     }
 }
