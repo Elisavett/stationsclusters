@@ -51,8 +51,6 @@ public class ResolveForm {
         model.addAttribute("sigma", ResolveForm.sigma);
         model.addAttribute("corr", ResolveForm.corrDOWN);
         model.addAttribute("dataType", ResolveForm.dataType);
-        model.addAttribute("wleft", ResolveForm.windowLeft);
-        model.addAttribute("wRight", ResolveForm.windowRight);
         model.addAttribute("periodStart", ResolveForm.periodStart);
         model.addAttribute("periodEnd", ResolveForm.periodEnd);
         model.addAttribute("cordType", ResolveForm.coordsIsStationsOnY);
