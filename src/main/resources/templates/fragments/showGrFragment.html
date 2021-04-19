@@ -27,7 +27,8 @@
             <div id="fileGeoDownload" class="col-sm-3" hidden="true" >
                 <a href="/downloadGeographicCharacters">Отчет о рассчетах</a>
             </div>
-
+            <span id="error" style="color: red">
+            </span>
         </div>
 </div>
 
@@ -51,6 +52,10 @@
                     $('#fileJSONDownload').attr("hidden", false);
                     $('#fileGeoDownload').attr("hidden", false);
                     if(isClusterizationEnd === true) $('#showOnMap').removeAttr('disabled');
+                },
+                error: function(){
+                    $('#loaderGroup').attr("hidden", true);
+                    $('#error').text("Ошибка вычислений");
                 }
             });
         }

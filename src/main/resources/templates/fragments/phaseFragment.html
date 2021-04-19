@@ -39,6 +39,8 @@
                 <div id="chartButton" class="form-check form-check-inline" hidden="true">
                     <a class="btn btn-primary" href="#underchart" role="button">Показать график</a>
                 </div>
+                <span id="errorChart" style="color: red">
+                </span>
             </div>
         </div>
 
@@ -71,6 +73,8 @@
         <div id="fileDownload" class="col-sm-3" hidden="true" >
             <a href="/downloadPhases">Скачать файл с фазами</a>
         </div>
+        <span id="errorPhase" style="color: red">
+                </span>
     </div>
 </div>
 <a name="PhaseFile"></a>
@@ -142,6 +146,10 @@
                     $(".loader").attr("hidden", true);
                     $('#chart').append(html);
                     $('#countPhaseButton').attr('hidden',false);
+                },
+                error: function(){
+                    $('.loader').attr("hidden", true);
+                    $('#errorChart').text("Ошибка вычислений");
                 }
             })
         }
@@ -167,6 +175,10 @@
                 $('#fileDownload').attr("hidden", false);
                 //Расчет выполнен - убираем предупреждение
                 $('#clusterWarning').html('');
+            },
+            error: function(){
+                $('#loaderPhase').attr("hidden", true);
+                $('#errorPhase').text("Ошибка вычислений");
             }
         });
     });

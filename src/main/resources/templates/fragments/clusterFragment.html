@@ -55,6 +55,8 @@
         <div id="fileGroupsDownload" class="col-sm-3" hidden="true" >
             <a href="/downloadGroups">Скачать файл с группами</a>
         </div>
+        <span id="error" style="color: red">
+        </span>
     </div>
 
 </div>
@@ -99,6 +101,10 @@
                     isClusterizationEnd = true;
                     //Управление кликабельностью кнопки для отображения карты
                     if(isGroopingEnd === true) $('#showOnMap').removeAttr('disabled');
+                },
+                error: function(){
+                    $('#loaderCluster').attr("hidden", true);
+                    $('#error').text("Ошибка вычислений");
                 }
             });
         }

@@ -21,6 +21,8 @@
         <div id="fileFinalGroupsDownload" class="col-sm-3" hidden="true" >
             <a href="/downloadGroups">Скачать файл с группами</a>
         </div>
+        <span id="error" style="color: red">
+        </span>
     </div>
 </div>
 <a name="ClustersFile"></a>
@@ -51,6 +53,10 @@
                     $('#fileFinalGroupsDownload').attr("hidden", false);
                     //Расчет выполнен - убираем предупреждение
                     $('#groupWarning').html('');
+                },
+                error: function(){
+                    $('#loaderClasses').attr("hidden", true);
+                    $('#error').text("Ошибка вычислений");
                 }
             });
         }

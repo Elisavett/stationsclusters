@@ -15,6 +15,8 @@
 <!--                <div id="fileTemperatureDownload" class="col-sm-3" hidden="true" >
                     <a href="/downloadFrequency">Скачать данные графика</a>
                 </div>-->
+                <span id="errorTemp" style="color: red">
+                </span>
             </div>
         </div>
 
@@ -41,6 +43,8 @@
                 <div id="fileSKODownload" class="col-sm-3" hidden="true" >
                     <a href="/downloadSKO">Скачать данные графика</a>
                 </div>
+                <span id="errorSKO" style="color: red">
+                </span>
             </div>
         </div>
 
@@ -64,6 +68,8 @@
                 <div id="fileFRDownload" class="col-sm-3" hidden="true" >
                     <a href="/downloadFrequency">Скачать данные графика</a>
                 </div>
+                <span id="errorFR" style="color: red">
+                </span>
             </div>
         </div>
 
@@ -79,35 +85,43 @@
 <script>
     var real_data;
     $('#skoChartButton').click(function() {
-        $('#skoChartPlace').attr("hidden", false);
+
 
         $.ajax({
             url: '/SKOAnalysis',
             contentType: 'text/html',
             dataType: 'html',
             success: function (html) {
+                $('#skoChartPlace').attr("hidden", false);
                 real_data = html;
                 $('#skoChart').append(html);
                 //Отображени файлы для скачивания
                 $('#fileSKODownload').attr("hidden", false);
+            },
+            error: function(){
+                $('#errorSKO').text("Ошибка вычислений");
             }
         })
     });
     $('#temperatureChartButton').click(function() {
         const data = $("input[type=number][name=station2]").val();
         if (data!=='') {
-            $('#temperatureChartPlace').attr("hidden", false);
+
             $.ajax({
                 url: '/temperatureChart',
                 contentType: 'text/html',
                 dataType: 'html',
                 data: "station=" + data,
                 success: function (html) {
+                    $('#temperatureChartPlace').attr("hidden", false);
                     real_data = html;
                     $('#temperatureChart').append(html);
                     //Отображени файлы для скачивания
                     $('#nostationerror2').html('');
                     $("#nostationerror2").attr("hidden",true);
+                },
+                error: function(){
+                    $('#errorTemp').text("Ошибка вычислений");
                 }
             })
         }
@@ -119,19 +133,23 @@
     $('#frquencyChartButton').click(function() {
         var data = $("input[type=number][name=station]").val();
         if (data!=='') {
-            $('#frequencyChartPlace').attr("hidden", false);
+
             $.ajax({
                 url: '/frequencyAnalysis',
                 contentType: 'text/html',
                 dataType: 'html',
                 data: "station=" + data,
                 success: function (html) {
+                    $('#frequencyChartPlace').attr("hidden", false);
                     real_data = html;
                     $('#frequencyChart').append(html);
                     //Отображени файлы для скачивания
                     $('#fileFRDownload').attr("hidden", false);
                     $('#nostationerror').html('');
                     $("#nostationerror").attr("hidden",true);
+                },
+                error: function(){
+                    $('#errorFR').text("Ошибка вычислений");
                 }
             })
         }
