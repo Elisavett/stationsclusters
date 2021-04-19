@@ -128,6 +128,7 @@ public class ModulesCalc {
         ResolveForm.arrayGroup = arrayPrevGroup;
         executorService.shutdown();
     }
+
     public static void ClassesCalc() throws InterruptedException, ExecutionException {
         TreeSet<Group> sortGroups = new TreeSet<>(ResolveForm.arrayGroup);
         if(!ResolveForm.groupCross) {
@@ -155,11 +156,9 @@ public class ModulesCalc {
         List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
         List<Future<Corr>> arrayCorr;
         for (int i = 0; i < groupStartPhases.length; i++) {
-                Phase phase = ResolveForm.arrayPhase.get(i);
-                CorrelationCalculation corrThread = new CorrelationCalculation(phase, i, groupStartPhases);
-                corrThreadTasks.add(corrThread);
-
-            //выполняем все задачи. главный поток ждет
+            Phase phase = groupStartPhases.clone()[i];
+            CorrelationCalculation corrThread = new CorrelationCalculation(phase, -1, ResolveForm.arrayPhase);
+            corrThreadTasks.add(corrThread);
         }
         arrayCorr = executorService.invokeAll(corrThreadTasks);
         for (Future<Corr> corrFuture : arrayCorr) {
@@ -179,7 +178,7 @@ public class ModulesCalc {
         //Выбираем из списка только те станции, у которых корреляция больше установленного значения
         List<List<Integer>> groups = new ArrayList<>();
         List<List<Double>> corrs = new ArrayList<>();
-        int[] lonelyStations = new int[ResolveForm.arrayPhase.size()];
+        int[] GroupEntrys = new int[ResolveForm.arrayPhase.size()];
         for (List<Double> groupCorr : groupCorrs) {
             List<Integer> tempGroup = new ArrayList<>();
             List<Double> tempCorr = new ArrayList<>();
@@ -187,9 +186,8 @@ public class ModulesCalc {
                 if (groupCorr.get(j) > ResolveForm.classCoef) {
                     tempGroup.add(j);
                     tempCorr.add(groupCorr.get(j));
-                } else {
-                    //Считаем сколько раз станция не входила в группу
-                    lonelyStations[j]++;
+                    //Считаем сколько раз станция вошла в группу
+                    GroupEntrys[j]++;
                 }
             }
             if (tempGroup.size() > 0) {
@@ -197,10 +195,10 @@ public class ModulesCalc {
                 corrs.add(tempCorr);
             }
         }
-        for (int i = 0; i < groupCorrs.size(); i++) {
+        for (int i = 0; i < GroupEntrys.length; i++) {
             //Если станция не вошла ни в одну группу
             //Добавим её отдельной группой
-            if(lonelyStations[i] == groupCorrs.size()){
+            if(GroupEntrys[i] == 0){
                 List<Integer> tempGroup = new ArrayList<>();
                 List<Double> tempCorr = new ArrayList<>();
                 tempGroup.add(i);
@@ -218,29 +216,5 @@ public class ModulesCalc {
 
         return GroupsForMap.getJson();
     }
-    private static double correlationCalc(double[] firstStation, double[] secondStation) {
-        double average1 = 0, average2 = 0;
-        int num = firstStation.length;
-        for (int i = 0; i < num; i++) {
-            average1 += firstStation[i];
-            average2 += secondStation[i];
-        }
-        if(average1 == 0 || average2 == 0)
-            return 0;
-        average1 = average1 / num;
-        average2 = average2 / num;
 
-        double part1 = 0;
-        double part2 = 0;
-        double part3 = 0;
-        for (int i = 0; i < num; i++) {
-            double dif1 = firstStation[i] - average1;
-            double dif2 = secondStation[i] - average2;
-            part1 += dif1 * dif2;
-            part2 += dif1 * dif1;
-            part3 += dif2 * dif2;
-        }
-        double part4 = Math.sqrt(part2 * part3);
-        return part1 / part4;
-    }
 }
