@@ -54,20 +54,34 @@ public class SplitInputFile {
             if ((filetype == 't') != isOnY) {
                 arrayTemp = new double[finalTemp.size()][];
                 for (int k = 0; k < finalTemp.size(); k++) {
-                    double[] tempArr = new double[finalTemp.get(k).size()];
-                    for (int i = 0; i < finalTemp.get(k).size(); i++) {
-                        tempArr[i] = finalTemp.get(k).get(i);
+                    if(finalTemp.get(k).size() == finalTemp.get(0).size()) {
+                        double[] tempArr = new double[finalTemp.get(k).size()];
+                        for (int i = 0; i < finalTemp.get(k).size(); i++) {
+                            tempArr[i] = finalTemp.get(k).get(i);
+                        }
+                        arrayTemp[k] = tempArr;
                     }
-                    arrayTemp[k] = tempArr;
+                    else {
+                        String file = "характеристик";
+                        if(filetype == 'c') file = "координат";
+                        throw new Exception("Проверьте данные в файле " + file + ". Вероятно, в столбце " + (k+1) + " пропущенно значение");
+                    }
                 }
             } else {
-                arrayTemp = new double[finalTemp.get(0).size()][];
+                arrayTemp = new double[finalTemp.get(0).size()][finalTemp.size()];
                 for (int k = 0; k < finalTemp.get(0).size(); k++) {
-                    double[] tempArr = new double[finalTemp.size()];
-                    for (int i = 0; i < finalTemp.size(); i++) {
-                        tempArr[i] = finalTemp.get(i).get(k);
+                    if(finalTemp.get(k).size() == finalTemp.get(0).size()) {
+                        double[] tempArr = new double[finalTemp.size()];
+                        for (int i = 0; i < finalTemp.size(); i++) {
+                            tempArr[i] = finalTemp.get(i).get(k);
+                        }
+                        arrayTemp[k] = tempArr;
                     }
-                    arrayTemp[k] = tempArr;
+                    else {
+                        String file = "характеристик";
+                        if(filetype == 'c') file = "координат";
+                        throw new Exception("Проверьте данные в файле " + file + ". Вероятно, в строке " + (k+1) + " пропущенно значение");
+                    }
                 }
             }
             return arrayTemp;
