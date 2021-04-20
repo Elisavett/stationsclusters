@@ -1,7 +1,6 @@
-<!DOCTYPE html>
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <div th:replace="fragments/scripts :: scripts"></div>
     <script
             src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -9,6 +8,7 @@
 
     <script type="text/javascript"
             src="https://www.gstatic.com/charts/loader.js"></script>
+    <div th:replace="fragments/scripts :: scripts"></div>
     <title>Расчет</title>
 </head>
 <header>
@@ -67,16 +67,16 @@
                     </div>
                     <div class="col-sm-5 row">
                         <label class="col-sm-4 pl-3">Отсчеты:</label>
-                            <div class="col-sm-4">
-                                <input class="form-check-input" type="radio" name="tempType" id="tempsLine" value="true">
-                                <label class="form-check-label">В строку</label>
-                                <img data-toggle="tooltip" title="<img src='/img/TempsStrEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
-                            </div>
-                            <div class="col-sm-4">
-                                <input class="form-check-input" checked type="radio" name="tempType" id="tempsCol" value="false">
-                                <label class="form-check-label">В столбец</label>
-                                <img data-toggle="tooltip" title="<img src='/img/TempsColEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
-                            </div>
+                        <div class="col-sm-4">
+                            <input class="form-check-input" type="radio" name="tempType" id="tempsLine" value="true">
+                            <label class="form-check-label">В строку</label>
+                            <img data-toggle="tooltip" title="<img src='/img/TempsStrEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-check-input" checked type="radio" name="tempType" id="tempsCol" value="false">
+                            <label class="form-check-label">В столбец</label>
+                            <img data-toggle="tooltip" title="<img src='/img/TempsColEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+                        </div>
                     </div>
                 </div>
                 <input type="hidden" id="temps" th:attr="value=${tempers}">
@@ -103,7 +103,7 @@
 
                         </div>
                         <div class="col-sm-4">
-                            <input class="form-check-input" checked  type="radio" name="cordsType" id="cordsCol" value="true">
+                            <input class="form-check-input" checked type="radio" name="cordsType" id="cordsCol" value="true">
                             <label class="form-check-label">В столбец</label>
                             <img data-toggle="tooltip" title="<img src='/img/CordsColEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
 
@@ -178,11 +178,7 @@
                     </div>
                 </div>
                 <div hidden="true" class="optional">
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <input type="checkbox" name="classification" value="true">&nbsp;&nbsp;Классификация
-                        </div>
-                    </div>
+
                     <div class="form-group row">
                         <div class="col-sm-12">
                             <input type="checkbox" name="groupCross" class="groupCross" value="true">&nbsp;&nbsp;Отображать группы с пересечением
@@ -235,7 +231,22 @@
                                    id="minGroupSize" th:attr="value=${minGroupSize}">
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input onclick="showClassification()" type="checkbox" name="classification" value="true">&nbsp;&nbsp;Классификация
+                        </div>
 
+                    </div>
+                    <div class=" dataClass" id="classification" hidden="true">
+                        <div class="form-group row" >
+                            <label class="col-sm-5 col-form-label">Коэффициент корреляции (от 0 до 1):
+                            </label>
+                            <div class="col-sm-2">
+                                <input class="form-control" type="text" name="classCoef" onkeyup="checkParams()" autocomplete="off"
+                                       id="classCoef" value="0.7">
+                            </div>
+                        </div>
+                    </div>
                     <div id="dataTypes" class="form-group row">
                         <div class="col-sm-6">
                             <a id="additional2">Указать режим вычисления окна</a> /
@@ -434,6 +445,9 @@
             })
         }
     });
+    function showClassification(){
+        $('#classification').attr('hidden', !$('input[name="classification"]').prop('checked'));
+    }
 
 </script>
 </body>

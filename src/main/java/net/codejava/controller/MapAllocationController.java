@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.codejava.controller;
 
 import java.text.DateFormat;
@@ -77,13 +72,16 @@ public class MapAllocationController {
                       @RequestParam(value = "isAccurate", required = false) String isAccurate,
                       @RequestParam(value = "windowCounted", required = false) Integer windowCounted,
                       @RequestParam(value = "minGroupSize", required = false) Integer minGroupSize,
-                      @RequestParam(value = "groupCross", required = false) String groupCross) throws ExecutionException, InterruptedException {
+                      @RequestParam(value = "classCoef", required = false) String classCoef, @RequestParam(value = "groupCross", required = false) String groupCross) throws ExecutionException, InterruptedException {
 
         ResolveForm.isPhasesCounted = false;
         ResolveForm.isAccurate = Boolean.parseBoolean(isAccurate);
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
         ResolveForm.groupCross = "true".equals(groupCross);
         ResolveForm.classification = "true".equals(classification);
+        if(ResolveForm.classification){
+            ResolveForm.classCoef = Double.parseDouble(classCoef);
+        }
         if(windowCounted!=null){
             ResolveForm.windowLeft = ResolveForm.windowCenter - windowCounted;
             ResolveForm.windowRight = ResolveForm.windowCenter + windowCounted;
@@ -207,10 +205,6 @@ public class MapAllocationController {
     @GetMapping("/map")
     public String map() {
         return "map1";
-    }
-
-    private void saveParamsFromCalc(){
-
     }
     private void saveParamsFromCheck(boolean tempType, boolean cordsType,
                                      MultipartFile fileTemp, MultipartFile fileCoordinates,
