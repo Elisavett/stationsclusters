@@ -1,0 +1,16 @@
+<div xmlns:th="http://www.w3.org/1999/xhtml" th:id="${num}">
+    <div class="optional row pb-3" style="margin-bottom: 5px">
+        <label class="col-sm-12 col-form-label paramNumber"><b th:text="'Параметр'"></b></label>
+        <div class="col-sm-12 row">
+            <label class="col-sm-2">
+                Название
+            </label>
+                <input class="col-sm-3 parameter" type="text" name="parameter" >
+                <div class="offset-sm-1 col-sm-3">
+                    <input type="checkbox" th:name="${num}" class="parameter" value="true" checked>&nbsp;&nbsp;Отображать на карте
+                </div>
+            <img th:attr="onclick=|deleteFileParam('${num}')|" class="offset-sm-2" src="/img/DeleteCross.png" width='30' height='30'>
+
+        </div>
+    </div>
+</div>

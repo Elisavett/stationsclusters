@@ -18,12 +18,12 @@ public class SplitInputFile {
      * Разделяет полученный файл по строчкам и помещает каждую строку в новый файл в переданный путь
      *
      */
-    public static double[][] ReadFromFileSplitting(MultipartFile fileTemp, char filetype) throws FileException {
+    public static String[][] ReadFromFileSplitting(MultipartFile fileTemp, char filetype) throws FileException {
         try {
 
-            ArrayList<ArrayList<Double>> finalTemp = new ArrayList<>();
+            ArrayList<ArrayList<String>> finalTemp = new ArrayList<>();
             InputStream is = fileTemp.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "windows-1251"));
             String line;
             boolean isOnY = false;
 
@@ -43,35 +43,35 @@ public class SplitInputFile {
                         if (!flag) finalTemp.add(new ArrayList<>());
                         {
                             if (parts[j].contains(",")) parts[j] = parts[j].replace(',', '.');
-                            finalTemp.get(counter).add(Double.parseDouble(parts[j]));
+                            finalTemp.get(counter).add(parts[j]);
                         }
                         counter++;
                     }
                 }
                 flag = true;
             }
-            double[][] arrayTemp;
+            String[][] arrayTemp;
             if ((filetype == 't') != isOnY) {
-                arrayTemp = new double[finalTemp.size()][];
+                arrayTemp = new String[finalTemp.size()][];
                 for (int k = 0; k < finalTemp.size(); k++) {
-                    if(finalTemp.get(k).size() == finalTemp.get(0).size()) {
-                        double[] tempArr = new double[finalTemp.get(k).size()];
+                    //if(finalTemp.get(k).size() == finalTemp.get(0).size()) {
+                        String[] tempArr = new String[finalTemp.get(k).size()];
                         for (int i = 0; i < finalTemp.get(k).size(); i++) {
                             tempArr[i] = finalTemp.get(k).get(i);
                         }
                         arrayTemp[k] = tempArr;
-                    }
-                    else {
+                    //}
+                   /* else {
                         String file = "характеристик";
                         if(filetype == 'c') file = "координат";
                         throw new Exception("Проверьте данные в файле " + file + ". Вероятно, в столбце " + (k+1) + " пропущенно значение");
-                    }
+                    }*/
                 }
             } else {
-                arrayTemp = new double[finalTemp.get(0).size()][finalTemp.size()];
+                arrayTemp = new String[finalTemp.get(0).size()][finalTemp.size()];
                 for (int k = 0; k < finalTemp.get(0).size(); k++) {
                     if(finalTemp.get(k).size() == finalTemp.get(0).size()) {
-                        double[] tempArr = new double[finalTemp.size()];
+                        String [] tempArr = new String[finalTemp.size()];
                         for (int i = 0; i < finalTemp.size(); i++) {
                             tempArr[i] = finalTemp.get(i).get(k);
                         }

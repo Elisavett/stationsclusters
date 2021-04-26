@@ -44,7 +44,7 @@ public class WindowChart {
         if(assimetric) j = 1;
         int stationsNum = stationCount;
         int prevCount = 0;
-        int bestWindow = 0;
+        int bestWindow = windows.get(0);
         for(int i = 1; i< stationCount; i++)
         {
             //округляем в большую сторону
@@ -64,7 +64,6 @@ public class WindowChart {
                 count++;
             }
         }
-        //graphData.put(j + " (" + count + ")", windows.get(stationCount-1));
         graphData.put(String.valueOf(windows.get(stationCount-1)), count*1.0/stationCount*100);
 
         ResolveForm.windowDelta = bestWindow;

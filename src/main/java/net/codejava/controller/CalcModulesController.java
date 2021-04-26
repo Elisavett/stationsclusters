@@ -8,8 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 @Controller
@@ -21,7 +23,8 @@ public class CalcModulesController {
         ResolveForm.arrayTypical = null;
         ResolveForm.arrayGroup = null;
         ResolveForm.isPhasesCounted = true;
-        return "resolve/resolveModules";
+        model.addAttribute("isModules", "true");
+        return "resolve/resolve";
     }
 
     @GetMapping("/getFrequencyFragment")
@@ -60,11 +63,13 @@ public class CalcModulesController {
         WindowChart.getWindowsChartData(assimetricWindow);
         model.addAttribute("chartData", WindowChart.chartData);
         model.addAttribute("window", ResolveForm.windowDelta);
+        model.addAttribute("windowCenter", ResolveForm.windowCenter);
         return "additionals/windowChart";
     }
     @GetMapping("/countPhase")
     @ResponseStatus(value = HttpStatus.OK)
-    public void countPhase(@RequestParam(value = "isForPhase", required = false) String isForPhase,
+    public void countPhase(@RequestParam(value = "isDelta", required = false) String isDelta,
+                           @RequestParam(value = "isForPhase", required = false) String isForPhase,
                            @RequestParam(value = "windowCounted", required = false) String windowCounted,
                            @RequestParam(value = "isWindowManually", required = false) String isWindowManually,
                            @RequestParam(value = "windowLeft", required = false) String windowLeft,
@@ -74,15 +79,21 @@ public class CalcModulesController {
         //Отмечаем, что фаза считалась
         ResolveForm.isPhasesCounted = false;
         //Если окно уже было подсчитано (через вывод графика)
-        if(!windowCounted.equals("")){
+        if(windowCounted != null){
             //Устанавливаем граныцы окна
-            setWindowLimits(Integer.parseInt(windowCounted));
+            if(Boolean.parseBoolean(isDelta)) {
+                setWindowLimits(Integer.parseInt(windowCounted));
+            }
+            else{
+                ResolveForm.windowLeft = Double.parseDouble(windowLeft);
+                ResolveForm.windowRight = Double.parseDouble(windowRight);
+            }
+
         }
         //Окно не подсчитано (автоматический расчет или задание границ окна вручную)
         else {
             //Если окно вручную не задано
-            if ((windowLeft.equals("0.0") && windowRight.equals("0.0")) ||
-                    (windowLeft.equals("") && windowRight.equals(""))) {
+            if (windowLeft == null && windowRight == null) {
                     //Выбран режим автоматического расчета
                     if (Integer.parseInt(isWindowManually) == 0) {
                         //Считаем симметричное окно
@@ -137,6 +148,11 @@ public class CalcModulesController {
     public String showMap(Model model){
         model.addAttribute("json", ResolveForm.json);
         model.addAttribute("groupNum", ResolveForm.groupNum);
+        if(ResolveForm.resolveTime.equals("")) {
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+            ResolveForm.resolveTime = dateFormat.format(Calendar.getInstance().getTime());
+        }
+        model.addAttribute("resolveTime", "Расчет: " + ResolveForm.resolveTime);
         return "map1";
     }
 

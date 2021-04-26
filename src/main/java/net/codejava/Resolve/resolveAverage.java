@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class resolveAverage {
     private static final Gson GSON = new GsonBuilder().create();
-    public ArrayList<String> resolve(Double r, Double[] temps, double[][] coords){
+    public ArrayList<String> resolve(Double r, Double[] temps, String[][] coords){
 
         int T_sr_index = 4;
         int  quantity_column = coords.length + 1;
@@ -47,7 +47,7 @@ public class resolveAverage {
         {
             for (int j = 0; j < quantity_column - 1; j++)
             {
-                out_print[i][j] = coords[j][i];
+                out_print[i][j] = Double.parseDouble(coords[j][i]);
 
             }
             out_print[i][quantity_column] = sr[i];

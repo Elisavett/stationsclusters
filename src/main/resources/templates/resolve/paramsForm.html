@@ -1,0 +1,140 @@
+<div style="padding: 0 12% 0 12%;" xmlns:th="http://www.w3.org/1999/xhtml" class="row">
+    <label style="color: darkred" class="col-sm-12 col-form-label" th:if="${message}!=null" th:text="${message}"></label>
+</div>
+<form xmlns:th="http://www.w3.org/1999/xhtml" target="_blank" th:if="${message}=='Период выбран верно' OR ${message}=='Данные не прошли проверку'" th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form" >
+
+    <div id="options">
+        <div class="form-group row">
+            <label  class="col-sm-12 col-form-label">Все вещественные значения вводятся ч/з точку!!!</label>
+        </div>
+        <div class="form-group row">
+            <label for="corr" class="col-sm-5 col-form-label">Коэффициент корреляции (от 0 до 1):
+            </label>
+            <div class="col-sm-2">
+                <input class="form-control" type="text" name="corr" onkeyup="checkParams()" autocomplete="off"
+                       id="corr" th:attr="value=${corr}">
+            </div>
+        </div>
+        <div id="optionsAdder" onclick="optionsAdder()" class="form-group row">
+            <div class="col-sm-5">
+                <button id="additional" type="button" class="btn btn-link">Дополнительные опции</button>
+
+            </div>
+        </div>
+        <div id="additionalOptions" hidden="true" class="optional">
+
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <input type="checkbox" name="groupCross" class="groupCross" value="true">&nbsp;&nbsp;Отображать группы с пересечением
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-12 col-form-label">Выполнять расчет по:
+                </label>
+                <div class="col-sm-12">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" checked type="radio" name="isForPhase" id="forPhase" value="true">
+                        <label class="form-check-label" >Фазе</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="isForPhase" id="forAmplitude" value="false">
+                        <label class="form-check-label" >Амплитуде</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-12 col-form-label">Точность расчета:
+                </label>
+                <div class="col-sm-12">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" checked type="radio" onclick="accurateCalc()" name="isAccurate" id="accurateCalc" value="true">
+                        <label class="form-check-label" >Точный расчет</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="isAccurate" onclick="errorCalc()" id="errorCalc" value="false">
+                        <label class="form-check-label" >Указать погрешность</label>
+                    </div>
+
+                </div>
+            </div>
+            <div hidden="true" class="errorClass">
+                <div class="form-group row">
+                    <label for="corr" class="col-sm-5 col-form-label">Погрешность вычислений :
+                    </label>
+                    <div class="col-sm-2">
+                        <input class="form-control" type="text" name="sigma" onkeyup="checkParams()" autocomplete="off"
+                               id="sigma" th:attr="value=${sigma}">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="corr" class="col-sm-5 col-form-label">Минимальный размер групп:
+                </label>
+                <div class="col-sm-2">
+                    <input class="form-control" type="number" name="minGroupSize" onkeyup="checkParams()" autocomplete="off"
+                           id="minGroupSize" th:attr="value=${minGroupSize}">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <input onclick="showClassification()" type="checkbox" name="classification" value="true">&nbsp;&nbsp;Классификация
+                </div>
+
+            </div>
+            <div class="underElementClass" id="classification" hidden="true">
+                <div class="form-group row" >
+                    <label class="col-sm-5 col-form-label">Коэффициент корреляции (от 0 до 1):
+                    </label>
+                    <div class="col-sm-2">
+                        <input class="form-control" type="text" name="classCoef" onkeyup="checkParams()" autocomplete="off"
+                               id="classCoef" value="0.7">
+                    </div>
+                </div>
+            </div>
+            <div id="dataTypes" class="form-group row">
+                <div class="col-sm-6">
+                    <button onclick="onAdditional2Click()" type="button" class="btn btn-link">Указать режим вычисления окна</button>
+                    /<button onclick="onAdditional3Click()" type="button" class="btn btn-link">Указать окно</button>
+
+                </div>
+            </div>
+            <div hidden="true" class="dataClass">
+                <div class="form-group row">
+                    <label for="corr" class="col-sm-12 col-form-label">Вычисление окна:
+                    </label>
+                    <div class="col-sm-12">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" checked type="radio" name="isWindowManually" id="automaticWindow" value="0" onclick="modeChanged('NOTmanually')">
+                            <label class="form-check-label" >Автоматически</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyWindow" value="1" onclick="modeChanged('manually')">
+                            <label class="form-check-label" >Вручную</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyAsimetricWindow" value="2" onclick="modeChanged('manually')">
+                            <label class="form-check-label" >Вручную (несимметричное)</label>
+                        </div>
+                        <div id="chartButton" onclick="chartButton()" class="form-check form-check-inline" hidden="true">
+                            <a class="btn btn-primary" href="#underchart" role="button">Показать график</a>
+                        </div>
+                    </div>
+                </div>
+                <div hidden="true" id="chartPlace" style="min-height: 350px">
+                    <div id="chartLoader" class="loader" style="margin: 0 auto;"></div>
+                    <div id="chart"></div>
+                </div>
+            </div>
+
+
+            <div hidden="true" class="windowClass">
+
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-2" >
+                <button onclick="getChecked()" class="btn btn-outline-secondary btn-block" type="submit" >Рассчитать</button>
+            </div>
+        </div>
+    </div>
+</form>

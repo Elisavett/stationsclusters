@@ -52,8 +52,8 @@ public class Report {
             min_lat = 90;
             min_long = 180;
             for (int j : gr.getGroupMembers()) {
-                double lat = ResolveForm.coordData[1][j];
-                double _long = ResolveForm.coordData[2][j];
+                double lat = Double.parseDouble(ResolveForm.coordData[1][j]);
+                double _long = Double.parseDouble(ResolveForm.coordData[2][j]);
                     if (lat > max_lat) max_lat = lat;
                     if (lat < min_lat) min_lat = lat;
                     if (_long > max_long) max_long = _long;
@@ -68,8 +68,11 @@ public class Report {
         return stringClusterGeo.toString();
     }
     public static StringBuilder getCalcCharacteristics(){
-        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-        StringBuilder outputString = new StringBuilder("Дата расчета: " + dateFormat.format(Calendar.getInstance().getTime()) + "\n");
+        if(ResolveForm.resolveTime.equals("")) {
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+            ResolveForm.resolveTime = dateFormat.format(Calendar.getInstance().getTime());
+        }
+        StringBuilder outputString = new StringBuilder("Дата расчета: " + ResolveForm.resolveTime + "\n");
         outputString.append("Рассчетный период: с ").append(ResolveForm.periodStart).append(" по ").append(ResolveForm.periodEnd).append("\n");
         outputString.append("Расчет выполнялся по ").append(ResolveForm.isForPhases ? "фазе" : "амплитуде").append("\n");
         outputString.append("Размер окна: нач. частота ").append(ResolveForm.windowLeft).append(", конеч. частота : ").append(ResolveForm.windowRight).append(", несущая частота: ").append(ResolveForm.windowCenter).append("\n");
@@ -81,14 +84,21 @@ public class Report {
         StringBuilder outputString = getCalcCharacteristics();
         outputString.append("\nТиповые температуры" + "\n");
         StringBuilder stringAmpl = new StringBuilder(ResolveForm.isForPhases ? "\nТиповые амплитуды\n" : "\nТиповые фазы\n");
+        StringBuilder stringPhase = new StringBuilder(ResolveForm.isForPhases ? "\nТиповые фазы\n" : "\nТиповые амплитуды\n");
         StringBuilder stringCorr = new StringBuilder();
         StringBuilder stringStations = new StringBuilder();
         int l = 0;
         for (Group cluster : ResolveForm.clusters) {
 
             List<Integer> group = cluster.getGroupMembers();
+
             if(group.size() > ResolveForm.minGroupSize) {
                 l++;
+                stringPhase.append("Кластер_").append(l).append(" ");
+                for (double phase : cluster.getPhases().getPhase()) {
+                    stringPhase.append(Math.round(phase * 1000) / 1000.0).append(" ");
+                }
+                stringPhase.append("\n");
                 //Добавление строки с номерами станций в группе
                 stringStations.append("Кластер_").append(l).append(" ")
                             .append(cluster.getGroupString());
@@ -113,7 +123,8 @@ public class Report {
             }
         }
         outputString.append("\nСтанции в кластерах " + "\n").append(stringStations);
-        outputString.append(ResolveForm.isForPhases ? "\nТиповые фазы\n" : "\nТиповые амплитуды\n").append(stringAmpl);
+        outputString.append(stringPhase)
+                .append(stringAmpl);
 
         outputString.append(stringCorr);
 

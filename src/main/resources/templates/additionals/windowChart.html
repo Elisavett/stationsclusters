@@ -6,19 +6,59 @@
         <div class="form-group row">
             <label for="windowCounted" class="col-sm-5 col-form-label">Выберете окно (по умочанию рекомендованное):
             </label>
-            <div class="col-sm-2">
-                <input class="form-control" type="number" name="windowCounted"  autocomplete="off"
-                       id="windowCounted" th:attr="value=${window}">
+            <div class="col-sm-2" >
+                <input onchange="countWindow()" class="form-control" type="number" name="windowCounted"  autocomplete="off"
+                       id="windowCounted" th:attr="value=${window}" readonly>
+            </div>
+            <div class="col-sm-5">
+                <!--<div class="offset-sm-1 col-sm-3">-->
+                    <input onclick="deltaCheck()" type="checkbox" name="enterWindowDelta" id="checked" value="true">&nbsp;&nbsp;Указать относительно несущей частоты
+                <!--</div>-->
             </div>
         </div>
+    <input type="hidden" name="isDelta" id="isDelta">
+
+    <div th:replace="fragments/windowLimitsFragment :: windowLimits"></div>
 </div>
 <script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
+
+    var windowCenter = /*[[${windowCenter}]]*/'noValue';
+
+    function disableDelta(){
+        $("#windowCounted").attr('readonly', 'readonly');
+        $("#checked").prop('checked', false);
+    }
+
+    function countWindow(){
+        let winDelta = parseInt($('input[name="windowCounted"]').val());
+        $('input[name="windowLeft"]').val(windowCenter - winDelta);
+        $('input[name="windowRight"]').val(windowCenter + winDelta);
+    }
+
+    function deltaCheck(){
+        if($("#checked").prop('checked')){
+            $("#windowCounted").removeAttr('readonly');
+        }
+        else{
+            $("#windowCounted").attr('readonly', 'readonly');
+        }
+    }
+
+    function getChecked(){
+        $("#isDelta").val($("#checked").prop('checked'));
+    }
+
     var real_data = /*[[${chartData}]]*/'noValue';
 
     $(document).ready(function() {
         google.charts.load('current', {
             packages : [ 'corechart', 'bar' ]
         });
+
+        let delta = /*[[${window}]]*/'noValue';
+        $('input[name="windowLeft"]').val(windowCenter - delta > 0 ? windowCenter - delta : 1);
+        $('input[name="windowRight"]').val(windowCenter + delta);
+
         google.charts.setOnLoadCallback(drawColumnChart);
     });
 

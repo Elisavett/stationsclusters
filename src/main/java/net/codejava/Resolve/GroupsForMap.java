@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.codejava.Resolve.Model.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 
 /**
@@ -45,12 +47,21 @@ public class GroupsForMap {
             boolean isLessThenMinGroupSize;
             isLessThenMinGroupSize = gr.getGroupMembers().size() < ResolveForm.minGroupSize;
             for (int groupMember : gr.getGroupMembers()) {
+                Map<String, String> additional = new HashMap<>();
+                if(ResolveForm.coordData.length > 3 && ResolveForm.fileParams.length > 1) {
+                    int limit = Math.min((ResolveForm.coordData.length-3), ResolveForm.fileParams.length / 2);
+                    for (int i = 0; i < limit; i++) {
+                        if(Boolean.parseBoolean(ResolveForm.fileParams[i*2+1]))
+                            additional.put(ResolveForm.fileParams[i * 2], ResolveForm.coordData[i+3][groupMember]);
+                    }
+                }
                 GroupAndCoordinates groupAndCoordinates = new GroupAndCoordinates(
-                        ResolveForm.coordData[0][groupMember],
-                        ResolveForm.coordData[1][groupMember],
-                        ResolveForm.coordData[2][groupMember],
+                        Double.parseDouble(ResolveForm.coordData[0][groupMember]),
+                        Double.parseDouble(ResolveForm.coordData[1][groupMember]),
+                        Double.parseDouble(ResolveForm.coordData[2][groupMember]),
                         numberGroup,
-                        isLessThenMinGroupSize);
+                        isLessThenMinGroupSize,
+                        additional);
                 String jsonData = GSON.toJson(groupAndCoordinates);
                 json.add(jsonData);
             }

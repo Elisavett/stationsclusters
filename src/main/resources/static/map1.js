@@ -262,6 +262,10 @@ function setObjectType (type) {
         for (let i=1; i<circleClusters.length; i++) {
             if(currentClusterNums.has(i)) {
                 map.geoObjects.add(rectangleClusters[i]);
+            }
+        }
+        for (let i=1; i<circleClusters.length; i++) {
+            if(currentClusterNums.has(i)) {
                 map.geoObjects.add(circleClusters[i]);
             }
         }
@@ -297,6 +301,13 @@ window.onload = function () {
             else if(coordinates[i].lat < min_lat) min_lat = coordinates[i].lat;
             if(coordinates[i].long > max_long) max_long = coordinates[i].long;
             else if(coordinates[i].long < min_long) min_long = coordinates[i].long;
+
+
+            var stringParam = "";
+            for (const [key, value] of Object.entries(coordinates[i].additionalParams)) {
+                stringParam += key + ": " + value + "<br \/>";
+            }
+
             if (coordinates[i].isLessThenMinGroupMembers === false) {
                 if (rects[coordinates[i].number_group] === undefined) {
                     rectangleClusters[coordinates[i].number_group] = new ymaps.GeoObjectCollection();
@@ -329,6 +340,7 @@ window.onload = function () {
                     }
 
                 }
+
                 var myCircle = new ymaps.Circle([
                         // Координаты центра круга.
                         [coordinates[i].lat, coordinates[i].long],
@@ -340,6 +352,7 @@ window.onload = function () {
                         balloonContentBody:
                             " №Станции: " + parseInt(coordinates[i].number_station) + "<br \/>" +
                             " Координаты: " + coordinates[i].lat + "; " + coordinates[i].long + "<br \/>" +
+                            stringParam +
                             " №группы: " + coordinates[i].number_group
                         // Содержимое хинта.
                         //hintContent: "Подвинь меня"
@@ -364,6 +377,7 @@ window.onload = function () {
                         balloonContentBody:
                             " №Станции: " + coordinates[i].number_station + "<br \/>" +
                             " Координаты: " + coordinates[i].lat + "; " + coordinates[i].long + "<br \/>" +
+                            stringParam +
                             " №группы: без группы"
                         // Содержимое хинта.
                         //hintContent: "Подвинь меня"
@@ -558,7 +572,7 @@ window.onload = function () {
             centerClusters[i].add(clasterCenter);
 
         }
-        setObjectType('rect');
+        setObjectType('both');
 
     }
     $('.slider__item>.div1').on('mouseenter', function(){

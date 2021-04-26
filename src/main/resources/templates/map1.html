@@ -85,8 +85,15 @@
 
 </head>
 
+<link rel="stylesheet" th:href="@{/back.css}">
+<nav class="navbar navbar-expand-lg navbar-dark gradient-nav" style="background-color: #dcdede;">
+    <div class="container">
+        <a href="/downloadReport" class="navbar-brand">[[${resolveTime}]]</a>
+    </div>
+</nav>
+
 <span for="json"></span><input type="text" th:value="*{json}" id="json" hidden="true">
-<div th:replace="fragments/navbar :: navbar (${'map'})"></div>
+<!--<div th:replace="fragments/navbar :: navbar (${'map'})"></div>-->
 <input type="text" th:value="*{groupNum}" id="groupNum" hidden="true">
 <!-- Anychart map -->
 
@@ -160,7 +167,9 @@
 
 </span>
 <!-- ///Yandex map -->
+<div class="dropdown" style="height: 300px; background-color: #0c314c">
 
+</div>
 <div class="container">
     <div class="modal fade" id="modal-1" tabindex="-1" role="dialog" aria-labelledby="modalLabel1">
         <div class="modal-dialog" role="document">

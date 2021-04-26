@@ -8,13 +8,14 @@
 
     <script type="text/javascript"
             src="https://www.gstatic.com/charts/loader.js"></script>
-    <div th:replace="fragments/scripts :: scripts"></div>
+
     <title>Расчет</title>
 </head>
 <header>
     <div th:replace="fragments/navbar :: navbar (${'resolve'})"></div>
 </header>
 <body class="gradient">
+<span th:replace="fragments/scripts :: scripts"></span>
 <!-- Обработка ошибок -->
 <div th:if="${error}">
     <div class="container">
@@ -45,7 +46,7 @@
 <div class="mt-2" >
     <div>
 
-        <form th:action="@{/check}" method="post" enctype="multipart/form-data" id="form1" >
+        <form action="javascript:;" method="post" enctype="multipart/form-data" id="form1" >
             <div class="p-3 border border-dark rounded">
                 <!--<div class="form-group row">
                     <span class="col-sm-12 col-form-label">
@@ -57,12 +58,12 @@
                 </div>-->
                 <div class="form-group row">
                     <label ></label>
-                    <label th:text="'Файл температур:&nbsp;&nbsp;&nbsp;' + (${tempers}?${tempers}:'')" for="corr" class="col-sm-3 col-form-label">
+                    <label th:text="'Файл температур:&nbsp;&nbsp;&nbsp;' + (${tempers}?${tempers}:'')" class="col-sm-3 col-form-label">
                     </label>
                     <div class="col-sm-4">
 
                         <input  type="file" class="custom-file-input" name="fileTemp" accept="text/plain"
-                               onchange="checkParams()" autocomplete="off" id="fileTemp"  th:attr="value=${tempers}">
+                               onchange="checkParams();" autocomplete="off" id="fileTemp"  th:attr="value=${tempers}">
                         <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл..')" class="custom-file-label" data-browse="Загрузить" for="fileTemp"></label>
                     </div>
                     <div class="col-sm-5 row">
@@ -85,10 +86,13 @@
                 <input type="hidden" id="tempType" th:attr="value=${tempType}">
                 <input type="hidden" id="cordType" th:attr="value=${cordType}">
                 <input type="hidden" id="isForPhase" th:attr="value=${isForPhase}">
+                <input type="hidden" id="isModules" name="isModules" th:attr="value=${isModules}">
                 <input type="hidden" id="isStationsOnY" th:attr="value=${isStationsOnY}">
                 <div class="form-group row">
-                    <label th:text="'Файл координат:&nbsp;&nbsp;&nbsp;' + (${coords}?${coords}:'')" for="corr" class="col-sm-3 col-form-label">
+
+                    <label th:text="'Файл координат:&nbsp;&nbsp;&nbsp;' + (${coords}?${coords}:'')" class="col-sm-3 col-form-label">
                     </label>
+
                     <div class="col-sm-4">
                         <input  type="file" class="custom-file-input" name="fileCoordinates" accept="text/plain"
                                onchange="checkParams()" autocomplete="off" id="fileCoordinates" th:attr="value=${coords}">
@@ -106,12 +110,24 @@
                             <input class="form-check-input" checked type="radio" name="cordsType" id="cordsCol" value="true">
                             <label class="form-check-label">В столбец</label>
                             <img data-toggle="tooltip" title="<img src='/img/CordsColEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
-
                         </div>
                     </div>
+
+
                 </div>
                 <div id="message" hidden class="row p-3">
                     <span style="color: gray" id="TextMessage"></span>
+                </div>
+                <div class="row">
+                    <button onclick="setAdditionalParams()" type="button" class="btn btn-link">Дополнительные параметры в файле координат&nbsp;&nbsp;<img data-toggle="tooltip" title="По умолчанию 3 обязательных парамтра: номер, широта, долгота. Возможно указать дополнительные парамерты в порядке следования в файле (Название станции, н.у.м и др.)" src="/img/question-circle-regular.svg" width='12' height='12'>
+                    </button>
+                </div>
+                <div id="parentAdditional" hidden="true" >
+                    <div id="fileParameters"></div>
+                    <div class="optional row p-1 mt-0" onclick="setAdditionalParams()">
+                        <img src="/img/add.png" width='25' height='25' style="margin-left: auto;margin-right: auto;">
+
+                    </div>
                 </div>
                 <div class="form-group row">
                     <label for="periodStart" class="col-sm-4 col-form-label">Данные получены за период с:
@@ -131,7 +147,7 @@
                 </div>
 
                 <div class="form-group row">
-                    <label for="corr" class="col-sm-12 col-form-label">Периодичность данных:
+                    <label class="col-sm-12 col-form-label">Периодичность данных:
                     </label>
                     <div class="col-sm-12">
                         <div class="form-check form-check-inline">
@@ -142,173 +158,99 @@
                             <input class="form-check-input" type="radio" name="dataType" id="avrgDay" value="365">
                             <label class="form-check-label" for="avrgDay">Среднесуточные</label>
                         </div>
+                        <input type="hidden" name="fileAdditionalParameters" id="fileAdditionalParameters">
                         <div style="float: right; margin-right: 10%">
-                            <input  id="submit"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Проверить" />
+                            <input onclick="checkParams();getParams()"  id="submit"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Проверить" />
                         </div>
                         <div style="float: right; margin-right: 10%">
                             <input  id="submit2" formaction="/withNoCheck"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Расчет без проверки" />
                         </div>
                     </div>
                 </div>
-
-                <div class="form-group row">
-
-                        <label style="color: darkred" class="col-sm-12 col-form-label" th:if="${message}!=null" th:text="${message}"></label>
-
-                </div>
             </div>
         </form>
-        <form th:if="${message}=='Период выбран верно' OR ${message}=='Данные не прошли проверку'" th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form" >
-
-            <div id="options">
-                <div class="form-group row">
-                    <label  class="col-sm-12 col-form-label">Все вещественные значения вводятся ч/з точку!!!</label>
-                </div>
-                <div class="form-group row">
-                    <label for="corr" class="col-sm-5 col-form-label">Коэффициент корреляции (от 0 до 1):
-                    </label>
-                    <div class="col-sm-2">
-                        <input class="form-control" type="text" name="corr" onkeyup="checkParams()" autocomplete="off"
-                               id="corr" th:attr="value=${corr}">
-                    </div>
-                </div>
-                <div id="optionsAdder" class="form-group row">
-                    <div class="col-sm-5">
-                        <a id="additional">Дополнительные опции</a>
-                    </div>
-                </div>
-                <div hidden="true" class="optional">
-
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <input type="checkbox" name="groupCross" class="groupCross" value="true">&nbsp;&nbsp;Отображать группы с пересечением
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-sm-12 col-form-label">Выполнять расчет по:
-                        </label>
-                        <div class="col-sm-12">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" checked type="radio" name="isForPhase" id="forPhase" value="true">
-                                <label class="form-check-label" >Фазе</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="isForPhase" id="forAmplitude" value="false">
-                                <label class="form-check-label" >Амплитуде</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-sm-12 col-form-label">Точность расчета:
-                        </label>
-                        <div class="col-sm-12">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" checked type="radio" name="isAccurate" id="accurateCalc" value="true">
-                                <label class="form-check-label" >Точный расчет</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="isAccurate" id="errorCalc" value="false">
-                                <label class="form-check-label" >Указать погрешность</label>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div hidden="true" class="errorClass">
-                        <div class="form-group row">
-                            <label for="corr" class="col-sm-5 col-form-label">Погрешность вычислений :
-                            </label>
-                            <div class="col-sm-2">
-                                <input class="form-control" type="text" name="sigma" onkeyup="checkParams()" autocomplete="off"
-                                       id="sigma" th:attr="value=${sigma}">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="corr" class="col-sm-5 col-form-label">Минимальный размер групп:
-                        </label>
-                        <div class="col-sm-2">
-                            <input class="form-control" type="number" name="minGroupSize" onkeyup="checkParams()" autocomplete="off"
-                                   id="minGroupSize" th:attr="value=${minGroupSize}">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-12">
-                            <input onclick="showClassification()" type="checkbox" name="classification" value="true">&nbsp;&nbsp;Классификация
-                        </div>
-
-                    </div>
-                    <div class=" dataClass" id="classification" hidden="true">
-                        <div class="form-group row" >
-                            <label class="col-sm-5 col-form-label">Коэффициент корреляции (от 0 до 1):
-                            </label>
-                            <div class="col-sm-2">
-                                <input class="form-control" type="text" name="classCoef" onkeyup="checkParams()" autocomplete="off"
-                                       id="classCoef" value="0.7">
-                            </div>
-                        </div>
-                    </div>
-                    <div id="dataTypes" class="form-group row">
-                        <div class="col-sm-6">
-                            <a id="additional2">Указать режим вычисления окна</a> /
-                                    <a id="additional3">Указать окно</a>
-                            </div>
-                        </div>
-                    <div hidden="true" class="dataClass">
-                        <div class="form-group row">
-                            <label for="corr" class="col-sm-12 col-form-label">Вычисление окна:
-                            </label>
-                            <div class="col-sm-12">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" checked type="radio" name="isWindowManually" id="automaticWindow" value="0" onclick="modeChanged('NOTmanually')">
-                                    <label class="form-check-label" >Автоматически</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyWindow" value="1" onclick="modeChanged('manually')">
-                                    <label class="form-check-label" >Вручную</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyAsimetricWindow" value="2" onclick="modeChanged('manually')">
-                                    <label class="form-check-label" >Вручную (несимметричное)</label>
-                                </div>
-                                <div id="chartButton" class="form-check form-check-inline" hidden="true">
-                                    <a class="btn btn-primary" href="#underchart" role="button">Показать график</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div hidden="true" id="chartPlace" style="min-height: 350px">
-                            <div id="chartLoader" class="loader" style="margin: 0 auto;"></div>
-                            <div id="chart"></div>
-                        </div>
-                    </div>
-
-
-                    <div hidden="true" class="windowClass">
-                        <div class="form-group row">
-                            <label for="corr" class="col-sm-5 col-form-label">Размер окна :
-                            </label>
-                            <div class="col-sm-2">
-                                <input class="form-control" type="text" name="windowLeft" onkeyup="checkParams()" autocomplete="off"
-                                       id="windowLeft" th:attr="value=${wleft}">
-                            </div>
-                            <div class="col-sm-2">
-                                <input class="form-control" type="text" name="windowRight" onkeyup="checkParams()" autocomplete="off"
-                                       id="windowRight" th:attr="value=${wRight}">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-2" >
-                        <button class="btn btn-outline-secondary btn-block" type="submit" >Рассчитать</button>
-                    </div>
-                </div>
-            </div>
-        </form>
+        <div id="resolveParams"></div>
     </div>
 </div>
 
 <script>
+    function optionsAdder() {
+        if($('#additionalOptions').attr("hidden"))
+        {
+            $("#additionalOptions").attr("hidden",false);
+        }
+        else{
+            $("#additionalOptions").attr("hidden",true);
+        }
+    }
+    function onAdditional2Click() {
+        if($('.dataClass').attr("hidden"))
+        {
+            $(".dataClass").attr("hidden",false);
+            $("#windowLeft").attr("value", null);
+            $("#windowRight").attr("value",null);
+            var type = $('#dataType').val();
+            $('input[name="dataType"][value='+type+']').prop('checked', true);
+        }
+        else{
+            $(".dataClass").attr("hidden",true);
+        }
+        $(".windowClass").attr("hidden",true);
+    }
+    function onAdditional3Click() {
+        if($('.windowClass').attr("hidden"))
+        {
 
+            $.ajax({
+                url: '/windowLimits',
+                contentType: 'text/html',
+                dataType: 'html',
+                success: function (html) {
+                    $('.windowClass').html(html);
+                    $(".windowClass").attr("hidden",false);
+                    $("#windowLeft").attr("value", $('#windowLeft').val());
+                    $("#windowRight").attr("value", $('#windowRight').val());
+                    $('input[name="dataType"]').prop('checked', false);
+                }
+            })
+        }
+        else{
+            $(".windowClass").attr("hidden",true);
+            $('.windowClass').html('');
+        }
+        $(".dataClass").attr("hidden",true);
+    }
+
+    function errorCalc() {
+        $(".errorClass").attr("hidden",false);
+    }
+
+    function accurateCalc() {
+        $(".errorClass").attr("hidden",true);
+    }
+    $(function() {
+        $('form').submit(function(e) {
+            //отмена действия по умолчанию для кнопки submit
+            e.preventDefault();
+            var $form = $(this);
+            $.ajax({
+                type: "POST",
+                url: "/check",
+                processData: false,
+                contentType: false,
+                data: new FormData($form[0]),
+                success: function(html) {
+                    $("#resolveParams").html(html);
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                //var err = eval("(" + jqXHR.responseText + ")");
+                    alert("error");
+                    //$("#errorLabel").html(jqXHR.responseText);
+                }
+            });
+
+        });
+    });
     window.onload = function (){
         $('img[data-toggle="tooltip"]').tooltip({
             html: true
@@ -326,51 +268,6 @@
 
         checkParams();
     }
-    $('#optionsAdder').click(function() {
-        if($('.optional').attr("hidden"))
-        {
-            $(".optional").attr("hidden",false);
-        }
-        else{
-            $(".optional").attr("hidden",true);
-        }
-    });
-    $('#additional2').click(function() {
-        if($('.dataClass').attr("hidden"))
-        {
-            $(".dataClass").attr("hidden",false);
-            $("#windowLeft").attr("value", null);
-            $("#windowRight").attr("value",null);
-            var type = $('#dataType').val();
-            $('input[name="dataType"][value='+type+']').prop('checked', true);
-        }
-        else{
-            $(".dataClass").attr("hidden",true);
-        }
-        $(".windowClass").attr("hidden",true);
-    });
-    $('#additional3').click(function() {
-        if($('.windowClass').attr("hidden"))
-        {
-            $(".windowClass").attr("hidden",false);
-            $("#windowLeft").attr("value", $('#windowLeft').val());
-            $("#windowRight").attr("value", $('#windowRight').val());
-            $('input[name="dataType"]').prop('checked', false);
-
-        }
-        else{
-            $(".windowClass").attr("hidden",true);
-        }
-        $(".dataClass").attr("hidden",true);
-    });
-
-    $('#errorCalc').click(function() {
-            $(".errorClass").attr("hidden",false);
-    });
-
-    $('#accurateCalc').click(function() {
-        $(".errorClass").attr("hidden",true);
-    });
 
     //стиль закрузки файла
     $(".custom-file-input").on("change", function () {
@@ -420,7 +317,7 @@
         $('#chartPlace').attr("hidden", true);
         $("#chartLoader").attr("hidden", false);
     }
-    $('#chartButton').click(function() {
+    function chartButton() {
         $('#chartPlace').attr("hidden", false);
 
         var data;
@@ -444,11 +341,46 @@
                 }
             })
         }
-    });
+    }
     function showClassification(){
         $('#classification').attr('hidden', !$('input[name="classification"]').prop('checked'));
     }
+    var paramIds = 4;
+    var paramCounter = 3;
+    function setAdditionalParams(){
+        $.ajax({
+            url: '/getAdditionalParamFragment',
+            contentType: 'text/html',
+            dataType: 'html',
+            data: 'paramNumber=' + paramIds++,
+            success: function (html) {
+                paramCounter++;
+                $('#fileParameters').append(html);
+                //$(".paramNumber").last().append("<b>Параметр " + paramCounter++ + "</b>");
+                $('#parentAdditional').attr('hidden',false);
+            }
+        })
+    }
+    function deleteFileParam(id){
+        paramCounter--;
+        $("#" + id).html('');
+        if(paramCounter === 3){
+            $('#parentAdditional').attr('hidden',true);
+        }
 
+    }
+    function getParams(){
+        var params = "";
+        $('.parameter').each(function (index, element) {
+            if(index % 2 !== 0){
+                params += $(element).prop('checked') + "delimiter";
+            }
+            else {
+                params += $(element).val() + "delimiter";
+            }
+        });
+        $("#fileAdditionalParameters").val(params);
+    }
 </script>
 </body>
 </html>

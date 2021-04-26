@@ -11,8 +11,11 @@ import java.util.concurrent.Future;
 
 public class ResolveForm {
 
+    public static String resolveTime = "";
     public static double[][] TempData;
+    public static String[][] TempString;
     public static List<Phase> arrayPhase;
+    public static String[] fileParams;
     public static List<Phase> arrayAmplitude;
     public static List<Phase> arrayTypical;
     public static List<Group> arrayGroup;
@@ -20,7 +23,7 @@ public class ResolveForm {
     public static ArrayList<String> json;
     public static boolean groupCross = false;
     public static int groupNum;
-    public static double[][] coordData;
+    public static String[][] coordData;
     public static double[] averageTemps;
     public static String tempFileName;
     public static String coordFileName;

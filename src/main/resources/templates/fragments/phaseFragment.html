@@ -1,81 +1,72 @@
 <div class="optional">
-    <div class="form-group row">
-        <label class="col-sm-12 col-form-label">Выполнять расчет по:
-        </label>
-        <div class="col-sm-12">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" checked type="radio" name="isForPhase" id="forPhase" value="true">
-                <label class="form-check-label" >Фазе</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="isForPhase" id="forAmplitude" value="false">
-                <label class="form-check-label" >Амплитуде</label>
-            </div>
-        </div>
-    </div>
-    <div id="dataTypes" class="form-group row">
-        <div class="col-sm-6">
-            <a id="additional2">Указать режим вычисления окна</a> /
-            <a id="additional3">Указать окно</a>
-        </div>
-    </div>
-    <div class="dataClass">
+    <form style="padding: 0; margin: 0" id="phaseForm"  action="/countPhase" method="post" enctype="multipart/form-data">
         <div class="form-group row">
-            <label class="col-sm-12 col-form-label">Вычисление окна:
+            <label class="col-sm-12 col-form-label">Выполнять расчет по:
             </label>
             <div class="col-sm-12">
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" checked type="radio" name="isWindowManually" id="automaticWindow" value="0" onclick="modeChanged('NOTmanually')">
-                    <label class="form-check-label" >Автоматически</label>
+                    <input class="form-check-input" checked type="radio" name="isForPhase" id="forPhase" value="true">
+                    <label class="form-check-label" >Фазе</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyWindow" value="1" onclick="modeChanged('manually')">
-                    <label class="form-check-label" >Вручную</label>
+                    <input class="form-check-input" type="radio" name="isForPhase" id="forAmplitude" value="false">
+                    <label class="form-check-label" >Амплитуде</label>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyAsimetricWindow" value="2" onclick="modeChanged('manually')">
-                    <label class="form-check-label" >Вручную (несимметричное)</label>
-                </div>
-                <div id="chartButton" class="form-check form-check-inline" hidden="true">
-                    <a class="btn btn-primary" href="#underchart" role="button">Показать график</a>
-                </div>
-                <span id="errorChart" style="color: red">
-                </span>
             </div>
         </div>
+        <div id="dataTypes" class="form-group row">
+            <div class="col-sm-6">
+                <button onclick="onAdditional2Click()" type="button" class="btn btn-link">Указать режим вычисления окна</button>
+                /<button onclick="onAdditional3Click()" type="button" class="btn btn-link">Указать окно</button>
+            </div>
+        </div>
+        <div class="dataClass">
+            <div class="form-group row">
+                <label class="col-sm-12 col-form-label">Вычисление окна:
+                </label>
+                <div class="col-sm-12">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" checked type="radio" name="isWindowManually" id="automaticWindow" value="0" onclick="modeChanged('NOTmanually')">
+                        <label class="form-check-label" >Автоматически</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyWindow" value="1" onclick="modeChanged('manually')">
+                        <label class="form-check-label" >Вручную</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="isWindowManually" id="manuallyAsimetricWindow" value="2" onclick="modeChanged('manually')">
+                        <label class="form-check-label" >Вручную (несимметричное)</label>
+                    </div>
+                    <div id="chartButton" class="form-check form-check-inline" hidden="true">
+                        <a class="btn btn-primary" href="#underchart" role="button">Показать график</a>
+                    </div>
+                    <span id="errorChart" style="color: red">
+                    </span>
+                </div>
+            </div>
 
-        <div hidden="true" id="chartPlace" style="min-height: 350px">
-            <div id="chartLoader" class="loader" style="margin: 0 auto;"></div>
-            <div id="chart"></div>
+            <div hidden="true" id="chartPlace" style="min-height: 350px">
+                <div id="chartLoader" class="loader" style="margin: 0 auto;"></div>
+                <div id="chart"></div>
+            </div>
+            <a name="underchart"></a>
         </div>
-        <a name="underchart"></a>
-    </div>
-    <div hidden="true" class="windowClass">
+        <div hidden="true" class="windowClass">
+
+        </div>
         <div class="form-group row">
-            <label class="col-sm-5 col-form-label">Размер окна :
-            </label>
-            <div class="col-sm-2">
-                <input class="form-control" type="text" name="windowLeft" onkeyup="checkParams()" autocomplete="off"
-                       id="windowLeft">
+            <div class="col-sm-3">
+                <input type="submit" id="countPhaseButton" onclick="getChecked()" class="btn btn-primary" value="Выполнить расчет">
             </div>
-            <div class="col-sm-2">
-                <input class="form-control" type="text" name="windowRight" onkeyup="checkParams()" autocomplete="off"
-                       id="windowRight">
+            <div id="loaderPhase" class="loader" style="width: 30px; height: 30px; border-width: 4px; border-top-width: 4px" hidden="true" >
             </div>
+            <div id="fileDownload" class="col-sm-3" hidden="true" >
+                <a href="/downloadPhases">Скачать файл с фазами</a>
+            </div>
+            <span id="errorPhase" style="color: red">
+                    </span>
         </div>
-    </div>
-    <div class="form-group row">
-        <div class="col-sm-3">
-            <a id="countPhaseButton" class="btn btn-primary" href="#PhaseFile" role="button">Выполнить расчет</a>
-        </div>
-        <div id="loaderPhase" class="loader" style="width: 30px; height: 30px; border-width: 4px; border-top-width: 4px" hidden="true" >
-        </div>
-        <div id="fileDownload" class="col-sm-3" hidden="true" >
-            <a href="/downloadPhases">Скачать файл с фазами</a>
-        </div>
-        <span id="errorPhase" style="color: red">
-                </span>
-    </div>
+    </form>
 </div>
 <a name="PhaseFile"></a>
 <script>
@@ -154,32 +145,53 @@
             })
         }
     });
-    $('#countPhaseButton').click(function() {
+    $(function() {
+        $('form#phaseForm').submit(function(e) {
+
+            //отмена действия по умолчанию для кнопки submit
+            e.preventDefault();
+            var $form = $(this);
+            $.ajax({
+                type: "GET",
+                url: "/countPhase",
+                data: $form.serialize(),
+                success: function() {
+                    //Скрываем значок загрузки
+                    $('#loaderPhase').attr("hidden", true);
+                    //Отображени файлы для скачивания
+                    $('#fileDownload').attr("hidden", false);
+                    //Расчет выполнен - убираем предупреждение
+                    $('#clusterWarning').html('');
+                },
+                error: function() {
+                    $('#loaderPhase').attr("hidden", true);
+                    $('#errorPhase').text("Ошибка вычислений");
+                }
+            });
+
+        });
+    });
+    /*$('#countPhaseButton').click(function() {
         $('#loaderPhase').attr("hidden", false);
 
         var windowDelta = $("input[name=windowCounted]").val();
         var isForPhase = $("input[type=radio][name=isForPhase]:checked").val();
         var isWindowManually = $("input[type=radio][name=isWindowManually]:checked").val();
-        var windowLeft = $("input[type=text][name=windowLeft]").val();
-        var windowRight = $("input[type=text][name=windowRight]").val();
+        var windowLeft = $("input[name=windowLeft]").val();
+        var windowRight = $("input[name=windowRight]").val();
+        var isDelta = $("input[name=isDelta]").val();
         if(windowDelta===undefined) windowDelta = "";
         $.ajax({
             url: '/countPhase',
-            data: "isForPhase=" + isForPhase + "&windowCounted=" + windowDelta
+            data: "isDelta=" + isDelta + "&isForPhase=" + isForPhase + "&windowCounted=" + windowDelta
                 + "&isWindowManually=" + isWindowManually + "&windowLeft=" + windowLeft
                 + "&windowRight=" + windowRight,
             success: function () {
-                //Скрываем значок загрузки
-                $('#loaderPhase').attr("hidden", true);
-                //Отображени файлы для скачивания
-                $('#fileDownload').attr("hidden", false);
-                //Расчет выполнен - убираем предупреждение
-                $('#clusterWarning').html('');
+
             },
             error: function(){
-                $('#loaderPhase').attr("hidden", true);
-                $('#errorPhase').text("Ошибка вычислений");
+
             }
-        });
-    });
+        });*/
+    //});
 </script>

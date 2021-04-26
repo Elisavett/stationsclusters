@@ -73,7 +73,7 @@ public class DownloadFilesController {
 
         return getFile("groups", stringPhase.toString());
     }
-    @RequestMapping("/downloadGeographicCharacters")
+    @RequestMapping("/downloadReport")
     public ResponseEntity<String> downloadGeographicCharacters() {
         return getFile("groupGeoCharacteristics", Report.getReport());
     }
