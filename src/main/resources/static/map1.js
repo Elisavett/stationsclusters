@@ -484,7 +484,11 @@ window.onload = function () {
                 [rects[i][2], rects[i][3]]
             ], {
                 //Properties
-                hintContent: '№группы: ' + i
+                //hintContent: '№группы: ' + i,
+                balloonContentBody:
+                    '№группы: ' + i + "<br \/>" +
+                    " Координаты: " + rects[i][0] + ", " + rects[i][1] + "; " + rects[i][2] + ", " + rects[i][3] + "<br \/>" +
+                    "<a href='/downloadReport'>ссылка</a>"
             }, {
                 /**
                  * Options.

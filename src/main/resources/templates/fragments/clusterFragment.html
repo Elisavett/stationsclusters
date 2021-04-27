@@ -1,64 +1,65 @@
 <div class="optional" xmlns:th="http://www.w3.org/1999/xhtml">
     <div id="clusterWarning" th:text="${phaseWarning}" class="warningMessage"></div>
-    <div class="form-group row">
-        <label class="col-sm-5 col-form-label">Нижняя граница корреляции (от 0 до 1):
-        </label>
-        <div class="col-sm-2">
-            <input class="form-control" type="text" name="corrDOWN" onkeyup="checkParams()" autocomplete="off"
-                   id="corr1" value="0.8">
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="col-sm-5 col-form-label">Верхняя граница корреляции (от 0 до 1):
-        </label>
-        <div class="col-sm-2">
-            <input class="form-control" type="text" name="corrUP" onkeyup="checkParams()" autocomplete="off"
-                   id="corr2" value="1">
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="col-sm-12 col-form-label">Точность расчета:
-        </label>
-        <div class="col-sm-12">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" checked type="radio" name="isAccurate" id="accurateCalc" value="true">
-                <label class="form-check-label" >Точный расчет</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="isAccurate" id="errorCalc" value="false">
-                <label class="form-check-label" >Указать погрешность</label>
-            </div>
-        </div>
-    </div>
-    <div hidden="true" class="errorClass">
+    <form style="padding: 0; margin: 0" id="clusterForm"  action="/countPhase" method="post" enctype="multipart/form-data">
         <div class="form-group row">
-            <label class="col-sm-5 col-form-label">Погрешность вычислений :
+            <label class="col-sm-5 col-form-label">Нижняя граница корреляции (от 0 до 1):
             </label>
             <div class="col-sm-2">
-                <input class="form-control" type="text" name="sigma" autocomplete="off"
-                       id="sigma" value="0.1">
+                <input class="form-control" type="text" name="corrDOWN" onkeyup="checkParams()" autocomplete="off"
+                       id="corr1" value="0.8">
             </div>
         </div>
-    </div>
-    <div style="color: red" hidden id="error-element" class="col-sm-5 form-group row">
+        <div class="form-group row">
+            <label class="col-sm-5 col-form-label">Верхняя граница корреляции (от 0 до 1):
+            </label>
+            <div class="col-sm-2">
+                <input class="form-control" type="text" name="corrUP" onkeyup="checkParams()" autocomplete="off"
+                       id="corr2" value="1">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-12 col-form-label">Точность расчета:
+            </label>
+            <div class="col-sm-12">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" checked type="radio" name="isAccurate" id="accurateCalc" value="true">
+                    <label class="form-check-label" >Точный расчет</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isAccurate" id="errorCalc" value="false">
+                    <label class="form-check-label" >Указать погрешность</label>
+                </div>
+            </div>
+        </div>
+        <div hidden="true" class="errorClass">
+            <div class="form-group row">
+                <label class="col-sm-5 col-form-label">Погрешность вычислений :
+                </label>
+                <div class="col-sm-2">
+                    <input class="form-control" type="text" name="sigma" autocomplete="off"
+                           id="sigma" value="0.1">
+                </div>
+            </div>
+        </div>
+        <div style="color: red" hidden id="error-element" class="col-sm-5 form-group row">
 
-    </div>
-    <div class="form-group row">
-        <div class="col-sm-3">
-            <a id="countClustersButton" class="btn btn-primary" href="#ClustersFile" role="button">Выполнить расчет</a>
         </div>
-        <div id="loaderCluster" class="loader" style="width: 30px; height: 30px; border-width: 4px; border-top-width: 4px" hidden="true" >
+        <div class="form-group row">
+            <div class="col-sm-3">
+                <input type="submit" id="countClustersButton" class="btn btn-primary" value="Выполнить расчет"/>
+            </div>
+            <div id="loaderCluster" class="loader" style="width: 30px; height: 30px; border-width: 4px; border-top-width: 4px" hidden="true" >
+            </div>
+            <div id="fileTypDownload" class="col-sm-3" hidden="true" >
+                <a href="/downloadTypicals">Скачать файл с типовыми</a>
+            </div>
+            <div id="fileGroupsDownload" class="col-sm-3" hidden="true" >
+                <a href="/downloadGroups">Скачать файл с группами</a>
+            </div>
+            <span id="error" style="color: red">
+            </span>
         </div>
-        <div id="fileTypDownload" class="col-sm-3" hidden="true" >
-            <a href="/downloadTypicals">Скачать файл с типовыми</a>
-        </div>
-        <div id="fileGroupsDownload" class="col-sm-3" hidden="true" >
-            <a href="/downloadGroups">Скачать файл с группами</a>
-        </div>
-        <span id="error" style="color: red">
-        </span>
-    </div>
-
+    </form>
 </div>
 <a name="ClustersFile"></a>
 
@@ -70,25 +71,16 @@
     $('#accurateCalc').click(function() {
         $(".errorClass").attr("hidden",true);
     });
-    $('#countClustersButton').click(function() {
-        $('#error-element').attr("hidden", true);
-
-        var corrUP = $("input[type=text][name=corrUP]").val();
-        var corrDOWN = $("input[type=text][name=corrDOWN]").val();
-        var isAccurate = $("input[type=radio][name=isAccurate]:checked").val();
-        var sigma = $("input[type=text][name=sigma]").val();
-
-        if(corrUP==="" || (isAccurate==="false" && sigma==="")){
-            $('#error-element').html('Заполните все поля');
-            $('#error-element').attr("hidden", false);
-        }
-        else {
+    $('form#clusterForm').submit(function(e) {
+        //отмена действия по умолчанию для кнопки submit
+        e.preventDefault();
+        var $form = $(this);
             //Отображаем значок загузки
             $('#loaderCluster').attr("hidden", false);
+
             $.ajax({
                 url: '/countClusters',
-                data: "corrUP=" + corrUP + "&corrDOWN=" + corrDOWN + "&isAccurate=" + isAccurate
-                    + "&sigma=" + sigma,
+                data: $form.serialize(),
                 success: function () {
                     //Скрываем значок загрузки
                     $('#loaderCluster').attr("hidden", true);
@@ -107,7 +99,7 @@
                     $('#error').text("Ошибка вычислений");
                 }
             });
-        }
+
     });
 
 </script>

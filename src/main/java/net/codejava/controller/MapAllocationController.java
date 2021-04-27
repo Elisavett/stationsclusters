@@ -155,6 +155,9 @@ public class MapAllocationController {
             ResolveForm.resolveTime = dateFormat.format(Calendar.getInstance().getTime());
         }
         model.addAttribute("resolveTime", "Расчет: " + ResolveForm.resolveTime);
+        model.addAttribute("corr", "Коэф. корреляции: " + ResolveForm.corrDOWN + " - " + ResolveForm.corrUP);
+        model.addAttribute("window", "Окно: " + ResolveForm.windowLeft + " - " + ResolveForm.windowRight);
+        model.addAttribute("calcPeriod", "Рассчетный период: " + ResolveForm.periodString);
         return "map1";
     }
 
@@ -240,8 +243,13 @@ public class MapAllocationController {
         saveFilesInfo(tempType, cordsType, fileTemp, fileCoordinates);
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
+        DateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
+
         ResolveForm.periodStart = formatter.format(periodStart);
         ResolveForm.periodEnd = formatter.format(periodEnd);
+
+        ResolveForm.periodString = "c " + formatter2.format(periodStart) + " по " + formatter2.format(periodEnd);
+
         ResolveForm.dataType = dataType;
 
         ResolveForm.windowCenter = ResolveForm.TempData[0].length / ResolveForm.dataType;

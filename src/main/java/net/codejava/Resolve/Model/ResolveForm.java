@@ -28,6 +28,7 @@ public class ResolveForm {
     public static String tempFileName;
     public static String coordFileName;
     public static String periodStart = "1955-01-01";
+    public static String periodString = "1955-01-01";
     public static String periodEnd = "2010-12-31";
     public static int minGroupSize = 5;
     public static double corrDOWN = 0.8;

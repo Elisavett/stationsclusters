@@ -135,7 +135,7 @@
                 data: "isWindowManually="+data,
                 success: function (html) {
                     $(".loader").attr("hidden", true);
-                    $('#chart').append(html);
+                    $('#chart').html(html);
                     $('#countPhaseButton').attr('hidden',false);
                 },
                 error: function(){
@@ -147,7 +147,7 @@
     });
     $(function() {
         $('form#phaseForm').submit(function(e) {
-
+            $('#loaderPhase').attr("hidden", false);
             //отмена действия по умолчанию для кнопки submit
             e.preventDefault();
             var $form = $(this);
@@ -171,27 +171,4 @@
 
         });
     });
-    /*$('#countPhaseButton').click(function() {
-        $('#loaderPhase').attr("hidden", false);
-
-        var windowDelta = $("input[name=windowCounted]").val();
-        var isForPhase = $("input[type=radio][name=isForPhase]:checked").val();
-        var isWindowManually = $("input[type=radio][name=isWindowManually]:checked").val();
-        var windowLeft = $("input[name=windowLeft]").val();
-        var windowRight = $("input[name=windowRight]").val();
-        var isDelta = $("input[name=isDelta]").val();
-        if(windowDelta===undefined) windowDelta = "";
-        $.ajax({
-            url: '/countPhase',
-            data: "isDelta=" + isDelta + "&isForPhase=" + isForPhase + "&windowCounted=" + windowDelta
-                + "&isWindowManually=" + isWindowManually + "&windowLeft=" + windowLeft
-                + "&windowRight=" + windowRight,
-            success: function () {
-
-            },
-            error: function(){
-
-            }
-        });*/
-    //});
 </script>

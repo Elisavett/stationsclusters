@@ -153,6 +153,9 @@ public class CalcModulesController {
             ResolveForm.resolveTime = dateFormat.format(Calendar.getInstance().getTime());
         }
         model.addAttribute("resolveTime", "Расчет: " + ResolveForm.resolveTime);
+        model.addAttribute("corr", "Коэф. корреляции: " + ResolveForm.corrDOWN + " - " + ResolveForm.corrUP);
+        model.addAttribute("window", "Окно: " + ResolveForm.windowLeft + " - " + ResolveForm.windowRight);
+        model.addAttribute("calcPeriod", "Рассчетный период: " + ResolveForm.periodStart + " - " + ResolveForm.periodEnd);
         return "map1";
     }
 

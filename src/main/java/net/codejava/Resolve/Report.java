@@ -73,7 +73,7 @@ public class Report {
             ResolveForm.resolveTime = dateFormat.format(Calendar.getInstance().getTime());
         }
         StringBuilder outputString = new StringBuilder("Дата расчета: " + ResolveForm.resolveTime + "\n");
-        outputString.append("Рассчетный период: с ").append(ResolveForm.periodStart).append(" по ").append(ResolveForm.periodEnd).append("\n");
+        outputString.append("Рассчетный период: ").append(ResolveForm.periodString).append("\n");
         outputString.append("Расчет выполнялся по ").append(ResolveForm.isForPhases ? "фазе" : "амплитуде").append("\n");
         outputString.append("Размер окна: нач. частота ").append(ResolveForm.windowLeft).append(", конеч. частота : ").append(ResolveForm.windowRight).append(", несущая частота: ").append(ResolveForm.windowCenter).append("\n");
         outputString.append("Коэффициент корреляции: минимальный ").append(ResolveForm.corrDOWN).append(", максимальный ").append(ResolveForm.corrUP).append("\n");
