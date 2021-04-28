@@ -1,0 +1,91 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script type="text/javascript"
+            src="https://www.gstatic.com/charts/loader.js"></script>
+    <title>Кластер [[${clusterNum}]]</title>
+
+</head>
+<h3 style="margin: 20px 120px" id="clusterNum">Кластер [[${clusterNum}]]</h3>
+<div id="Chart">
+</div>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
+    var real_data = /*[[${chartData}]]*/'noValue';
+    var Title = /*[[${title}]]*/'noValue';
+    var X_name = /*[[${X_name}]]*/'noValue';
+    var Y_name = /*[[${Y_name}]]*/'noValue';
+    var id = /*[[${id}]]*/'noValue';
+    var additionalData = /*[[${additionalData}]]*/'noValue';
+    var additionalY_names = /*[[${additionalY_names}]]*/'noValue';
+    var chartType = /*[[${chartType}]]*/'noValue';
+
+    $(document).ready(function() {
+        google.charts.load('current', {
+            packages : [ 'corechart', 'bar' ]
+        });
+        google.charts.setOnLoadCallback(drawColumnChart);
+    });
+
+    function drawColumnChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', X_name);
+        data.addColumn('number', Y_name);
+        if(additionalY_names !== 'noValue')
+        {
+            for(let i in additionalY_names){
+                data.addColumn('number', additionalY_names[i]);
+            }
+        }
+        Object.keys(real_data).forEach(function(key) {
+            var dataArray = [Number(key), Number(real_data[key])];
+            if(additionalData!=='noValue') {
+                for(let i in additionalData){
+                    if(typeof additionalData[i] == "object"){
+                       dataArray.push(Number(additionalData[i][key]));
+                    }
+                    else {
+                        dataArray.push(Number(additionalData[i]));
+                    }
+
+                }
+            }
+            data.addRow(dataArray);
+
+        });
+
+        var options = {
+            title : Title,
+            hAxis : {
+                title : X_name,
+            },
+            explorer: {
+                //maxZoomOut:2,
+                keepInBounds: true,
+                axis: 'horizontal'
+            },
+            trendlines: { 0: {
+                    visibleInLegend: true,
+                    color: 'red',
+                    labelInLegend: 'Тренд',
+                } }/*,
+            vAxis : {
+                title : Y_name
+            }*/
+        };
+        if(chartType==='line'){
+            var chart = new google.visualization.LineChart(document
+                .getElementById('Chart'));
+        }
+        else{
+            var chart = new google.visualization.ColumnChart(document
+                .getElementById('Chart'));
+        }
+        chart.draw(data, options);
+    }
+
+</script>

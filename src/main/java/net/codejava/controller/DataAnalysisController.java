@@ -1,11 +1,19 @@
 package net.codejava.controller;
 
+import net.codejava.Resolve.Model.Group;
 import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.PhaseCalc.DataAnalysis;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 
 @Controller
@@ -23,10 +31,25 @@ public class DataAnalysisController {
                 "corechart");
         return "additionals/frequencyChart";
     }
+    @RequestMapping("/showTypicalTempChart")
+    public String showTypicalTempChart(Model model, @RequestParam Integer clusterNum){
+        Group[] groups = new Group[ResolveForm.clusters.size()];
+        groups = ResolveForm.clusters.toArray(groups);
+        List<Integer> group = groups[clusterNum].getGroupMembers();
+        LinkedHashMap<Integer,Double> typicalTemps = DataAnalysis.getTypicalTemps(group);
+        setCommonChartOptions(model,
+                typicalTemps,
+                "Отсчеты", "Значение температуры",
+                "Температура",
+                "temperature",
+                "line");
+        model.addAttribute("clusterNum", clusterNum);
+        return "additionals/Chart";
+    }
     @GetMapping("/temperatureChart")
     public String temperatureChart(Model model, @RequestParam Integer station){
-        double avgTemp = DataAnalysis.getStationAvgTemp(station);
-        double sko = DataAnalysis.getStationSKO(avgTemp, station);
+        double avgTemp = DataAnalysis.getStationAvgTemp(ResolveForm.TempData[station].clone());
+        double sko = DataAnalysis.getStationSKO(avgTemp, ResolveForm.TempData[station].clone());
         setCommonChartOptions(model,
                 DataAnalysis.getStationTemp(station),
                 "Отсчеты", "Значение температуры",

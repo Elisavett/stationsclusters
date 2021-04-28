@@ -2,6 +2,7 @@ package net.codejava.Resolve.PhaseCalc;
 import net.codejava.Resolve.Model.ResolveForm;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class DataAnalysis{
 
@@ -21,16 +22,25 @@ public class DataAnalysis{
         }
         return temperatures;
     }
-    public static double getStationAvgTemp(int station){
-        double[] temp = ResolveForm.TempData[station].clone();
+    public static double getStationAvgTemp(double[] temp){
         double averageT = 0;
         for (double v : temp) {
             averageT += v;
         }
         return averageT / temp.length;
     }
-    public static double getStationSKO(double averageT, int station){
-        double[] temp = ResolveForm.TempData[station].clone();
+    public static LinkedHashMap<Integer, Double> getTypicalTemps(List<Integer> group){
+        LinkedHashMap<Integer, Double> temps = new LinkedHashMap<>();
+        for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
+            double averageTemp = 0;
+            for (Integer station : group) {
+                averageTemp += ResolveForm.TempData[station][j];
+            }
+            temps.put(j, Math.round(averageTemp/group.size()*1000)/1000.0);
+        }
+        return temps;
+    }
+    public static double getStationSKO(double averageT, double[] temp){
         double sko_temp = 0;
         for (double v : temp) {
             sko_temp += (v - averageT)*(v - averageT);
@@ -41,12 +51,12 @@ public class DataAnalysis{
         ResolveForm.averageTemps = new double[ResolveForm.TempData.length];
         for(int i = 0; i < ResolveForm.TempData.length; i++)
         {
-            ResolveForm.averageTemps[i] = getStationAvgTemp(i);
+            ResolveForm.averageTemps[i] = getStationAvgTemp(ResolveForm.TempData[i].clone());
         }
         LinkedHashMap<Integer, Double> SKO = new LinkedHashMap<>();
         for(int i = 0; i < ResolveForm.averageTemps.length; i++)
         {
-            SKO.put(i+1, getStationSKO(ResolveForm.averageTemps[i], i));
+            SKO.put(i+1, getStationSKO(ResolveForm.averageTemps[i], ResolveForm.TempData[i]));
         }
         return SKO;
     }

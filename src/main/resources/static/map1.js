@@ -488,7 +488,7 @@ window.onload = function () {
                 balloonContentBody:
                     '№группы: ' + i + "<br \/>" +
                     " Координаты: " + rects[i][0] + ", " + rects[i][1] + "; " + rects[i][2] + ", " + rects[i][3] + "<br \/>" +
-                    "<a href='/downloadReport'>ссылка</a>"
+                    "<a target='_blank' href='/showTypicalTempChart?clusterNum=" + i + "'>Типовая температура</a>"
             }, {
                 /**
                  * Options.
