@@ -92,7 +92,7 @@ public class Report {
 
             List<Integer> group = cluster.getGroupMembers();
 
-            if(group.size() > ResolveForm.minGroupSize) {
+            if(group.size() >= ResolveForm.minGroupSize) {
                 l++;
                 //Добавление строки с номерами станций в группе
                 stringStations.append("Кластер_").append(l).append(" ")
