@@ -84,8 +84,8 @@ public class Report {
         StringBuilder outputString = getCalcCharacteristics();
         outputString.append("\nТиповые температуры" + "\n");
         StringBuilder stringAmpl = new StringBuilder(ResolveForm.isForPhases ? "\nТиповые амплитуды\n" : "\nТиповые фазы\n");
+        //StringBuilder stringPhase = new StringBuilder(ResolveForm.isForPhases ? "\nТиповые фазы\n" : "\nТиповые амплитуды\n");
         StringBuilder stringPhase = new StringBuilder(ResolveForm.isForPhases ? "\nТиповые фазы\n" : "\nТиповые амплитуды\n");
-        StringBuilder stringCorr = new StringBuilder();
         StringBuilder stringStations = new StringBuilder();
         int l = 0;
         for (Group cluster : ResolveForm.clusters) {
@@ -94,17 +94,12 @@ public class Report {
 
             if(group.size() > ResolveForm.minGroupSize) {
                 l++;
-                stringPhase.append("Кластер_").append(l).append(" ");
-                for (double phase : cluster.getPhases().getPhase()) {
-                    stringPhase.append(Math.round(phase * 1000) / 1000.0).append(" ");
-                }
-                stringPhase.append("\n");
                 //Добавление строки с номерами станций в группе
                 stringStations.append("Кластер_").append(l).append(" ")
                             .append(cluster.getGroupString());
 
-                stringCorr.append("Кластер_").append(l).append(" ")
-                            .append(cluster.getCorrelationString());
+                stringPhase.append("Кластер_").append(l).append(" ")
+                            .append(cluster.getPhaseString());
 
                 outputString.append("Кластер_").append(l);
                 stringAmpl.append("Кластер_").append(l);
@@ -123,10 +118,9 @@ public class Report {
             }
         }
         outputString.append("\nСтанции в кластерах " + "\n").append(stringStations);
-        outputString.append(stringPhase)
-                .append(stringAmpl);
+        outputString.append(stringAmpl);
 
-        outputString.append(stringCorr);
+        outputString.append(stringPhase);
 
         outputString.append(getGeoCharacteristics());
         return outputString.toString();

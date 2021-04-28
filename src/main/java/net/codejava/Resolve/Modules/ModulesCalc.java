@@ -212,6 +212,9 @@ public class ModulesCalc {
         }
         GroupAllocation allocationThread = new GroupAllocation(groups, corrs, executorService);
         ResolveForm.arrayGroup = ResolveForm.FutureToPlaneObj(allocationThread.classesCalc());
+        for (int i = 0; i < groupMas.length; i++) {
+            ResolveForm.arrayGroup.get(i).setPhases(groupStartPhases[i]);
+        }
     }
     public static ArrayList<String> JsonCalc() {
         GroupsForMap.loadGroups();

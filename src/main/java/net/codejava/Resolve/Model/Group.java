@@ -67,7 +67,7 @@ public class Group implements Comparable<Group> {
         stringClusters.append("\n");
         return stringClusters.toString();
     }
-    public String getCorrelationString(){
+    public String getPhaseString(){
         StringBuilder stringPhase = new StringBuilder();
         for (double phase : getPhases().getPhase()) {
             stringPhase.append(Math.round(phase*1000)/1000.0).append(" ");
