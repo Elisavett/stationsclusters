@@ -136,6 +136,8 @@ public class ModulesCalc {
                 gr.deleteDoubles(sortGroups);
             }
         }
+
+        sortGroups.removeIf(s->s.getGroupMembers().size() == 0);
         //получаем количество процессоров
         int processors = Runtime.getRuntime().availableProcessors();
         //создаем пул на количество процессоров
@@ -147,7 +149,8 @@ public class ModulesCalc {
         Phase[] groupStartPhases = new Phase[groupMas.length];
         for (int i = 0; i < groupMas.length; i++) {
             Group group = (Group) groupMas[i];
-            Phase phase = ResolveForm.arrayTypical.get(group.getGroupMembers().get(0));
+            int index = group.getGroupMembers().get(0);
+            Phase phase = ResolveForm.arrayTypical.get(index);
             groupStartPhases[i] = phase;
         }
 
