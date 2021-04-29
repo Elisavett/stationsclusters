@@ -121,13 +121,14 @@ public class CalcModulesController {
     public void countClusters(@RequestParam(value = "corrUP", required = false) String corrUP,
                               @RequestParam(value = "corrDOWN", required = false) String corrDOWN,
                               @RequestParam(value = "isAccurate", required = false) String isAccurate,
-                              @RequestParam(value = "sigma", required = false) String sigma
+                              @RequestParam(value = "sigma", required = false) String sigma,
+                              String isFromPrev
     ) throws InterruptedException, ExecutionException {
         ResolveForm.isAccurate = Boolean.parseBoolean(isAccurate);
         ResolveForm.corrUP = Double.parseDouble(corrUP);
         ResolveForm.corrDOWN = Double.parseDouble(corrDOWN);
         ResolveForm.sigma = sigma;
-        ModulesCalc.ClustersCalc();
+        ModulesCalc.ClustersCalc(Boolean.parseBoolean(isFromPrev));
     }
     @GetMapping("/countClasses")
     @ResponseStatus(value = HttpStatus.OK)

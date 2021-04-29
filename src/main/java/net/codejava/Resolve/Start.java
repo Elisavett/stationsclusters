@@ -10,7 +10,7 @@ public class Start {
     public ArrayList<String> run() throws InterruptedException, ExecutionException {
 
         ModulesCalc.PhaseAmplCalc();
-        ModulesCalc.ClustersCalc();
+        ModulesCalc.ClustersCalc(true);
         if (ResolveForm.classification) {
             ModulesCalc.ClassesCalc();
         }

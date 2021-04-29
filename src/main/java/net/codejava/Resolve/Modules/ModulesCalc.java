@@ -56,7 +56,7 @@ public class ModulesCalc {
         executorService.shutdown();
     }
 
-    public static void ClustersCalc() throws InterruptedException, ExecutionException {
+    public static void ClustersCalc(boolean isFromPrev) throws InterruptedException, ExecutionException {
         int count = 0;
         List<Phase> arrayPhase;
         int stationCount = ResolveForm.TempData.length;
@@ -71,7 +71,7 @@ public class ModulesCalc {
                 Phase phase = new Phase(ResolveForm.TempData[i]);
                 arrayPhase.add(phase);
             }
-            ResolveForm.arrayPhase = arrayPhase;
+            ResolveForm.arrayPhase = new ArrayList<>(arrayPhase);
         }
         List<Phase> typicalPhases = new ArrayList<>();
         List<Group> arrayGroup;
@@ -108,7 +108,13 @@ public class ModulesCalc {
             typicalPhases.clear();
             for (int i = 0; i < stationCount; i++) {
                 Group groupIndex = arrayGroup.get(i);
-                TypicalCalculation typical = new TypicalCalculation(stationCount, arrayPhase, groupIndex);
+                TypicalCalculation typical;
+                if(isFromPrev){
+                    typical = new TypicalCalculation(stationCount, arrayPhase, groupIndex);
+                }
+                else{
+                    typical = new TypicalCalculation(stationCount, ResolveForm.arrayPhase, groupIndex);
+                }
                 Phase typicalPhase = typical.run();
                 groupIndex.setPhases(typicalPhase);
                 typicalPhases.add(typicalPhase);
