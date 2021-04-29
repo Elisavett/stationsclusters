@@ -345,7 +345,7 @@ window.onload = function () {
                         // Координаты центра круга.
                         [coordinates[i].lat, coordinates[i].long],
                         // Радиус круга в метрах.
-                        20500
+                        15500
                     ],
                     {
                         // Содержимое балуна. //
@@ -366,6 +366,7 @@ window.onload = function () {
                         // Ширина обводки в пикселях.
                         strokeWidth: 7,
                         geodesic: true
+
                     });
 
                 // Добавляем круг на карту.
@@ -388,9 +389,11 @@ window.onload = function () {
                         iconImageHref: '/img/cross.png',
                         // Размеры метки.
                         iconImageSize: [7, 7],
+                        iconColor: colors[(coordinates[i].number_group - 1) % colors.length],
                         // Смещение левого верхнего угла иконки относительно
                         // её "ножки" (точки привязки).
                         iconImageOffset: [-2, -2],// Задаем опции круга.
+                        geodesic: true
 
                     });
                 circleClusters[0].add(myCircle);
@@ -518,12 +521,10 @@ window.onload = function () {
             var centerX = Math.floor((clusterCordsSumm[i][0]+clusterCordsSumm[i][1])/2*100)/100;
             var centerY = Math.floor((clusterCordsSumm[i][2]+clusterCordsSumm[i][3])/2*100)/100;
 
-            var clasterCenter= new ymaps.Circle([
+            var clasterCenter= new ymaps.Placemark(
                     // Координаты центра круга.
                     [centerX, centerY],
-                    // Радиус круга в метрах.
-                    40500
-                ],
+                    // Радиус круга в метрах.,
                 {
                     // Содержимое балуна. //
                     balloonContentBody:
@@ -532,17 +533,8 @@ window.onload = function () {
                     // Содержимое хинта.
                     //hintContent: "Подвинь меня"
                 }, {
-                    fillColor: "#ffffff",
-                    // Цвет обводки.
-                    fillOpacity: 1,
-                    // Stroke colors.
-                    strokeColor: colors[(i - 1) % colors.length],
-                    // Stroke transparency.
-                    strokeOpacity: 0.9,
-
-                    strokeWidth: 2,
-                    geodesic: true,
-
+                    preset: "islands#circleIcon",
+                    iconColor:  colors[(i - 1) % colors.length],
 
                 });
             //Центры кластеров
