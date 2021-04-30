@@ -13,12 +13,12 @@ public class TypicalCalculation {
     List<Integer> members = new ArrayList<>();
     int stationCount;
     List<Phase> arrayPhase;
-    Group groupIndex;
+    Group group;
 
-    public TypicalCalculation(int stationCount, List<Phase> arrayPhase, Group groupIndex) {
+    public TypicalCalculation(int stationCount, List<Phase> arrayPhase, Group group) {
         this.stationCount = stationCount;
         this.arrayPhase = arrayPhase;
-        this.groupIndex = groupIndex;
+        this.group = group;
     }
 
     public Phase run() {
@@ -29,7 +29,7 @@ public class TypicalCalculation {
     }
 
     private void loadGroup() {
-        members.addAll(groupIndex.getGroupMembers());
+        members.addAll(group.getGroupMembers());
     }
 
     //Добавляет для каждой станции из группы members фазу, соответствующую этой станции

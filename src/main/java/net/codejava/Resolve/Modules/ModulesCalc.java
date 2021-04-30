@@ -107,16 +107,16 @@ public class ModulesCalc {
             //блок вычисления типовых фаз
             typicalPhases.clear();
             for (int i = 0; i < stationCount; i++) {
-                Group groupIndex = arrayGroup.get(i);
+                Group group = arrayGroup.get(i);
                 TypicalCalculation typical;
                 if(isFromPrev){
-                    typical = new TypicalCalculation(stationCount, arrayPhase, groupIndex);
+                    typical = new TypicalCalculation(stationCount, arrayPhase, group);
                 }
                 else{
-                    typical = new TypicalCalculation(stationCount, ResolveForm.arrayPhase, groupIndex);
+                    typical = new TypicalCalculation(stationCount, ResolveForm.arrayPhase, group);
                 }
                 Phase typicalPhase = typical.run();
-                groupIndex.setPhases(typicalPhase);
+                group.setPhases(typicalPhase);
                 typicalPhases.add(typicalPhase);
             }
 

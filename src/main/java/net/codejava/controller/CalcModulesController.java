@@ -140,6 +140,7 @@ public class CalcModulesController {
     @ResponseStatus(value = HttpStatus.OK)
     public void toMap(@RequestParam(value = "minGroupSize", required = false) String minGroupSize,
                       @RequestParam(value = "groupCross", required = false) String groupCross) {
+        ResolveForm.resolveTime = "";
         ResolveForm.minGroupSize = Integer.parseInt(minGroupSize);
         ResolveForm.groupCross = groupCross.equals("true");
         ResolveForm.json = new ArrayList<>();
