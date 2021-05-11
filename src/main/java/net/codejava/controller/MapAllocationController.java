@@ -4,7 +4,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.codejava.Resolve.*;
+import net.codejava.Resolve.Model.GroupAndCoordinates;
 import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -135,6 +139,38 @@ public class MapAllocationController {
         }
         return "redirect:/showOnMap";
     }
+    @GetMapping("/showStationsOnMap")
+    public String showStationsOnMap(Model model){
+
+        Gson GSON = new GsonBuilder().create();
+        //формирую json файл
+        ArrayList<String> json = new ArrayList<>();
+        for(int j = 0; j<ResolveForm.coordData[0].length; j++) {
+            Map<String, String> additional = new HashMap<>();
+            if(ResolveForm.coordData.length > 3 && ResolveForm.fileParams.length > 1) {
+                int limit = Math.min((ResolveForm.coordData.length-3), ResolveForm.fileParams.length / 2);
+                for (int i = 0; i < limit; i++) {
+                    if(Boolean.parseBoolean(ResolveForm.fileParams[i*2+1]))
+                        additional.put(ResolveForm.fileParams[i * 2], ResolveForm.coordData[i+3][j]);
+                }
+            }
+            GroupAndCoordinates groupAndCoordinates = new GroupAndCoordinates(
+                    Double.parseDouble(ResolveForm.coordData[0][j]),
+                    Double.parseDouble(ResolveForm.coordData[1][j]),
+                    Double.parseDouble(ResolveForm.coordData[2][j]),
+                    1,
+                    true,
+                    additional);
+            String jsonData = GSON.toJson(groupAndCoordinates);
+            json.add(jsonData);
+        }
+        model.addAttribute("json", json);
+        model.addAttribute("groupNum", ResolveForm.groupNum);
+        if(ResolveForm.resolveTime.equals("")) {
+            ResolveForm.resolveTime = " ";
+        }
+        return "map1";
+    }
     @GetMapping("/showOnMap")
     public String toMap(Model model){
         ArrayList<String> json = new ArrayList<>();
@@ -151,7 +187,7 @@ public class MapAllocationController {
         model.addAttribute("json", json);
         model.addAttribute("groupNum", ResolveForm.groupNum);
         if(ResolveForm.resolveTime.equals("")) {
-            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh.mm.ss");
             ResolveForm.resolveTime = dateFormat.format(Calendar.getInstance().getTime());
         }
         model.addAttribute("resolveTime", "Расчет: " + ResolveForm.resolveTime);
@@ -241,6 +277,8 @@ public class MapAllocationController {
                                      int dataType,
                                      Date periodStart, Date periodEnd){
         saveFilesInfo(tempType, cordsType, fileTemp, fileCoordinates);
+
+        ResolveForm.startDate = periodStart;
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         DateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");

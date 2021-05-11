@@ -351,9 +351,10 @@ window.onload = function () {
                         // Содержимое балуна. //
                         balloonContentBody:
                             " №Станции: " + parseInt(coordinates[i].number_station) + "<br \/>" +
-                            " Координаты: " + coordinates[i].lat + "; " + coordinates[i].long + "<br \/>" +
+                            " Координаты: ш: " + coordinates[i].lat + "; д: " + coordinates[i].long + "<br \/>" +
                             stringParam +
-                            " №группы: " + coordinates[i].number_group
+                            " №группы: " + coordinates[i].number_group + "<br \/>" +
+                            "<a target='_blank' href='/dataAnalysisForStation?station=" + parseInt(coordinates[i].number_station) + "'>Анализ данных</a>"
                         // Содержимое хинта.
                         //hintContent: "Подвинь меня"
                     }, {
@@ -377,9 +378,10 @@ window.onload = function () {
                         // Содержимое балуна. //
                         balloonContentBody:
                             " №Станции: " + coordinates[i].number_station + "<br \/>" +
-                            " Координаты: " + coordinates[i].lat + "; " + coordinates[i].long + "<br \/>" +
+                            " Координаты: ш: " + coordinates[i].lat + "; д: " + coordinates[i].long + "<br \/>" +
                             stringParam +
-                            " №группы: без группы"
+                            " №группы: без группы" + "<br \/>" +
+                            "<a target='_blank' href='/dataAnalysisForStation?station=" + parseInt(coordinates[i].number_station) + "'>Анализ данных</a>"
                         // Содержимое хинта.
                         //hintContent: "Подвинь меня"
                     }, {
@@ -388,7 +390,7 @@ window.onload = function () {
                         // Своё изображение иконки метки.
                         iconImageHref: '/img/cross.png',
                         // Размеры метки.
-                        iconImageSize: [7, 7],
+                        iconImageSize: [8, 8],
                         iconColor: colors[(coordinates[i].number_group - 1) % colors.length],
                         // Смещение левого верхнего угла иконки относительно
                         // её "ножки" (точки привязки).
@@ -396,6 +398,7 @@ window.onload = function () {
                         geodesic: true
 
                     });
+
                 circleClusters[0].add(myCircle);
                 //Добавляем круг на карту.
                 //map.geoObjects.add(myCircle);
@@ -490,8 +493,9 @@ window.onload = function () {
                 //hintContent: '№группы: ' + i,
                 balloonContentBody:
                     '№группы: ' + i + "<br \/>" +
-                    " Координаты: " + rects[i][0] + ", " + rects[i][1] + "; " + rects[i][2] + ", " + rects[i][3] + "<br \/>" +
-                    "<a target='_blank' href='/showTypicalTempChart?clusterNum=" + i + "'>Типовая температура</a>"
+                    " Координаты левого нижнего угла: ш: " + rects[i][0] + ", д: " + rects[i][1] + "<br \/>" +
+                    " Координаты правого верхнего угла: ш: " + rects[i][2] + ", д: " + rects[i][3] + "<br \/>" +
+                    "<a target='_blank' href='/showClusterAnalysis?clusterNum=" + i + "'>Типовая температура</a>"
             }, {
                 /**
                  * Options.
@@ -521,7 +525,7 @@ window.onload = function () {
             var centerX = Math.floor((clusterCordsSumm[i][0]+clusterCordsSumm[i][1])/2*100)/100;
             var centerY = Math.floor((clusterCordsSumm[i][2]+clusterCordsSumm[i][3])/2*100)/100;
 
-            var clasterCenter= new ymaps.Placemark(
+            /*var clasterCenter= new ymaps.Placemark(
                     // Координаты центра круга.
                     [centerX, centerY],
                     // Радиус круга в метрах.,
@@ -536,36 +540,39 @@ window.onload = function () {
                     preset: "islands#circleIcon",
                     iconColor:  colors[(i - 1) % colors.length],
 
-                });
-            //Центры кластеров
-            /*var centerTrangle = new ymaps.Polygon([[
-                // Координаты вершин внешней границы многоугольника.
-                [centerX + (trangleSize-0.1)/Math.log(centerX/22), centerY],
-                [centerX - 0.5*trangleSize, centerY - 0.866*trangleSize],
-                [centerX - 0.5*trangleSize, centerY + 0.866*trangleSize]
-            ]],
+                });*/
+            var clasterCenter1 = new ymaps.Polyline([[rects[i][0], rects[i][1]],
+                    [rects[i][2], rects[i][3]]],
                 {
                     // Содержимое балуна. //
                     balloonContentBody:
-                        " Центр кластера " + i + "<br \/>" +
-                        " Координаты: " + centerX + "; " + centerY
-
-                }, {
-                    // Задаем опции круга.
-                    // Цвет заливки.
-                    // Последний байт (77) определяет прозрачность.
-                    fillColor: "#ffffff",
-                    // Цвет обводки.
-                    fillOpacity: 1,
-                    // Stroke colors.
+                        " Центр кластера: " + "<br \/>" +
+                        " Координаты: ш: " + centerX + "; д: " + centerY + "<br \/>"
+                    // Содержимое хинта.
+                    //hintContent: "Подвинь меня"
+                },
+                {
                     strokeColor: colors[(i - 1) % colors.length],
-                    // Stroke transparency.
-                    strokeOpacity: 0.9,
-
-                    strokeWidth: 2,
-                });*/
-
-            centerClusters[i].add(clasterCenter);
+                    strokeWidth: 4,
+                    opacity: 0.5
+                });
+            var clasterCenter2 = new ymaps.Polyline([[rects[i][0], rects[i][3]],
+                    [rects[i][2], rects[i][1]]],
+                {
+                    // Содержимое балуна. //
+                    balloonContentBody:
+                        " Центр кластера: " + "<br \/>" +
+                        " Координаты: ш: " + centerX + "; д: " + centerY + "<br \/>"
+                    // Содержимое хинта.
+                    //hintContent: "Подвинь меня"
+                },
+                {
+                    strokeColor: colors[(i - 1) % colors.length],
+                    strokeWidth: 4,
+                    opacity: 0.5
+                });
+            centerClusters[i].add(clasterCenter1);
+            centerClusters[i].add(clasterCenter2);
 
         }
         setObjectType('both');

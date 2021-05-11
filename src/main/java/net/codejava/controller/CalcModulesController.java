@@ -151,7 +151,7 @@ public class CalcModulesController {
         model.addAttribute("json", ResolveForm.json);
         model.addAttribute("groupNum", ResolveForm.groupNum);
         if(ResolveForm.resolveTime.equals("")) {
-            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh.mm.ss");
             ResolveForm.resolveTime = dateFormat.format(Calendar.getInstance().getTime());
         }
         model.addAttribute("resolveTime", "Расчет: " + ResolveForm.resolveTime);

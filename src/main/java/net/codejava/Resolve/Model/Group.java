@@ -11,13 +11,15 @@ import java.util.TreeSet;
 public class Group implements Comparable<Group> {
     private final List<Integer> groupMembers;
     private final List<Double> correlations;
+    private final List<List<Double>> groupCorrTable;
     @Setter private Phase phases;
     private final int index;
 
-    public Group(List<Integer> groupMembers, List<Double> cors, int index) {
+    public Group(List<Integer> groupMembers, List<Double> cors, List<List<Double>> groupCorrTable, int index) {
         this.groupMembers = groupMembers;
         this.correlations = cors;
         this.index = index;
+        this.groupCorrTable = groupCorrTable;
     }
     @Override
     public boolean equals(Object obj) {

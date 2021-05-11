@@ -69,7 +69,7 @@ public class Report {
     }
     public static StringBuilder getCalcCharacteristics(){
         if(ResolveForm.resolveTime.equals("")) {
-            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh.mm.ss");
             ResolveForm.resolveTime = dateFormat.format(Calendar.getInstance().getTime());
         }
         StringBuilder outputString = new StringBuilder("Дата расчета: " + ResolveForm.resolveTime + "\n");

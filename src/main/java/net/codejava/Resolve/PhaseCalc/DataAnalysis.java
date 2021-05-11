@@ -1,24 +1,42 @@
 package net.codejava.Resolve.PhaseCalc;
 import net.codejava.Resolve.Model.ResolveForm;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 public class DataAnalysis{
 
     FrequencyAnalysis frequencyAnalysis;
+    private static int dateDelta = Calendar.MONTH;
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static final Calendar date = Calendar.getInstance();
+    public static Date dateForChart (){
+        date.setTime(ResolveForm.startDate);
+        date.add(dateDelta, ResolveForm.TempData[0].length/3);
+        return date.getTime();
+    }
     public DataAnalysis(double[] temp) {
+        this();
         this.frequencyAnalysis = new FrequencyAnalysis(temp);
     }
-    public LinkedHashMap<Integer, Double> getFrequencySpector(){
+    public DataAnalysis(){
+        if(ResolveForm.dataType == 365){
+            dateDelta = Calendar.DATE;
+        }
+    }
+    public LinkedHashMap<String, Double> getFrequencySpector(){
         return frequencyAnalysis.spectorCalculation();
     }
     public static LinkedHashMap<String, Double> getStationTemp(int station){
         double[] temp = ResolveForm.TempData[station].clone();
         LinkedHashMap<String, Double> temperatures = new LinkedHashMap<>();
-        for(int i = 0; i < temp.length; i++)
-        {
-            temperatures.put(String.valueOf(i), Math.round(100*temp[i])/100.);
+        date.setTime(ResolveForm.startDate);
+        for (double v : temp) {
+            date.add(dateDelta, 1);
+            temperatures.put(dateFormat.format(date.getTime()), Math.round(100 * v) / 100.);
         }
         return temperatures;
     }
@@ -29,14 +47,16 @@ public class DataAnalysis{
         }
         return averageT / temp.length;
     }
-    public static LinkedHashMap<Integer, Double> getTypicalTemps(List<Integer> group){
-        LinkedHashMap<Integer, Double> temps = new LinkedHashMap<>();
+    public static LinkedHashMap<String, Double> getTypicalTemps(List<Integer> group){
+        LinkedHashMap<String, Double> temps = new LinkedHashMap<>();
+        date.setTime(ResolveForm.startDate);
         for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
             double averageTemp = 0;
             for (Integer station : group) {
                 averageTemp += ResolveForm.TempData[station][j];
             }
-            temps.put(j, Math.round(averageTemp/group.size()*1000)/1000.0);
+            date.add(dateDelta, 1);
+            temps.put(dateFormat.format(date.getTime()), Math.round(averageTemp/group.size()*1000)/1000.0);
         }
         return temps;
     }
@@ -68,13 +88,15 @@ public class DataAnalysis{
             this.temp = temp;
         }
 
-        public LinkedHashMap<Integer, Double> spectorCalculation() {
+        public LinkedHashMap<String, Double> spectorCalculation() {
             LoadFunction();
             FFTCalculation();
-            LinkedHashMap<Integer, Double> graphData = new LinkedHashMap<>();
-            graphData.put(1, 0.);
+            LinkedHashMap<String, Double> graphData = new LinkedHashMap<>();
+            date.setTime(ResolveForm.startDate);
+            graphData.put(dateFormat.format(date.getTime()), 0.);
             for (int i = 1; i < real.length; i++) {
-                graphData.put(i + 1, Math.round(100 * Math.sqrt(imag[i] * imag[i] + real[i] * real[i])) / 100.);
+                date.add(dateDelta, 1);
+                graphData.put(dateFormat.format(date.getTime()), Math.round(100 * Math.sqrt(imag[i] * imag[i] + real[i] * real[i])) / 100.);
             }
             return graphData;
         }

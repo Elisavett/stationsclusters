@@ -1,0 +1,135 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script type="text/javascript"
+            src="https://www.gstatic.com/charts/loader.js"></script>
+    <title>Станция [[${stationNum}]]</title>
+
+</head>
+<span th:replace="fragments/scripts :: scripts"></span>
+<body class="gradient">
+    <h3 style="margin: 20px 120px" id="clusterNum">Станция [[${stationNum}]]</h3>
+    <div class="optional">
+        <div class="dataClass">
+            <div class="form-group row">
+                <h6 class="col-sm-12 col-form-label"><u>Грфафик температуры:</u>
+                </h6>
+            </div>
+
+            <div id="temperatureChartPlace" style="min-height: 280px">
+                <div class="frequencyLoader" style="margin: 0 auto;"></div>
+                <div id="temperatureChart"></div>
+            </div>
+
+
+        </div>
+        <a name="underFRchart"></a>
+        <div class="dataClass">
+            <div class="form-group row">
+                <h6 class="col-sm-12 col-form-label"><u>Разложение в спектр:</u>
+                </h6>
+            </div>
+
+            <div id="frequencyChartPlace" style="min-height: 280px">
+                <div class="frequencyLoader" style="margin: 0 auto;"></div>
+                <div id="frequencyChart"></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
+    var frequencyData = /*[[${frequencyData}]]*/'noValue';
+    var temperaturesData = /*[[${temperaturesData}]]*/'noValue';
+    var additionalData = /*[[${additionalData}]]*/'noValue';
+
+    $(document).ready(function() {
+        google.charts.load('current', {
+            packages : [ 'corechart', 'bar' ],
+            'language': 'ru'
+        });
+        google.charts.setOnLoadCallback(drawTemperatureChart);
+        google.charts.setOnLoadCallback(drawFrequencyChart);
+    });
+    function drawFrequencyChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', "Дата");
+        data.addColumn('number', "Модуль спектра");
+        Object.keys(frequencyData).forEach(function(key) {
+            var dataArray = [new Date(key), Number(frequencyData[key])];
+            data.addRow(dataArray);
+
+        });
+
+        var options = {
+            title : "Частотный спектр",
+            hAxis : {
+                title : "Отсчеты",
+            },
+            explorer: {
+                //maxZoomOut:2,
+                keepInBounds: true,
+                axis: 'horizontal'
+            },/*,
+            vAxis : {
+                title : Y_name
+            }*/
+        };
+        var chart = new google.visualization.LineChart(document
+            .getElementById('frequencyChart'));
+        chart.draw(data, options);
+    }
+    function drawTemperatureChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', "Дата");
+        data.addColumn('number', "Температура, С");
+        //data.addColumn('number', "Средняя");
+        data.addColumn('number', "+СКО");
+        data.addColumn('number', "-СКО");
+        Object.keys(temperaturesData).forEach(function(key) {
+            var dataArray = [new Date(key), Number(temperaturesData[key])];
+                for(let i in additionalData){
+                    if(typeof additionalData[i] == "object"){
+                        dataArray.push(Number(additionalData[i][key]));
+                    }
+                    else {
+                        dataArray.push(Number(additionalData[i]));
+                    }
+
+                }
+            data.addRow(dataArray);
+
+        });
+
+        var options = {
+            title : "Температура",
+            hAxis : {
+                title : "Отсчеты",
+            },
+            explorer: {
+                //maxZoomOut:2,
+                keepInBounds: true,
+                axis: 'horizontal'
+            },
+
+            trendlines: { 0: {
+                    visibleInLegend: true,
+                    color: 'green',
+                    labelInLegend: 'Тренд',
+                    //type: 'polynomial'
+                } }
+            /*,
+            vAxis : {
+                title : Y_name
+            }*/
+        };
+        var chart = new google.visualization.LineChart(document
+                .getElementById('temperatureChart'));
+        chart.draw(data, options);
+    }
+
+</script>

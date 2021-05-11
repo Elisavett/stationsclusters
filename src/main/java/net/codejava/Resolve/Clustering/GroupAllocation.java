@@ -5,9 +5,6 @@ import net.codejava.Resolve.Model.Group;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 public class GroupAllocation {
     double corrDOWN;
@@ -17,32 +14,28 @@ public class GroupAllocation {
     List<List<Double>> groupsCorrs;
     int stationCount;
     List<Corr> arrayCorr;
-    ExecutorService executorService;
 
-    public GroupAllocation(int stationCount, double corrDOWN, double corrUP, List<Corr> arrayCorr, ExecutorService executorService)
+    public GroupAllocation(int stationCount, double corrDOWN, double corrUP, List<Corr> arrayCorr)
     {
-        this(executorService);
+        this();
         this.stationCount = stationCount;
         this.corrDOWN = corrDOWN;
         this.corrUP = corrUP;
         this.arrayCorr = arrayCorr;
     }
-    public GroupAllocation(List<List<Integer>> groups, List<List<Double>> corrs, ExecutorService executorService) {
-        this(executorService);
+    public GroupAllocation(List<List<Integer>> groups, List<List<Double>> corrs) {
+        this();
         this.groups = groups;
         this.groupsCorrs = corrs;
     }
-    public GroupAllocation(ExecutorService executorService)
-    {
-        this.executorService = executorService;
-    }
+    public GroupAllocation(){}
 
-    public List<Future<Group>> clustersCalc() throws InterruptedException {
+    public List<Group> clustersCalc() {
         loadCorrelationTable();
         allocateGroups();
         return saveGroups();
     }
-    public List<Future<Group>> classesCalc() throws InterruptedException {
+    public List<Group> classesCalc() {
         return saveGroups();
     }
 
@@ -89,38 +82,30 @@ public class GroupAllocation {
         return corrTable.get(i).get(Math.abs(j - i) - 1) >= corrDOWN && corrTable.get(i).get(Math.abs(j - i) - 1) <= corrUP;
     }
 
-    private List<Future<Group>> saveGroups() throws InterruptedException {
+    private List<Group> saveGroups() {
         //создаем лист задач
-        List<MyCallable> tasks = new ArrayList<>();
+
+        List<Group> returnGroups = new ArrayList<>();
         for (int i = 0; i < groups.size(); i++) {
-            MyCallable myCallable = new MyCallable(i, groups, groupsCorrs);
-            tasks.add(myCallable);
-        }
-        return executorService.invokeAll(tasks);
-    }
-
-
-    static class MyCallable implements Callable<Group> {
-        int position;
-        List<List<Integer>> groups;
-        List<List<Double>> coords;
-
-        public MyCallable(int position, List<List<Integer>> groups, List<List<Double>> coords) {
-            this.position = position;
-            this.groups = groups;
-            this.coords = coords;
-        }
-
-        @Override
-        public Group call() {
-            List<Integer> groupMembers = new ArrayList<>();
-            List<Double> corrs= new ArrayList<>();
-            for (int j = 0; j < groups.get(position).size(); j++) {
-                groupMembers.add(groups.get(position).get(j));
-                corrs.add((double)groups.get(position).get(j));
+            List<List<Double>> groupCorrTable = new ArrayList<>();
+            for(int member1 : groups.get(i)){
+                List<Double> memberCorrs = new ArrayList<>();
+                for(int member2 : groups.get(i)){
+                    if (member1 > member2) {
+                        memberCorrs.add(Math.round(corrTable.get(member2).get(member1 - member2 - 1)*1000)/1000.0);
+                    }
+                    else if (member1 < member2){
+                        memberCorrs.add(Math.round(corrTable.get(member1).get(member2 - member1 - 1)*1000)/1000.0);
+                    }
+                    else{
+                        memberCorrs.add(1.);
+                    }
+                }
+                groupCorrTable.add(memberCorrs);
             }
-            return new Group(groupMembers, corrs, position);
+            returnGroups.add(new Group(groups.get(i), groupsCorrs.get(i), groupCorrTable, i));
         }
+        return returnGroups;
     }
 }
 

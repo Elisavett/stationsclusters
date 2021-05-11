@@ -1,0 +1,124 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script type="text/javascript"
+            src="https://www.gstatic.com/charts/loader.js"></script>
+    <title>Кластер [[${clusterNum}]]</title>
+    <style>
+        table{
+            table-layout: fixed;
+        }
+        th,
+        td {
+            width: 65px;
+            overflow: hidden;
+            text-align: center;
+            background-color: white;
+        }
+        h3, h2{
+            margin: 40px 120px;
+        }
+    </style>
+
+</head>
+<div>
+    <span th:replace="fragments/scripts :: scripts"></span>
+    <h3 id="clusterNum">Кластер [[${clusterNum}]]</h3>
+    <div id="dashboard_div" style="height: 500px">
+        <div id="Chart" style="height: 70%">
+        </div>
+        <div id="control_div" style="height: 17%; width: 94%; margin: 0 3%">
+        </div>
+    </div>
+    <h3>Матрица корреляции</h3>
+    <table class="table table-bordered" style="position: sticky;top: 0;">
+        <thead >
+            <tr>
+                <th class="text-center">#</th>
+                <th class="text-center" th:each="member : ${groupMembers}">[[${member}]]</th>
+            </tr>
+        </thead>
+    </table>
+    <table class="table table-bordered table-hover" style="table-layout:fixed;">
+        <tbody>
+            <tr th:each="memberCorr,iterStat : ${corrTable}">
+                <td style="position: sticky;left: 0;"><b>[[${groupMembers.get(iterStat.index)}]]</b></td>
+                <td th:each="corrValue : ${memberCorr}">[[${corrValue}]]</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
+    var real_data = /*[[${chartData}]]*/'noValue';
+    var Title = /*[[${title}]]*/'noValue';
+    var X_name = /*[[${X_name}]]*/'noValue';
+    var Y_name = /*[[${Y_name}]]*/'noValue';
+    var id = /*[[${id}]]*/'noValue';
+    var periodShown = /*[[${periodShown}]]*/'noValue';
+
+    $(document).ready(function() {
+        google.charts.load('current', {
+            packages : [ 'corechart', 'bar', 'controls'],
+            'language': 'ru'
+        });
+        google.charts.setOnLoadCallback(drawColumnChart);
+    });
+
+    function drawColumnChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', X_name);
+        data.addColumn('number', "Температура, С");
+        Object.keys(real_data).forEach(function(key) {
+            var dataArray = [new Date(key), Number(real_data[key])];
+
+            data.addRow(dataArray);
+
+        });
+
+        var options = {
+            title : Title,
+            hAxis : {
+                title : X_name,
+            },
+            /*explorer: {
+                //maxZoomOut:2,
+                keepInBounds: true,
+                axis: 'horizontal'
+            },*/
+            trendlines: { 0: {
+                    visibleInLegend: true,
+                    color: 'red',
+                    labelInLegend: 'Тренд',
+                } }/*,
+            vAxis : {
+                title : Y_name
+            }*/
+        };
+            /*var chart = new google.visualization.LineChart(document
+                .getElementById('Chart'));*/
+        var chart = new google.visualization.ChartWrapper({
+            chartType: 'LineChart',
+            options: options,
+            containerId: 'Chart'
+        });
+        var control = new google.visualization.ControlWrapper({
+            controlType: 'ChartRangeFilter',
+            containerId: 'control_div',
+            state: {
+                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/3, 0) },
+            },
+            options: {
+                filterColumnIndex: 0,
+            }
+        });
+        var dashboard = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
+        dashboard.bind([control], [chart]);
+        dashboard.draw(data);
+    }
+
+</script>

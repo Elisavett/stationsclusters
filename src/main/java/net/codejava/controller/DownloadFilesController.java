@@ -75,7 +75,7 @@ public class DownloadFilesController {
     }
     @RequestMapping("/downloadReport")
     public ResponseEntity<String> downloadGeographicCharacters() {
-        return getFile("groupGeoCharacteristics", Report.getReport());
+        return getFile(ResolveForm.resolveTime, Report.getReport());
     }
 
     @RequestMapping("/downloadSKO")

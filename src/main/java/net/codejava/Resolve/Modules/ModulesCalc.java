@@ -91,8 +91,8 @@ public class ModulesCalc {
             arrayCorr = ResolveForm.FutureToPlaneObj(executorService.invokeAll(corrThreadTasks));
 
             //блок выделения групп
-            GroupAllocation allocationThread = new GroupAllocation(stationCount, ResolveForm.corrDOWN, ResolveForm.corrUP, arrayCorr, executorService);
-            arrayGroup = ResolveForm.FutureToPlaneObj(allocationThread.clustersCalc());
+            GroupAllocation allocationThread = new GroupAllocation(stationCount, ResolveForm.corrDOWN, ResolveForm.corrUP, arrayCorr);
+            arrayGroup = allocationThread.clustersCalc();
 
             equalsCount = 0;
             if(count>0 && ResolveForm.isAccurate) {
@@ -216,8 +216,8 @@ public class ModulesCalc {
                 corrs.add(tempCorr);
             }
         }
-        GroupAllocation allocationThread = new GroupAllocation(groups, corrs, executorService);
-        ResolveForm.arrayGroup = ResolveForm.FutureToPlaneObj(allocationThread.classesCalc());
+        GroupAllocation allocationThread = new GroupAllocation(groups, corrs);
+        ResolveForm.arrayGroup = allocationThread.classesCalc();
         for (int i = 0; i < groupMas.length; i++) {
             ResolveForm.arrayGroup.get(i).setPhases(groupStartPhases[i]);
         }

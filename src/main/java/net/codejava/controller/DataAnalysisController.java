@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.lang.reflect.Array;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -31,12 +30,13 @@ public class DataAnalysisController {
                 "corechart");
         return "additionals/frequencyChart";
     }
-    @RequestMapping("/showTypicalTempChart")
-    public String showTypicalTempChart(Model model, @RequestParam Integer clusterNum){
+    @RequestMapping("/showClusterAnalysis")
+    public String showClusterAnalysis(Model model, @RequestParam Integer clusterNum){
         Group[] groups = new Group[ResolveForm.clusters.size()];
         groups = ResolveForm.clusters.toArray(groups);
-        List<Integer> group = groups[clusterNum].getGroupMembers();
-        LinkedHashMap<Integer,Double> typicalTemps = DataAnalysis.getTypicalTemps(group);
+        List<Integer> group = groups[clusterNum-1].getGroupMembers();
+        LinkedHashMap<String,Double> typicalTemps = DataAnalysis.getTypicalTemps(group);
+
         setCommonChartOptions(model,
                 typicalTemps,
                 "Отсчеты", "Значение температуры",
@@ -44,7 +44,10 @@ public class DataAnalysisController {
                 "temperature",
                 "line");
         model.addAttribute("clusterNum", clusterNum);
-        return "additionals/Chart";
+        model.addAttribute("corrTable", groups[clusterNum-1].getGroupCorrTable());
+        model.addAttribute("groupMembers", group);
+        model.addAttribute("periodShown", new String[]{ResolveForm.startDate.toString(), DataAnalysis.dateForChart().toString()});
+        return "additionals/groupAnalysis";
     }
     @GetMapping("/temperatureChart")
     public String temperatureChart(Model model, @RequestParam Integer station){
@@ -60,7 +63,23 @@ public class DataAnalysisController {
         model.addAttribute("additionalY_names", new String[]{"Средняя", "+СКО", "-СКО"});
         return "additionals/frequencyChart";
     }
-    @GetMapping("/SKOAnalysis")
+    @GetMapping("/dataAnalysisForStation")
+    public String dataAnalysisForStation(Model model, @RequestParam Integer station) {
+        double avgTemp = DataAnalysis.getStationAvgTemp(ResolveForm.TempData[station].clone());
+        double sko = DataAnalysis.getStationSKO(avgTemp, ResolveForm.TempData[station].clone());
+        model.addAttribute("temperaturesData", DataAnalysis.getStationTemp(station));
+        model.addAttribute("additionalData", new double[]{avgTemp + sko, avgTemp - sko});
+
+        double[] temp = ResolveForm.TempData[station].clone();
+        DataAnalysis dataAnalysis = new DataAnalysis(temp);
+        ResolveForm.frequencyAnalysis = dataAnalysis.getFrequencySpector();
+        model.addAttribute("frequencyData", ResolveForm.frequencyAnalysis);
+        model.addAttribute("stationNum", station);
+        return "additionals/stationDataCharts";
+    }
+
+
+        @GetMapping("/SKOAnalysis")
     public String SKOAnalysis(Model model) {
         ResolveForm.SKO = DataAnalysis.getAllSKO();
         setCommonChartOptions(model, ResolveForm.SKO,
