@@ -165,7 +165,7 @@ public class MapAllocationController {
             json.add(jsonData);
         }
         model.addAttribute("json", json);
-        model.addAttribute("groupNum", ResolveForm.groupNum);
+        model.addAttribute("groupNum", 0);
         if(ResolveForm.resolveTime.equals("")) {
             ResolveForm.resolveTime = " ";
         }

@@ -1,5 +1,6 @@
-<div style="padding: 0 12% 0 12%;" xmlns:th="http://www.w3.org/1999/xhtml" class="row">
-    <label style="color: darkred" class="col-sm-12 col-form-label" th:if="${message}!=null" th:text="${message}"></label>
+<div th:if="${message}!=null" style="padding: 0 12% 0 12%;" xmlns:th="http://www.w3.org/1999/xhtml" class="row">
+    <label style="color: darkred" class="col-sm-4 col-form-label"  th:text="${message}"></label>
+    <a target="_blank" href="/showStationsOnMap" class="col-sm-6 col-form-label">Отобразить станции на карте</a>
 </div>
 <form xmlns:th="http://www.w3.org/1999/xhtml" target="_blank" th:if="${message}=='Период выбран верно' OR ${message}=='Данные не прошли проверку'" th:action="@{/map}" method="post" enctype="multipart/form-data" id="test_form" >
 
