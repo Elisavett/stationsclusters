@@ -5,21 +5,19 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
 
 @Getter
 public class Group implements Comparable<Group> {
     private final List<Integer> groupMembers;
     private final List<Double> correlations;
-    private final List<List<Double>> groupCorrTable;
+    @Setter private List<List<Double>> groupCorrTable;
     @Setter private Phase phases;
     private final int index;
 
-    public Group(List<Integer> groupMembers, List<Double> cors, List<List<Double>> groupCorrTable, int index) {
+    public Group(List<Integer> groupMembers, List<Double> cors, int index) {
         this.groupMembers = groupMembers;
         this.correlations = cors;
         this.index = index;
-        this.groupCorrTable = groupCorrTable;
     }
     @Override
     public boolean equals(Object obj) {
@@ -37,14 +35,14 @@ public class Group implements Comparable<Group> {
         return correlations.get(idx);
     }
 
-    public void deleteDoubles(TreeSet<Group> allStations){
+    public void deleteDoubles(List<Group> allStations){
         for (Group tempGroup : allStations) {
             List<Integer> currGroup = new ArrayList<>(tempGroup.getGroupMembers());
             if (index != tempGroup.index) {
                 for (int i = 0; i < groupMembers.size(); i++) {
                     int idx = currGroup.indexOf(groupMembers.get(i));
                     if (idx != -1) {
-                        if (tempGroup.getCorrsForIdx(idx) > correlations.get(i)) {
+                        if (tempGroup.getCorrsForIdx(idx) >= correlations.get(i)) {
                             removeIdx(i);
                         } else {
                             currGroup.remove(idx);
@@ -79,8 +77,8 @@ public class Group implements Comparable<Group> {
     }
     @Override
     public int compareTo(Group anotherGroupLine) {
-        if(this.groupMembers.size() > anotherGroupLine.getGroupMembers().size()) return -1;
+        if(this.groupMembers.size() < anotherGroupLine.getGroupMembers().size()) return 1;
         if(this.groupMembers.equals(anotherGroupLine.getGroupMembers())) return 0;
-        return 1;
+        return -1;
     }
 }

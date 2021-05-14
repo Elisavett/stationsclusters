@@ -76,7 +76,7 @@ public class ModulesCalc {
         List<Phase> typicalPhases = new ArrayList<>();
         List<Group> arrayGroup;
         List<Group> arrayPrevGroup = new ArrayList<>();
-        List<Corr> arrayCorr;
+        List<List<Double>> arrayCorr;
         boolean check = false;
         int equalsCount;
         do {
@@ -103,6 +103,7 @@ public class ModulesCalc {
                 }
                 if (equalsCount == stationCount) //|| prevEqualsCount > equalsCount)
                     break;
+                else ResolveForm.arrayCorr = arrayCorr;
             }
             //блок вычисления типовых фаз
             typicalPhases.clear();
@@ -137,13 +138,15 @@ public class ModulesCalc {
 
     public static void ClassesCalc() throws InterruptedException, ExecutionException {
         TreeSet<Group> sortGroups = new TreeSet<>(ResolveForm.arrayGroup);
+        ArrayList<Group> tmpGroup = new ArrayList<>(sortGroups);
         if(!ResolveForm.groupCross) {
-            for (Group gr : sortGroups) {
-                gr.deleteDoubles(sortGroups);
+            for (Group gr : tmpGroup) {
+                gr.deleteDoubles(tmpGroup);
             }
         }
 
-        sortGroups.removeIf(s->s.getGroupMembers().size() == 0);
+        tmpGroup.removeIf(s->s.getGroupMembers().size() == 0);
+        sortGroups = new TreeSet<>(tmpGroup);
         //получаем количество процессоров
         int processors = Runtime.getRuntime().availableProcessors();
         //создаем пул на количество процессоров
@@ -163,17 +166,12 @@ public class ModulesCalc {
         //Считаем корреляцию начальной фазы с каждой груповой фазой
         List<List<Double>> groupCorrs = new ArrayList<>();
         List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
-        List<Future<Corr>> arrayCorr;
         for (int i = 0; i < groupStartPhases.length; i++) {
             Phase phase = groupStartPhases.clone()[i];
             CorrelationCalculation corrThread = new CorrelationCalculation(phase, -1, ResolveForm.arrayPhase);
             corrThreadTasks.add(corrThread);
         }
-        arrayCorr = executorService.invokeAll(corrThreadTasks);
-        for (Future<Corr> corrFuture : arrayCorr) {
-            List<Double> correlations = corrFuture.get().getCorrelationArray();
-            groupCorrs.add(correlations);
-        }
+        groupCorrs = ResolveForm.FutureToPlaneObj(executorService.invokeAll(corrThreadTasks));
         //Находим наибольшую корреляцию для станции по всем группам. Остальные обращаются в 0
         for (int i = 0; i < groupCorrs.size(); i++) {
             for(int j = 0; j < groupCorrs.get(i).size(); j++) {

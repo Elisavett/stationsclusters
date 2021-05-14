@@ -495,7 +495,7 @@ window.onload = function () {
                     '№группы: ' + i + "<br \/>" +
                     " Координаты левого нижнего угла: ш: " + rects[i][0] + ", д: " + rects[i][1] + "<br \/>" +
                     " Координаты правого верхнего угла: ш: " + rects[i][2] + ", д: " + rects[i][3] + "<br \/>" +
-                    "<a target='_blank' href='/showClusterAnalysis?clusterNum=" + i + "'>Типовая температура</a>"
+                    "<a target='_blank' href='/showClusterAnalysis?clusterNum=" + i + "'>Анализ группы</a>"
             }, {
                 /**
                  * Options.

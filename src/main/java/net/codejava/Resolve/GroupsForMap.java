@@ -3,10 +3,8 @@ package net.codejava.Resolve;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.codejava.Resolve.Model.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+
+import java.util.*;
 
 /**
  * Класс служит для сопоставления данных о температуре с соответствующими кординатами станции
@@ -27,14 +25,39 @@ public class GroupsForMap {
      * Сортирует и удаляет повторяющиеся данные
      */
     public static void sortGroups() {
-        sortGroups = new TreeSet<>();
-        sortGroups.addAll(groupList);
+        TreeSet<Group> tempGroups = new TreeSet<>(groupList);
+        groupList = new ArrayList<>(tempGroups);
+
         if(!ResolveForm.groupCross) {
-            for (Group gr : sortGroups) {
-                gr.deleteDoubles(sortGroups);
+            for (Group gr : groupList) {
+                //Удаление вхождений групп в другие группы
+                gr.deleteDoubles(groupList);
+                //Добавление таблицы корреляции между элементами группы
+                gr.setGroupCorrTable(getGroupCorrTable(gr.getGroupMembers()));
             }
         }
+        sortGroups = new TreeSet<>();
+        sortGroups.addAll(groupList);
         ResolveForm.clusters = sortGroups;
+    }
+    public static List<List<Double>> getGroupCorrTable(List<Integer> groupMembers){
+        List<List<Double>> groupCorrTable = new ArrayList<>();
+        for(int member1 : groupMembers){
+            List<Double> memberCorrs = new ArrayList<>();
+            for(int member2 : groupMembers){
+                if (member1 > member2) {
+                    memberCorrs.add(Math.round(ResolveForm.arrayCorr.get(member2).get(member1 - member2 - 1)*1000)/1000.0);
+                }
+                else if (member1 < member2){
+                    memberCorrs.add(Math.round(ResolveForm.arrayCorr.get(member1).get(member2 - member1 - 1)*1000)/1000.0);
+                }
+                else{
+                    memberCorrs.add(1.);
+                }
+            }
+            groupCorrTable.add(memberCorrs);
+        }
+        return groupCorrTable;
     }
 
 

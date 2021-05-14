@@ -1,6 +1,5 @@
 package net.codejava.Resolve.Clustering;
 
-import net.codejava.Resolve.Model.Corr;
 import net.codejava.Resolve.Model.Group;
 
 import java.util.ArrayList;
@@ -13,16 +12,17 @@ public class GroupAllocation {
     List<List<Integer>> groups;
     List<List<Double>> groupsCorrs;
     int stationCount;
-    List<Corr> arrayCorr;
 
-    public GroupAllocation(int stationCount, double corrDOWN, double corrUP, List<Corr> arrayCorr)
+    //Кластеризация - группы вычисляем
+    public GroupAllocation(int stationCount, double corrDOWN, double corrUP, List<List<Double>> arrayCorr)
     {
         this();
         this.stationCount = stationCount;
         this.corrDOWN = corrDOWN;
         this.corrUP = corrUP;
-        this.arrayCorr = arrayCorr;
+        this.corrTable = arrayCorr;
     }
+    //Классификация - знаем группы
     public GroupAllocation(List<List<Integer>> groups, List<List<Double>> corrs) {
         this();
         this.groups = groups;
@@ -31,21 +31,22 @@ public class GroupAllocation {
     public GroupAllocation(){}
 
     public List<Group> clustersCalc() {
-        loadCorrelationTable();
+        //loadCorrelationTable();
         allocateGroups();
         return saveGroups();
     }
     public List<Group> classesCalc() {
+        //loadCorrelationTable();
         return saveGroups();
     }
 
-    private void loadCorrelationTable(){
+    /*private void loadCorrelationTable(){
         corrTable = new ArrayList<>();
         for (int i = 0; i < stationCount; i++) {
             Corr corr = arrayCorr.get(i);
             corrTable.add(corr.getCorrelationArray());
         }
-    }
+    }*/
 
     private void allocateGroups() {
         groups = new ArrayList<>();
@@ -87,25 +88,11 @@ public class GroupAllocation {
 
         List<Group> returnGroups = new ArrayList<>();
         for (int i = 0; i < groups.size(); i++) {
-            List<List<Double>> groupCorrTable = new ArrayList<>();
-            for(int member1 : groups.get(i)){
-                List<Double> memberCorrs = new ArrayList<>();
-                for(int member2 : groups.get(i)){
-                    if (member1 > member2) {
-                        memberCorrs.add(Math.round(corrTable.get(member2).get(member1 - member2 - 1)*1000)/1000.0);
-                    }
-                    else if (member1 < member2){
-                        memberCorrs.add(Math.round(corrTable.get(member1).get(member2 - member1 - 1)*1000)/1000.0);
-                    }
-                    else{
-                        memberCorrs.add(1.);
-                    }
-                }
-                groupCorrTable.add(memberCorrs);
-            }
-            returnGroups.add(new Group(groups.get(i), groupsCorrs.get(i), groupCorrTable, i));
+
+            returnGroups.add(new Group(groups.get(i), groupsCorrs.get(i), i));
         }
         return returnGroups;
     }
+
 }
 

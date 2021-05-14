@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.lang.reflect.Array;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -47,6 +45,7 @@ public class DataAnalysisController {
         model.addAttribute("corrTable", groups[clusterNum-1].getGroupCorrTable());
         model.addAttribute("groupMembers", group);
         model.addAttribute("periodShown", new String[]{ResolveForm.startDate.toString(), DataAnalysis.dateForChart().toString()});
+
         return "additionals/groupAnalysis";
     }
     @GetMapping("/temperatureChart")

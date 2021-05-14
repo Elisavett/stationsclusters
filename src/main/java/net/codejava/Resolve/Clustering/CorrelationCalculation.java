@@ -1,6 +1,5 @@
 package net.codejava.Resolve.Clustering;
 
-import net.codejava.Resolve.Model.Corr;
 import net.codejava.Resolve.Model.Phase;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.concurrent.Callable;
  *
  * @version 1.0
  */
-public class CorrelationCalculation implements Callable<Corr> {
+public class CorrelationCalculation implements Callable<List<Double>> {
     private final int firstIndex;
     private final List<Double> correlation;
     private final List<Double> firstStation;
@@ -21,12 +20,12 @@ public class CorrelationCalculation implements Callable<Corr> {
     private final Phase[] arrayPhase;
 
     @Override
-    public Corr call(){
+    public List<Double> call(){
         for (int i = firstIndex + 1; i < arrayPhase.length; i++) {
             secondStation = loadStantion(i);
             correlation.add(correlationCalc());
         }
-        return new Corr(correlation);
+        return new ArrayList<>(correlation);
     }
 
     public CorrelationCalculation(Phase station, int firstIndex, List<Phase> arrayPhase) {

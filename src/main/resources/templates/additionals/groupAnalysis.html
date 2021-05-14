@@ -8,7 +8,7 @@
 
     <script type="text/javascript"
             src="https://www.gstatic.com/charts/loader.js"></script>
-    <title>Кластер [[${clusterNum}]]</title>
+    <title>Группа №[[${clusterNum}]]</title>
     <style>
         table{
             table-layout: fixed;
@@ -28,7 +28,19 @@
 </head>
 <div>
     <span th:replace="fragments/scripts :: scripts"></span>
-    <h3 id="clusterNum">Кластер [[${clusterNum}]]</h3>
+    <h2 id="clusterNum" style="padding: 5px 20px 20px 20px">Кластер [[${clusterNum}]]</h2>
+    <h3>График типовой температуры</h3>
+    <div class="row" style="margin: 5px 120px">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Изменить тип тренда
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <span class="dropdown-item" onclick="changeTrendLine('linear', 'Линейный')">Линейный</span>
+            <span class="dropdown-item" onclick="changeTrendLine('exponential', 'Экспоненциальный')">Экспоненциальный</span>
+            <span class="dropdown-item" onclick="changeTrendLine('polynomial', 'Полиномиальный')">Полиномиальный</span>
+        </div>
+
+    </div>
     <div id="dashboard_div" style="height: 500px">
         <div id="Chart" style="height: 70%">
         </div>
@@ -40,7 +52,7 @@
         <thead >
             <tr>
                 <th class="text-center">#</th>
-                <th class="text-center" th:each="member : ${groupMembers}">[[${member}]]</th>
+                <th class="text-center" th:each="member : ${groupMembers}"><a target='_blank' th:href="@{/dataAnalysisForStation(station=${member})}">[[${member}]]</a></th>
             </tr>
         </thead>
     </table>
@@ -69,8 +81,22 @@
         google.charts.setOnLoadCallback(drawColumnChart);
     });
 
+    var data;
+    var chart;
+    var control;
+    var dashboard;
+    var options;
+
+    function changeTrendLine(type, name){
+        options.trendlines[0].type = type;
+        options.trendlines[0].labelInLegend = name + " тренд";
+        chart.options = options;
+        dashboard.bind([control], [chart]);
+        dashboard.draw(data);
+    }
+
     function drawColumnChart() {
-        var data = new google.visualization.DataTable();
+        data = new google.visualization.DataTable();
         data.addColumn('date', X_name);
         data.addColumn('number', "Температура, С");
         Object.keys(real_data).forEach(function(key) {
@@ -80,33 +106,26 @@
 
         });
 
-        var options = {
+        options = {
             title : Title,
             hAxis : {
                 title : X_name,
             },
-            /*explorer: {
-                //maxZoomOut:2,
-                keepInBounds: true,
-                axis: 'horizontal'
-            },*/
             trendlines: { 0: {
                     visibleInLegend: true,
                     color: 'red',
                     labelInLegend: 'Тренд',
-                } }/*,
-            vAxis : {
-                title : Y_name
-            }*/
+                }
+            }
         };
             /*var chart = new google.visualization.LineChart(document
                 .getElementById('Chart'));*/
-        var chart = new google.visualization.ChartWrapper({
+        chart = new google.visualization.ChartWrapper({
             chartType: 'LineChart',
             options: options,
             containerId: 'Chart'
         });
-        var control = new google.visualization.ControlWrapper({
+        control = new google.visualization.ControlWrapper({
             controlType: 'ChartRangeFilter',
             containerId: 'control_div',
             state: {
@@ -116,7 +135,7 @@
                 filterColumnIndex: 0,
             }
         });
-        var dashboard = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
+        dashboard = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
         dashboard.bind([control], [chart]);
         dashboard.draw(data);
     }

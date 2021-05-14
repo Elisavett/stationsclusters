@@ -16,6 +16,7 @@ public class ResolveForm {
     public static List<Phase> arrayAmplitude;
     public static List<Phase> arrayTypical;
     public static List<Group> arrayGroup;
+    public static List<List<Double>> arrayCorr;
     public static TreeSet<Group> clusters;
     public static ArrayList<String> json;
     public static boolean groupCross = false;
