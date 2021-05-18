@@ -190,7 +190,7 @@ public class ModulesCalc {
             List<Integer> tempGroup = new ArrayList<>();
             List<Double> tempCorr = new ArrayList<>();
             for (int j = 0; j < groupCorr.size(); j++) {
-                if (groupCorr.get(j) > ResolveForm.classCoef) {
+                if (groupCorr.get(j) > ResolveForm.classCoefDOWN && groupCorr.get(j) < ResolveForm.classCoefUP) {
                     tempGroup.add(j);
                     tempCorr.add(groupCorr.get(j));
                     //Считаем сколько раз станция вошла в группу

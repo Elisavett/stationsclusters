@@ -136,8 +136,9 @@ public class CalcModulesController {
     }
     @GetMapping("/countClasses")
     @ResponseStatus(value = HttpStatus.OK)
-    public void countClasses(@RequestParam(value = "classCoef", required = false) String classCoef) throws InterruptedException, ExecutionException{
-        ResolveForm.classCoef = Double.parseDouble(classCoef);
+    public void countClasses(@RequestParam String classCoefDOWN, @RequestParam String classCoefUP) throws InterruptedException, ExecutionException{
+        ResolveForm.classCoefDOWN = Double.parseDouble(classCoefDOWN);
+        ResolveForm.classCoefUP = Double.parseDouble(classCoefUP);
         ModulesCalc.ClassesCalc();
     }
     @GetMapping("/toMap")

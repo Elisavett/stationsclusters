@@ -1,13 +1,23 @@
 <div class="optional" xmlns:th="http://www.w3.org/1999/xhtml">
     <div id="classesWarning" th:text="${warning}" class="warningMessage"></div>
-    <div class="form-group row">
-        <label class="col-sm-5 col-form-label">Коэффициент корреляции (от 0 до 1):
-        </label>
-        <div class="col-sm-2">
-            <input class="form-control" type="text" name="classCoef" onkeyup="checkParams()" autocomplete="off"
-                   id="classCoef" value="0.9">
+
+        <div class="form-group row">
+            <label class="col-sm-5 col-form-label">Нижняя граница корреляции (от 0 до 1):
+            </label>
+            <div class="col-sm-2">
+                <input class="form-control" type="text" name="classCoefDOWN" onkeyup="checkParams()" autocomplete="off"
+                       id="corr1" value="0.8">
+            </div>
         </div>
-    </div>
+        <div class="form-group row">
+            <label class="col-sm-5 col-form-label">Верхняя граница корреляции (от 0 до 1):
+            </label>
+            <div class="col-sm-2">
+                <input class="form-control" type="text" name="classCoefUP" onkeyup="checkParams()" autocomplete="off"
+                       id="corr2" value="1">
+            </div>
+        </div>
+
 
     <div style="color: red" hidden id="error-element" class="col-sm-5 form-group row">
 
@@ -37,10 +47,11 @@
         $(".errorClass").attr("hidden",true);
     });
     $('#countClassesButton').click(function() {
-        var classCoef = $("input[type=text][name=classCoef]").val();
+        var classCoefDOWN = $("input[type=text][name=classCoefDOWN]").val();
+        var classCoefUP = $("input[type=text][name=classCoefUP]").val();
         $('#error-element').attr("hidden", true);
         $('#ClassesError').text("");
-        if(classCoef===""){
+        if(classCoefDOWN==="" || classCoefUP===""){
             $('#error-element').html('Заполните все поля');
             $('#error-element').attr("hidden", false);
         }
@@ -48,7 +59,7 @@
             $('#loaderClasses').attr("hidden", false);
             $.ajax({
                 url: '/countClasses',
-                data: "classCoef=" + classCoef,
+                data: "classCoefDOWN=" + classCoefDOWN + "&classCoefUP=" + classCoefUP,
                 success: function () {
                     //Отображени файлы для скачивания
                     $('#loaderClasses').attr("hidden", true);

@@ -32,7 +32,8 @@ public class ResolveForm {
     public static int minGroupSize = 5;
     public static double corrDOWN = 0.8;
     public static double corrUP = 1;
-    public static double classCoef = 0.8;
+    public static double classCoefDOWN = 0.8;
+    public static double classCoefUP = 1;
     public static double windowLeft = 0;
     public static double windowRight = 0;
     public static double windowCenter = 0;
