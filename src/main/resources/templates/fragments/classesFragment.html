@@ -13,16 +13,17 @@
 
     </div>
     <div class="form-group row">
-        <div class="col-sm-3">
+        <div class="col-sm-2">
             <a id="countClassesButton" class="btn btn-primary" href="#ClustersFile" role="button">Выполнить расчет</a>
         </div>
         <div id="loaderClasses" class="loader" style="width: 30px; height: 30px; border-width: 4px; border-top-width: 4px" hidden="true" >
         </div>
+        <span id="ClassesError" style="color: red; margin-right: 15px">
+        </span>
         <div id="fileFinalGroupsDownload" class="col-sm-3" hidden="true" >
             <a href="/downloadGroups">Скачать файл с группами</a>
         </div>
-        <span id="ClassesError" style="color: red">
-        </span>
+
     </div>
 </div>
 <a name="ClustersFile"></a>
@@ -38,6 +39,7 @@
     $('#countClassesButton').click(function() {
         var classCoef = $("input[type=text][name=classCoef]").val();
         $('#error-element').attr("hidden", true);
+        $('#ClassesError').text("");
         if(classCoef===""){
             $('#error-element').html('Заполните все поля');
             $('#error-element').attr("hidden", false);
@@ -53,6 +55,7 @@
                     $('#fileFinalGroupsDownload').attr("hidden", false);
                     //Расчет выполнен - убираем предупреждение
                     $('#groupWarning').html('');
+                    $('#ClassesError').text("Расчет выполнен");
                 },
                 error: function(){
                     $('#loaderClasses').attr("hidden", true);

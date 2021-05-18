@@ -16,19 +16,20 @@
         <div style="color: red" hidden id="error-element" class="form-group row"></div>
 
         <div class="form-group row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <a id="groupsButton" class="btn btn-primary" href="#fileJSONDownload" role="button">Выполнить расчет</a>
              </div>
             <div id="loaderGroup" class="loader" style="width: 30px; height: 30px; border-width: 4px; border-top-width: 4px" hidden="true" >
             </div>
+            <span id="groupError" style="color: red; margin-right: 15px">
+            </span>
             <div id="fileJSONDownload" class="col-sm-3" hidden="true" >
                 <a href="/downloadJSON">Скачать файл</a>
             </div>
             <div id="fileGeoDownload" class="col-sm-3" hidden="true" >
                 <a href="/downloadReport">Отчет</a>
             </div>
-            <span id="error" style="color: red">
-            </span>
+
         </div>
 </div>
 
@@ -37,6 +38,7 @@
         var minGroupSize = $("input[type=number][name=minGroupSize]").val();
         var groupCross = $("input[type=checkbox][name=groupCross]:checked").val();
         $('#error-element').attr("hidden", true);
+        $('#groupError').text("");
         if(minGroupSize===""){
             $('#error-element').html('Заполните все поля');
             $('#error-element').attr("hidden", false);
@@ -52,10 +54,11 @@
                     $('#fileJSONDownload').attr("hidden", false);
                     $('#fileGeoDownload').attr("hidden", false);
                     if(isClusterizationEnd === true) $('#showOnMap').removeAttr('disabled');
+                    $('#groupError').text("Расчет выполнен");
                 },
                 error: function(){
                     $('#loaderGroup').attr("hidden", true);
-                    $('#error').text("Ошибка вычислений");
+                    $('#groupError').text("Ошибка вычислений");
                 }
             });
         }

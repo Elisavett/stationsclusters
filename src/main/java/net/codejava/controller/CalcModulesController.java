@@ -4,6 +4,7 @@ import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.Modules.ModulesCalc;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -68,12 +69,12 @@ public class CalcModulesController {
     }
     @GetMapping("/countPhase")
     @ResponseStatus(value = HttpStatus.OK)
-    public void countPhase(@RequestParam(value = "isDelta", required = false) String isDelta,
-                           @RequestParam(value = "isForPhase", required = false) String isForPhase,
-                           @RequestParam(value = "windowCounted", required = false) String windowCounted,
-                           @RequestParam(value = "isWindowManually", required = false) String isWindowManually,
-                           @RequestParam(value = "windowLeft", required = false) String windowLeft,
-                           @RequestParam(value = "windowRight", required = false) String  windowRight) throws InterruptedException, ExecutionException {
+    public ResponseEntity<String> countPhase(@RequestParam(value = "isDelta", required = false) String isDelta,
+                                             @RequestParam(value = "isForPhase", required = false) String isForPhase,
+                                             @RequestParam(value = "windowCounted", required = false) String windowCounted,
+                                             @RequestParam(value = "isWindowManually", required = false) String isWindowManually,
+                                             @RequestParam(value = "windowLeft", required = false) String windowLeft,
+                                             @RequestParam(value = "windowRight", required = false) String  windowRight) throws InterruptedException, ExecutionException {
         //Рассчет по фазе или по амплитуде
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
         //Отмечаем, что фаза считалась
@@ -111,6 +112,9 @@ public class CalcModulesController {
             }
         }
         ModulesCalc.PhaseAmplCalc();
+        String output = "Окно: " + (int)ResolveForm.windowLeft + " - " + (int)ResolveForm.windowRight + "; ";
+        output += "Несущая: " + (int)ResolveForm.windowCenter;
+        return ResponseEntity.ok().body(output);
     }
     private void setWindowLimits(int delta){
         ResolveForm.windowLeft = ResolveForm.windowCenter - delta;

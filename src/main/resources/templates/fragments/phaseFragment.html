@@ -55,17 +55,20 @@
 
         </div>
         <div class="form-group row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <input type="submit" id="countPhaseButton" onclick="getChecked()" class="btn btn-primary" value="Выполнить расчет">
             </div>
             <div id="loaderPhase" class="loader" style="width: 30px; height: 30px; border-width: 4px; border-top-width: 4px" hidden="true" >
             </div>
-            <div id="fileDownload" class="col-sm-3" hidden="true" >
+            <span id="errorPhase" style="color: red; margin-right: 15px">
+                    </span>
+            <div id="fileDownload" class="col-sm-2" hidden="true" >
                 <a href="/downloadPhases">Скачать файл с фазами</a>
             </div>
-            <span id="errorPhase" style="color: red">
-                    </span>
-        </div>
+
+
+            </div>
+
     </form>
 </div>
 <a name="PhaseFile"></a>
@@ -150,18 +153,20 @@
             $('#loaderPhase').attr("hidden", false);
             //отмена действия по умолчанию для кнопки submit
             e.preventDefault();
+            $('#errorPhase').text("");
             var $form = $(this);
             $.ajax({
                 type: "GET",
                 url: "/countPhase",
                 data: $form.serialize(),
-                success: function() {
+                success: function(output) {
                     //Скрываем значок загрузки
                     $('#loaderPhase').attr("hidden", true);
                     //Отображени файлы для скачивания
                     $('#fileDownload').attr("hidden", false);
                     //Расчет выполнен - убираем предупреждение
                     $('#clusterWarning').html('');
+                    $('#errorPhase').text("Расчет выполнен (" + output + ")");
                 },
                 error: function() {
                     $('#loaderPhase').attr("hidden", true);

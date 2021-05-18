@@ -59,19 +59,20 @@
 
         </div>
         <div class="form-group row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <input type="submit" id="countClustersButton" class="btn btn-primary" value="Выполнить расчет"/>
             </div>
             <div id="loaderCluster" class="loader" style="width: 30px; height: 30px; border-width: 4px; border-top-width: 4px" hidden="true" >
             </div>
+            <span id="clusterError" style="color: red; margin-right: 15px">
+            </span>
             <div id="fileTypDownload" class="col-sm-3" hidden="true" >
                 <a href="/downloadTypicals">Скачать файл с типовыми</a>
             </div>
             <div id="fileGroupsDownload" class="col-sm-3" hidden="true" >
                 <a href="/downloadGroups">Скачать файл с группами</a>
             </div>
-            <span id="error" style="color: red">
-            </span>
+
         </div>
     </form>
 </div>
@@ -88,6 +89,7 @@
     $('form#clusterForm').submit(function(e) {
         //отмена действия по умолчанию для кнопки submit
         e.preventDefault();
+        $('#clusterError').text("");
         var $form = $(this);
             //Отображаем значок загузки
             $('#loaderCluster').attr("hidden", false);
@@ -107,10 +109,12 @@
                     isClusterizationEnd = true;
                     //Управление кликабельностью кнопки для отображения карты
                     if(isGroopingEnd === true) $('#showOnMap').removeAttr('disabled');
+
+                    $('#clusterError').text("Расчет выполнен");
                 },
                 error: function(){
                     $('#loaderCluster').attr("hidden", true);
-                    $('#error').text("Ошибка вычислений");
+                    $('#clusterError').text("Ошибка вычислений");
                 }
             });
 
