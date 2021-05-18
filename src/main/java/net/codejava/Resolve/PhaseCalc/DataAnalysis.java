@@ -27,7 +27,7 @@ public class DataAnalysis{
             dateDelta = Calendar.DATE;
         }
     }
-    public LinkedHashMap<String, Double> getFrequencySpector(){
+    public LinkedHashMap<Integer, Double> getFrequencySpector(){
         return frequencyAnalysis.spectorCalculation();
     }
     public static LinkedHashMap<String, Double> getStationTemp(int station){
@@ -88,15 +88,15 @@ public class DataAnalysis{
             this.temp = temp;
         }
 
-        public LinkedHashMap<String, Double> spectorCalculation() {
+        public LinkedHashMap<Integer, Double> spectorCalculation() {
             LoadFunction();
             FFTCalculation();
-            LinkedHashMap<String, Double> graphData = new LinkedHashMap<>();
+            LinkedHashMap<Integer, Double> graphData = new LinkedHashMap<>();
             date.setTime(ResolveForm.startDate);
-            graphData.put(dateFormat.format(date.getTime()), 0.);
+            graphData.put(0, 0.);
             for (int i = 1; i < real.length; i++) {
                 date.add(dateDelta, 1);
-                graphData.put(dateFormat.format(date.getTime()), Math.round(100 * Math.sqrt(imag[i] * imag[i] + real[i] * real[i])) / 100.);
+                graphData.put(i, Math.round(100 * Math.sqrt(imag[i] * imag[i] + real[i] * real[i])) / 100.);
             }
             return graphData;
         }

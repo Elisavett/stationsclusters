@@ -23,7 +23,12 @@
 
             <div id="temperatureChartPlace" style="min-height: 280px">
                 <div class="frequencyLoader" style="margin: 0 auto;"></div>
-                <div id="temperatureChart"></div>
+                <div id="temperature_dashboard" style="height: 500px">
+                    <div id="temperatureChart" style="height: 70%">
+                    </div>
+                    <div id="temperature_control" style="height: 17%; width: 94%; margin: 0 3%">
+                    </div>
+                </div>
             </div>
 
 
@@ -37,7 +42,12 @@
 
             <div id="frequencyChartPlace" style="min-height: 280px">
                 <div class="frequencyLoader" style="margin: 0 auto;"></div>
-                <div id="frequencyChart"></div>
+                <div id="frequency_dashboard" style="height: 500px">
+                    <div id="frequencyChart" style="height: 70%">
+                    </div>
+                    <div id="frequency_control" style="height: 17%; width: 94%; margin: 0 3%">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -49,23 +59,23 @@
 
     $(document).ready(function() {
         google.charts.load('current', {
-            packages : [ 'corechart', 'bar' ],
+            packages : [ 'corechart', 'bar', 'controls'],
             'language': 'ru'
         });
         google.charts.setOnLoadCallback(drawTemperatureChart);
         google.charts.setOnLoadCallback(drawFrequencyChart);
     });
     function drawFrequencyChart() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('date', "Дата");
+        let data = new google.visualization.DataTable();
+        data.addColumn('number', "Отсчеты");
         data.addColumn('number', "Модуль спектра");
         Object.keys(frequencyData).forEach(function(key) {
-            var dataArray = [new Date(key), Number(frequencyData[key])];
+            var dataArray = [Number(key), Number(frequencyData[key])];
             data.addRow(dataArray);
 
         });
 
-        var options = {
+        let options = {
             title : "Частотный спектр",
             hAxis : {
                 title : "Отсчеты",
@@ -79,12 +89,28 @@
                 title : Y_name
             }*/
         };
-        var chart = new google.visualization.LineChart(document
-            .getElementById('frequencyChart'));
-        chart.draw(data, options);
+
+        let chart = new google.visualization.ChartWrapper({
+            chartType: 'LineChart',
+            options: options,
+            containerId: 'frequencyChart'
+        });
+        let control = new google.visualization.ControlWrapper({
+            controlType: 'ChartRangeFilter',
+            containerId: 'frequency_control',
+            state: {
+                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/2, 0) },
+            },
+            options: {
+                filterColumnIndex: 0,
+            }
+        });
+        let dashboard = new google.visualization.Dashboard(document.getElementById('frequency_dashboard'));
+        dashboard.bind([control], [chart]);
+        dashboard.draw(data);
     }
     function drawTemperatureChart() {
-        var data = new google.visualization.DataTable();
+        let data = new google.visualization.DataTable();
         data.addColumn('date', "Дата");
         data.addColumn('number', "Температура, С");
         //data.addColumn('number', "Средняя");
@@ -105,10 +131,10 @@
 
         });
 
-        var options = {
+        let options = {
             title : "Температура",
             hAxis : {
-                title : "Отсчеты",
+                title : "Дата",
             },
             explorer: {
                 //maxZoomOut:2,
@@ -127,9 +153,25 @@
                 title : Y_name
             }*/
         };
-        var chart = new google.visualization.LineChart(document
-                .getElementById('temperatureChart'));
-        chart.draw(data, options);
+
+        let chart = new google.visualization.ChartWrapper({
+            chartType: 'LineChart',
+            options: options,
+            containerId: 'temperatureChart'
+        });
+        let control = new google.visualization.ControlWrapper({
+            controlType: 'ChartRangeFilter',
+            containerId: 'temperature_control',
+            state: {
+                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/3, 0) },
+            },
+            options: {
+                filterColumnIndex: 0,
+            }
+        });
+        let dashboard = new google.visualization.Dashboard(document.getElementById('temperature_dashboard'));
+        dashboard.bind([control], [chart]);
+        dashboard.draw(data);
     }
 
 </script>
