@@ -8,7 +8,7 @@
 
     <script type="text/javascript"
             src="https://www.gstatic.com/charts/loader.js"></script>
-    <title>Группа №[[${clusterNum}]]</title>
+    <title>Группа [[${clusterNum}]]</title>
     <style>
         table{
             table-layout: fixed;
@@ -28,7 +28,7 @@
 </head>
 <div>
     <span th:replace="fragments/scripts :: scripts"></span>
-    <h2 id="clusterNum" style="padding: 5px 20px 20px 20px">Кластер [[${clusterNum}]]</h2>
+    <h2 id="clusterNum" style="padding: 5px 20px 20px 20px">Группа [[${clusterNum}]]</h2>
     <h3>График типовой температуры</h3>
     <div class="row" style="margin: 5px 120px">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -47,23 +47,42 @@
         <div id="control_div" style="height: 17%; width: 94%; margin: 0 3%">
         </div>
     </div>
-    <h3>Матрица корреляции</h3>
-    <table class="table table-bordered" style="position: sticky;top: 0;">
-        <thead >
-            <tr>
-                <th class="text-center">#</th>
-                <th class="text-center" th:each="member : ${groupMembers}"><a target='_blank' th:href="@{/dataAnalysisForStation(station=${member})}">[[${member}]]</a></th>
-            </tr>
-        </thead>
-    </table>
-    <table class="table table-bordered table-hover" style="table-layout:fixed;">
-        <tbody>
-            <tr th:each="memberCorr,iterStat : ${corrTable}">
-                <td style="position: sticky;left: 0;"><b>[[${groupMembers.get(iterStat.index)}]]</b></td>
-                <td th:each="corrValue : ${memberCorr}">[[${corrValue}]]</td>
-            </tr>
-        </tbody>
-    </table>
+
+    <div id="accordion" >
+        <div class="card">
+            <div id="headingOne" style="margin: 0 20px">
+                <h3>
+                    <a href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Матрица корреляции элементов группы из исходных фаз/амплитуд
+                    </a>
+                </h3>
+            </div>
+
+            <div id="collapseOne" class="collapse collapsed" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                    <table class="table table-bordered" style="position: sticky;top: 0;">
+                        <thead >
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th class="text-center" th:each="member : ${groupMembers}"><a target='_blank' th:href="@{/dataAnalysisForStation(station=${member})}">[[${member}]]</a></th>
+                        </tr>
+                        </thead>
+                    </table>
+                    <table class="table table-bordered table-hover" style="table-layout:fixed;">
+                        <tbody>
+                        <tr th:each="memberCorr,iterStat : ${corrTable}">
+                            <td style="position: sticky;left: 0;"><b>[[${groupMembers.get(iterStat.index)}]]</b></td>
+                            <td th:each="corrValue : ${memberCorr}">[[${corrValue}]]</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 </div>
 <script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
     var real_data = /*[[${chartData}]]*/'noValue';

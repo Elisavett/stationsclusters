@@ -95,6 +95,7 @@ public class ModulesCalc {
             arrayGroup = allocationThread.clustersCalc();
 
             equalsCount = 0;
+            if(count == 0) ResolveForm.arrayCorr = arrayCorr;
             if(count>0 && ResolveForm.isAccurate) {
                 for (int i = 0; i < stationCount; i++) {
                     if (arrayPrevGroup.get(i).equals(arrayGroup.get(i))) {
@@ -103,7 +104,6 @@ public class ModulesCalc {
                 }
                 if (equalsCount == stationCount) //|| prevEqualsCount > equalsCount)
                     break;
-                else ResolveForm.arrayCorr = arrayCorr;
             }
             //блок вычисления типовых фаз
             typicalPhases.clear();
