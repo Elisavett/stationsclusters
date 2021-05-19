@@ -178,6 +178,30 @@ function openbox() {
     }
 }
 
+function outlineStation(station){
+    let index = stationNums[station][0];
+    let num = stationNums[station][1];
+    if(index == 0){
+        circleClusters[index].get(num-1).options.set('iconImageSize', [13, 13]);
+
+    }
+    else {
+        circleClusters[index].get(num-1).options.set('strokeWidth', 18);
+    }
+    window.setTimeout(function() {
+        backStation(index, num);
+    }, 3000);
+}
+function backStation(index, num){
+    if(index == 0){
+        circleClusters[index].get(num-1).options.set('iconImageSize', [7, 7]);
+
+    }
+    else {
+        circleClusters[index].get(num-1).options.set('strokeWidth', 7);
+    }
+}
+
 //меняю маркер
 function update() {
     let index = document.getElementById('number').value;
@@ -215,6 +239,7 @@ var map;
 var circlesToShow = [];
 var rectangleClusters = [];
 var circleClusters = [];
+var stationNums = [];
 var centerClusters = [];
 var clusterCordsSumm = [];
 var currentClusterNums = new Set();
@@ -292,6 +317,7 @@ window.onload = function () {
         var rects = [];
         circlesToShow[0] = [];
         circleClusters[0] = new ymaps.GeoObjectCollection();
+        stationNums[0] = [];
         let max_lat = -90;
         let max_long = -180;
         let min_lat = 90;
@@ -372,6 +398,7 @@ window.onload = function () {
 
                 // Добавляем круг на карту.
                 circleClusters[coordinates[i].number_group].add(myCircle);
+                stationNums[coordinates[i].number_station] = [coordinates[i].number_group, circleClusters[coordinates[i].number_group].getLength()];
             } else {
                 var myCircle = new ymaps.Placemark([coordinates[i].lat, coordinates[i].long],
                     {
@@ -400,6 +427,7 @@ window.onload = function () {
                     });
 
                 circleClusters[0].add(myCircle);
+                stationNums[coordinates[i].number_station] = [0, circleClusters[0].getLength()] ;
                 //Добавляем круг на карту.
                 //map.geoObjects.add(myCircle);
             }

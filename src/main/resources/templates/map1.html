@@ -154,6 +154,13 @@
                     <div class="div1" style="background: orange;"></div>
                      <div class="div2"></div>
     </div>
+    <div class="input-group centers">
+      <input id="stationToOutline" type="text" class="form-control" placeholder="Найти станцию по номеру" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+           <button onclick="outlineStation($('#stationToOutline').val())" class="btn btn-outline-secondary" type="button"><img height="15px" width="15px" th:src="@{/img/search.svg}"></button>
+      </div>
+    </div>
+
     <div class="centers div2">
             <input type="checkbox" name="isCentersShow" checked="checked" id="centersShow">&nbsp;&nbsp;Отображать центры
     </div>
