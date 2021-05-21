@@ -1,6 +1,7 @@
 package net.codejava.Resolve.PhaseCalc;
 
 import net.codejava.Resolve.Model.Phase;
+import net.codejava.Resolve.Model.ResolveForm;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -14,13 +15,14 @@ import java.util.concurrent.Callable;
 public class PhaseCalculation extends PhaseCalculationAbstract implements Callable<Phase> {
 
 
-    public PhaseCalculation(double[] temp,double leftLimit, double rightLimit) {
+    public PhaseCalculation(double[] temp, double leftLimit, double rightLimit) {
 
         this.temp = temp;
         this.leftLimit = leftLimit;
         this.rightLimit = rightLimit;
         this.N = temp.length;
     }
+
     @Override
     public Phase call() {
         LoadFunction();
@@ -29,12 +31,14 @@ public class PhaseCalculation extends PhaseCalculationAbstract implements Callab
         IFFTCalculation();
         PhaseCalculation();
         PhaseLinking();
-        if(isPhaseUnbroken()){
-            NormalizingToZero();
+
+        if (isPhaseUnbroken()) {
+            if (ResolveForm.phaseToZero) {
+                NormalizingToZero();
+            }
             RemoveLinear();
             return saveFile();
-        }
-        else{
+        } else {
             return phaseToZero();
         }
     }

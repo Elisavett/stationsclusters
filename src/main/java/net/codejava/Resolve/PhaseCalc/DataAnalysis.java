@@ -1,11 +1,9 @@
 package net.codejava.Resolve.PhaseCalc;
+import net.codejava.Resolve.Model.Phase;
 import net.codejava.Resolve.Model.ResolveForm;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 public class DataAnalysis{
 
@@ -40,26 +38,98 @@ public class DataAnalysis{
         }
         return temperatures;
     }
-    public static double getStationAvgTemp(double[] temp){
+    public static double getAvgTemp(double[] temp){
         double averageT = 0;
         for (double v : temp) {
             averageT += v;
         }
         return averageT / temp.length;
     }
-    public static LinkedHashMap<String, Double> getTypicalTemps(List<Integer> group){
+    public static LinkedHashMap<String, Double> getTypicalTempsChart(List<Integer> group){
         LinkedHashMap<String, Double> temps = new LinkedHashMap<>();
         date.setTime(ResolveForm.startDate);
+        Double[] typicals = getTypicalTemps(group);
+        for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
+            date.add(dateDelta, 1);
+            temps.put(dateFormat.format(date.getTime()), typicals[j]);
+        }
+        return temps;
+    }
+    public static Double[] getTypicalTemps(List<Integer> group){
+        Double[] temps = new Double[ResolveForm.TempData[0].length];
         for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
             double averageTemp = 0;
             for (Integer station : group) {
                 averageTemp += ResolveForm.TempData[station][j];
             }
-            date.add(dateDelta, 1);
-            temps.put(dateFormat.format(date.getTime()), Math.round(averageTemp/group.size()*1000)/1000.0);
+            temps[j] = Math.round(averageTemp/group.size()*1000)/1000.0;
         }
         return temps;
     }
+    public static LinkedHashMap<String, Double> getTypicalPhase (Phase phase){
+        LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
+        date.setTime(ResolveForm.startDate);
+        for(Double el : phase.getPhase()){
+            date.add(dateDelta, 1);
+            chartData.put(dateFormat.format(date.getTime()), Math.round(el*1000)/1000.0);
+        }
+        return chartData;
+    }
+    public static double getMax(Double[] values){
+        double max = values[0];
+        for (Double v : values) {
+            if (v > max) max = v;
+        }
+        return max;
+    }
+    public static double getMin(Double[] values){
+        double min = values[0];
+        for (Double v : values) {
+            if (v < min) min = v;
+        }
+        return min;
+    }
+    public static LinkedHashMap<String, Double> getClusterModel (Phase phase, List<Integer> group){
+        LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
+        List<Double> phaseMembs = phase.getPhase();
+        int N = phaseMembs.size();
+
+        List<Double> amplitude = new ArrayList<>(getTypicalAmplitudes(group).values());
+
+        Double[] typicalTemps = getTypicalTemps(group);
+        double sumT = 0;
+        for (Double v : typicalTemps) {
+            sumT += v;
+        }
+        double avgTypicalTemp = sumT / typicalTemps.length;
+        double maxTypical = getMax(typicalTemps);
+        double minTypical = Math.abs(getMin(typicalTemps));
+        double maxAmpl = getMax(amplitude.toArray(new Double[N]));
+
+        double coefficient = (maxTypical+minTypical)/(2*maxAmpl);
+
+        date.setTime(ResolveForm.startDate);
+
+        for(int i = 0; i < N; i++){
+            date.add(dateDelta, 1);
+            chartData.put(dateFormat.format(date.getTime()), avgTypicalTemp + coefficient * amplitude.get(i) * Math.cos(phaseMembs.get(i) + (2*Math.PI*i*ResolveForm.windowCenter/N) + Math.PI));
+        }
+        return chartData;
+    }
+    public static LinkedHashMap<String, Double> getTypicalAmplitudes (List<Integer> group){
+        LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
+        date.setTime(ResolveForm.startDate);
+        for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
+            date.add(dateDelta, 1);
+            double averageAmpl = 0;
+            for (Integer station : group) {
+                averageAmpl += ResolveForm.arrayAmplitude.get(station).getPhase().get(j);
+            }
+            chartData.put(dateFormat.format(date.getTime()), Math.round(averageAmpl/group.size()*1000)/1000.0);
+        }
+        return chartData;
+    }
+
     public static double getStationSKO(double averageT, double[] temp){
         double sko_temp = 0;
         for (double v : temp) {
@@ -71,7 +141,7 @@ public class DataAnalysis{
         ResolveForm.averageTemps = new double[ResolveForm.TempData.length];
         for(int i = 0; i < ResolveForm.TempData.length; i++)
         {
-            ResolveForm.averageTemps[i] = getStationAvgTemp(ResolveForm.TempData[i].clone());
+            ResolveForm.averageTemps[i] = getAvgTemp(ResolveForm.TempData[i].clone());
         }
         LinkedHashMap<Integer, Double> SKO = new LinkedHashMap<>();
         for(int i = 0; i < ResolveForm.averageTemps.length; i++)

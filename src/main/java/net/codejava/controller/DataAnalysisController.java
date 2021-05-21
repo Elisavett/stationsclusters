@@ -33,7 +33,7 @@ public class DataAnalysisController {
         Group[] groups = new Group[ResolveForm.clusters.size()];
         groups = ResolveForm.clusters.toArray(groups);
         List<Integer> group = groups[clusterNum-1].getGroupMembers();
-        LinkedHashMap<String,Double> typicalTemps = DataAnalysis.getTypicalTemps(group);
+        LinkedHashMap<String,Double> typicalTemps = DataAnalysis.getTypicalTempsChart(group);
 
         setCommonChartOptions(model,
                 typicalTemps,
@@ -41,16 +41,20 @@ public class DataAnalysisController {
                 "Температура",
                 "temperature",
                 "line");
+        LinkedHashMap<String, Double> typicalPhases = DataAnalysis.getTypicalPhase(groups[clusterNum-1].getPhases());
+        LinkedHashMap<String, Double> typicalAmpls = DataAnalysis.getTypicalAmplitudes(group);
+        model.addAttribute("phases", typicalPhases);
+        model.addAttribute("amplitudes", typicalAmpls);
+        model.addAttribute("clusterModel", DataAnalysis.getClusterModel(groups[clusterNum-1].getPhases(), group));
         model.addAttribute("clusterNum", clusterNum);
         model.addAttribute("corrTable", groups[clusterNum-1].getGroupCorrTable());
         model.addAttribute("groupMembers", group);
-        model.addAttribute("periodShown", new String[]{ResolveForm.startDate.toString(), DataAnalysis.dateForChart().toString()});
 
         return "additionals/groupAnalysis";
     }
     @GetMapping("/temperatureChart")
     public String temperatureChart(Model model, @RequestParam Integer station){
-        double avgTemp = DataAnalysis.getStationAvgTemp(ResolveForm.TempData[station].clone());
+        double avgTemp = DataAnalysis.getAvgTemp(ResolveForm.TempData[station].clone());
         double sko = DataAnalysis.getStationSKO(avgTemp, ResolveForm.TempData[station].clone());
         setCommonChartOptions(model,
                 DataAnalysis.getStationTemp(station),
@@ -64,7 +68,7 @@ public class DataAnalysisController {
     }
     @GetMapping("/dataAnalysisForStation")
     public String dataAnalysisForStation(Model model, @RequestParam Integer station) {
-        double avgTemp = DataAnalysis.getStationAvgTemp(ResolveForm.TempData[station].clone());
+        double avgTemp = DataAnalysis.getAvgTemp(ResolveForm.TempData[station].clone());
         double sko = DataAnalysis.getStationSKO(avgTemp, ResolveForm.TempData[station].clone());
         model.addAttribute("temperaturesData", DataAnalysis.getStationTemp(station));
         model.addAttribute("additionalData", new double[]{avgTemp + sko, avgTemp - sko});

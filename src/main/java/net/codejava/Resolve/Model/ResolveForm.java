@@ -14,6 +14,7 @@ public class ResolveForm {
     public static List<Phase> arrayPhase;
     public static String[] fileParams;
     public static List<Phase> arrayAmplitude;
+    public static boolean phaseToZero = true;
     public static List<Phase> arrayTypical;
     public static List<Group> arrayGroup;
     public static List<List<Double>> arrayCorr;

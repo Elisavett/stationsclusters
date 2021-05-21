@@ -74,9 +74,12 @@ public class CalcModulesController {
                                              @RequestParam(value = "windowCounted", required = false) String windowCounted,
                                              @RequestParam(value = "isWindowManually", required = false) String isWindowManually,
                                              @RequestParam(value = "windowLeft", required = false) String windowLeft,
-                                             @RequestParam(value = "windowRight", required = false) String  windowRight) throws InterruptedException, ExecutionException {
+                                             @RequestParam(value = "windowRight", required = false) String  windowRight,
+                                             @RequestParam(value = "toZero", required = false) String  toZero) throws InterruptedException, ExecutionException {
         //Рассчет по фазе или по амплитуде
         ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
+        //Выполнение дотяжки
+        ResolveForm.phaseToZero = Boolean.parseBoolean(toZero);
         //Отмечаем, что фаза считалась
         ResolveForm.isPhasesCounted = false;
         //Если окно уже было подсчитано (через вывод графика)

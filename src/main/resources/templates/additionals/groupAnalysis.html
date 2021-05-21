@@ -48,6 +48,27 @@
         </div>
     </div>
 
+    <div id="modelDashboard" style="height: 500px">
+        <div id="modelChart" style="height: 70%">
+        </div>
+        <div id="modelControl" style="height: 17%; width: 94%; margin: 0 3%">
+        </div>
+    </div>
+
+    <div id="phaseDashboard" style="height: 500px">
+        <div id="phaseChart" style="height: 70%">
+        </div>
+        <div id="phaseControl" style="height: 17%; width: 94%; margin: 0 3%">
+        </div>
+    </div>
+
+    <div id="amplitudesDashboard" style="height: 500px">
+        <div id="amplitudesChart" style="height: 70%">
+        </div>
+        <div id="amplitudesControl" style="height: 17%; width: 94%; margin: 0 3%">
+        </div>
+    </div>
+
     <div id="accordion" >
         <div class="card">
             <div id="headingOne" style="margin: 0 20px">
@@ -88,16 +109,20 @@
     var real_data = /*[[${chartData}]]*/'noValue';
     var Title = /*[[${title}]]*/'noValue';
     var X_name = /*[[${X_name}]]*/'noValue';
-    var Y_name = /*[[${Y_name}]]*/'noValue';
     var id = /*[[${id}]]*/'noValue';
-    var periodShown = /*[[${periodShown}]]*/'noValue';
+    var phasesChart = /*[[${phases}]]*/'noValue'
+    var amplitudesChart = /*[[${amplitudes}]]*/'noValue'
+    var modelChart = /*[[${clusterModel}]]*/'noValue'
 
     $(document).ready(function() {
         google.charts.load('current', {
             packages : [ 'corechart', 'bar', 'controls'],
             'language': 'ru'
         });
-        google.charts.setOnLoadCallback(drawColumnChart);
+        google.charts.setOnLoadCallback(drawTempChart);
+        google.charts.setOnLoadCallback(drawPhaseChart);
+        google.charts.setOnLoadCallback(drawAmplitudesChart);
+        google.charts.setOnLoadCallback(drawModelChart);
     });
 
     var data;
@@ -114,7 +139,7 @@
         dashboard.draw(data);
     }
 
-    function drawColumnChart() {
+    function drawTempChart() {
         data = new google.visualization.DataTable();
         data.addColumn('date', X_name);
         data.addColumn('number', "Температура, С");
@@ -158,5 +183,125 @@
         dashboard.bind([control], [chart]);
         dashboard.draw(data);
     }
+    function drawPhaseChart() {
+        let data = new google.visualization.DataTable();
+        data.addColumn('date', "Дата");
+        data.addColumn('number', "Типовая фаза");
+        Object.keys(phasesChart).forEach(function(key) {
+            var dataArray = [new Date(key), Number(phasesChart[key])];
 
+            data.addRow(dataArray);
+
+        });
+
+        let options = {
+            title : "Типовая фаза",
+            hAxis : {
+                title : "Дата",
+            }
+        };
+        /*var chart = new google.visualization.LineChart(document
+            .getElementById('Chart'));*/
+        let chart = new google.visualization.ChartWrapper({
+            chartType: 'LineChart',
+            options: options,
+            containerId: 'phaseChart'
+        });
+        let control = new google.visualization.ControlWrapper({
+            controlType: 'ChartRangeFilter',
+            containerId: 'phaseControl',
+            state: {
+                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/3, 0) },
+            },
+            options: {
+                filterColumnIndex: 0,
+            }
+        });
+        let dashboard = new google.visualization.Dashboard(document.getElementById('phaseDashboard'));
+        dashboard.bind([control], [chart]);
+        dashboard.draw(data);
+    }
+    function drawAmplitudesChart() {
+        let data = new google.visualization.DataTable();
+        data.addColumn('date', "Дата");
+        data.addColumn('number', "Типовая амплитуда");
+        Object.keys(amplitudesChart).forEach(function(key) {
+            var dataArray = [new Date(key), Number(amplitudesChart[key])];
+
+            data.addRow(dataArray);
+
+        });
+
+        let options = {
+            title : "Типовая амплитуда",
+            hAxis : {
+                title : "Дата",
+            }
+        };
+        /*var chart = new google.visualization.LineChart(document
+            .getElementById('Chart'));*/
+        let chart = new google.visualization.ChartWrapper({
+            chartType: 'LineChart',
+            options: options,
+            containerId: 'amplitudesChart'
+        });
+        let control = new google.visualization.ControlWrapper({
+            controlType: 'ChartRangeFilter',
+            containerId: 'amplitudesControl',
+            state: {
+                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/3, 0) },
+            },
+            options: {
+                filterColumnIndex: 0,
+            }
+        });
+        let dashboard = new google.visualization.Dashboard(document.getElementById('amplitudesDashboard'));
+        dashboard.bind([control], [chart]);
+        dashboard.draw(data);
+    }
+    function drawModelChart() {
+        let data = new google.visualization.DataTable();
+        data.addColumn('date', "Дата");
+        data.addColumn('number', "Модель темп. сигнала");
+        data.addColumn('number', "Температура типовая");
+        Object.keys(modelChart).forEach(function(key) {
+            var dataArray = [new Date(key), Number(modelChart[key]), Number(real_data[key])];
+
+            data.addRow(dataArray);
+
+        });
+
+        let options = {
+            title : "Модель темп. сигнала",
+            hAxis : {
+                title : "Дата",
+            },
+            trendlines: { 0: {
+                    visibleInLegend: true,
+                    color: 'red',
+                    labelInLegend: 'Тренд',
+                }
+            }
+        };
+        /*var chart = new google.visualization.LineChart(document
+            .getElementById('Chart'));*/
+        let chart = new google.visualization.ChartWrapper({
+            chartType: 'LineChart',
+            options: options,
+            containerId: 'modelChart'
+        });
+        let control = new google.visualization.ControlWrapper({
+            controlType: 'ChartRangeFilter',
+            containerId: 'modelControl',
+            state: {
+                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/3, 0) },
+            },
+            options: {
+                filterColumnIndex: 0,
+            }
+        });
+        let dashboard = new google.visualization.Dashboard(document.getElementById('modelDashboard'));
+        dashboard.bind([control], [chart]);
+        dashboard.draw(data);
+    }
 </script>
