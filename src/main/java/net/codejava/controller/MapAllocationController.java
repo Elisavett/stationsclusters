@@ -99,7 +99,7 @@ public class MapAllocationController {
         ResolveForm.groupCross = "true".equals(groupCross);
         ResolveForm.classification = "true".equals(classification);
         if(ResolveForm.classification){
-            ResolveForm.classCoef = Double.parseDouble(classCoef);
+            ResolveForm.classCoefDOWN = Double.parseDouble(classCoef);
         }
         if(windowCounted!=null){
             if(Boolean.parseBoolean(isDelta)) {
