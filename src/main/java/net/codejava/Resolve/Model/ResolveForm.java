@@ -2,6 +2,8 @@ package net.codejava.Resolve.Model;
 
 import org.springframework.ui.Model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -62,6 +64,19 @@ public class ResolveForm {
         model.addAttribute("tempType", ResolveForm.tempsIsStationsOnY);
         model.addAttribute("isForPhase", ResolveForm.isForPhases);
         model.addAttribute("classification", ResolveForm.classification);
+    }
+    public static Model calculateMapModel(Model model) {
+
+        model.addAttribute("groupNum", groupNum);
+        if(resolveTime.equals("")) {
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh.mm.ss");
+            resolveTime = dateFormat.format(Calendar.getInstance().getTime());
+        }
+        model.addAttribute("resolveTime", "Расчет: " + resolveTime);
+        model.addAttribute("corr", "Коэф. кор.: " + corrDOWN + " - " + corrUP);
+        model.addAttribute("window", "Окно: " + Math.round(windowLeft) + " - " + Math.round(windowRight));
+        model.addAttribute("calcPeriod", "Рассч. период: " + periodString);
+        return model;
     }
     public static  <T> List<T> FutureToPlaneObj(List<Future<T>> futureObject) throws ExecutionException, InterruptedException {
         List<T> planeObject = new ArrayList<>();

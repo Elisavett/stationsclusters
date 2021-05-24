@@ -1,9 +1,14 @@
 package net.codejava.Resolve.PhaseCalc;
+import net.codejava.Resolve.Clustering.CorrelationCalculation;
+import net.codejava.Resolve.Model.Group;
 import net.codejava.Resolve.Model.Phase;
 import net.codejava.Resolve.Model.ResolveForm;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class DataAnalysis{
 
@@ -129,7 +134,35 @@ public class DataAnalysis{
         }
         return chartData;
     }
-
+    //Таблица корреляции типовых фаз
+    public static List<List<Double>> getGroupPhasesCorrTable() throws InterruptedException, ExecutionException {
+        int processors = Runtime.getRuntime().availableProcessors();
+        ExecutorService executorService = Executors.newFixedThreadPool(processors);
+        List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
+        List<Phase> groupTypicals = new ArrayList<>();
+        for(Group g : ResolveForm.clusters){
+            if(g.getGroupMembers().size() >= ResolveForm.minGroupSize) {
+                groupTypicals.add(g.getPhases());
+            }
+        }
+        for (int i = 0; i < groupTypicals.size(); i++) {
+            CorrelationCalculation corrThread = new CorrelationCalculation(groupTypicals.get(i), i, groupTypicals);
+            corrThreadTasks.add(corrThread);
+        }
+        //выполняем все задачи. главный поток ждет
+        List<List<Double>> arrayCorr = ResolveForm.FutureToPlaneObj(executorService.invokeAll(corrThreadTasks));
+        List<Double> missingElements = new ArrayList<>();
+        arrayCorr.get(0).add(0, 0.);
+        for(int i = 1; i < arrayCorr.size(); i++){
+            for(int j = 0; j < i; j++){
+                missingElements.add(arrayCorr.get(j).get(i));
+            }
+            missingElements.add(0.);
+            arrayCorr.get(i).addAll(0, missingElements);
+            missingElements.clear();
+        }
+        return arrayCorr;
+    }
     public static double getStationSKO(double averageT, double[] temp){
         double sko_temp = 0;
         for (double v : temp) {

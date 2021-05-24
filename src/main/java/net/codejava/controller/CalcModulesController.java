@@ -9,10 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 @Controller
@@ -157,15 +154,7 @@ public class CalcModulesController {
     @RequestMapping("/showMap")
     public String showMap(Model model){
         model.addAttribute("json", ResolveForm.json);
-        model.addAttribute("groupNum", ResolveForm.groupNum);
-        if(ResolveForm.resolveTime.equals("")) {
-            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh.mm.ss");
-            ResolveForm.resolveTime = dateFormat.format(Calendar.getInstance().getTime());
-        }
-        model.addAttribute("resolveTime", "Расчет: " + ResolveForm.resolveTime);
-        model.addAttribute("corr", "Коэф. корреляции: " + ResolveForm.corrDOWN + " - " + ResolveForm.corrUP);
-        model.addAttribute("window", "Окно: " + ResolveForm.windowLeft + " - " + ResolveForm.windowRight);
-        model.addAttribute("calcPeriod", "Рассчетный период: " + ResolveForm.periodStart + " - " + ResolveForm.periodEnd);
+        ResolveForm.calculateMapModel(model);
         return "map1";
     }
 

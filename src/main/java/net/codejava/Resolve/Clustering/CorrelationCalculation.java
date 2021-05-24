@@ -74,7 +74,7 @@ public class CorrelationCalculation implements Callable<List<Double>> {
             part3 += dif2 * dif2;
         }
         double part4 = Math.sqrt(part2 * part3);
-        return part1 / part4;
+        return Math.round(part1 / part4*1000)/1000.0;
     }
 
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 @Controller
@@ -51,6 +52,11 @@ public class DataAnalysisController {
         model.addAttribute("groupMembers", group);
 
         return "additionals/groupAnalysis";
+    }
+    @GetMapping("/systemAnalysis")
+    public String systemAnalysis(Model model) throws ExecutionException, InterruptedException {
+        model.addAttribute("corrTable", DataAnalysis.getGroupPhasesCorrTable());
+        return "additionals/systemAnalysis";
     }
     @GetMapping("/temperatureChart")
     public String temperatureChart(Model model, @RequestParam Integer station){

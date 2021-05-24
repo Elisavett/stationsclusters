@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script type="text/javascript"
+            src="https://www.gstatic.com/charts/loader.js"></script>
+    <title>Анализ системы</title>
+    <style>
+        table{
+            table-layout: fixed;
+        }
+        th,
+        td {
+            width: 65px;
+            overflow: hidden;
+            text-align: center;
+            background-color: white;
+        }
+        h3, h2{
+            margin: 40px 120px;
+        }
+    </style>
+</head>
+<body>
+<h2 id="clusterNum" style="padding: 5px 20px 20px 20px">Анализ системы</h2>
+<h3>Матрица корреляции типовых</h3>
+<table class="table table-bordered" style="position: sticky;top: 0;">
+    <thead >
+    <tr>
+        <th class="text-center">#</th>
+        <th class="text-center" th:each="memberCorr,iterStat : ${corrTable}"><a target='_blank' th:href="@{/showClusterAnalysis(clusterNum=${iterStat.index + 1})}">[[${iterStat.index + 1}]]</a></th>
+    </tr>
+    </thead>
+</table>
+<table class="table table-bordered table-hover" style="table-layout:fixed;">
+    <tbody>
+    <tr th:each="memberCorr,iterStat : ${corrTable}">
+        <td style="position: sticky;left: 0;"><b>[[${iterStat.index + 1}]]</b></td>
+        <td th:each="corrValue : ${memberCorr}">[[${corrValue}]]</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

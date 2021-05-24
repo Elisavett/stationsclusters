@@ -173,10 +173,14 @@ public class MapAllocationController {
     }
     @GetMapping("/showOnMap")
     public String toMap(Model model){
-        ArrayList<String> json = new ArrayList<>();
         try {
+            ArrayList<String> json = new ArrayList<>();
+
             Start start = new Start();
             json = start.run();
+            model.addAttribute("json", json);
+
+            ResolveForm.calculateMapModel(model);
         } catch (NumberFormatException e) {
             String error = "Проверьте правильность данных";
             model.addAttribute("error", error);
@@ -184,16 +188,6 @@ public class MapAllocationController {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        model.addAttribute("json", json);
-        model.addAttribute("groupNum", ResolveForm.groupNum);
-        if(ResolveForm.resolveTime.equals("")) {
-            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh.mm.ss");
-            ResolveForm.resolveTime = dateFormat.format(Calendar.getInstance().getTime());
-        }
-        model.addAttribute("resolveTime", "Расчет: " + ResolveForm.resolveTime);
-        model.addAttribute("corr", "Коэф. корреляции: " + ResolveForm.corrDOWN + " - " + ResolveForm.corrUP);
-        model.addAttribute("window", "Окно: " + ResolveForm.windowLeft + " - " + ResolveForm.windowRight);
-        model.addAttribute("calcPeriod", "Рассчетный период: " + ResolveForm.periodString);
         return "map1";
     }
 
@@ -267,7 +261,6 @@ public class MapAllocationController {
         if("true".equals(isModules)) return "resolve/resolveModules";
         else return "resolve/resolve";
     }
-
     @GetMapping("/map")
     public String map() {
         return "map1";
@@ -297,7 +290,6 @@ public class MapAllocationController {
         ResolveForm.tempsIsStationsOnY = tempType;
         ResolveForm.coordsIsStationsOnY = cordsType;
         if (!"".equals(fileTemp.getOriginalFilename())) {
-
             ResolveForm.TempString = new String[(int) fileTemp.getSize()][];
             ResolveForm.TempString = SplitInputFile.ReadFromFileSplitting(fileTemp, 't');
             ResolveForm.TempData = new double[ResolveForm.TempString.length][ResolveForm.TempString[0].length];
