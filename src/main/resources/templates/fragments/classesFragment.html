@@ -67,10 +67,12 @@
                     //Расчет выполнен - убираем предупреждение
                     $('#groupWarning').html('');
                     $('#ClassesError').text("Расчет выполнен");
+                    $('#ClassesError').css('color', 'green');
                 },
                 error: function(){
                     $('#loaderClasses').attr("hidden", true);
                     $('#ClassesError').text("Ошибка вычислений");
+                    $('#ClassesError').css('color', 'red');
                 }
             });
         }

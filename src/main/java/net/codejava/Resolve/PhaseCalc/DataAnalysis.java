@@ -152,15 +152,21 @@ public class DataAnalysis{
         //выполняем все задачи. главный поток ждет
         List<List<Double>> arrayCorr = ResolveForm.FutureToPlaneObj(executorService.invokeAll(corrThreadTasks));
         List<Double> missingElements = new ArrayList<>();
-        arrayCorr.get(0).add(0, 0.);
+        arrayCorr.get(0).add(0, 1.);
+        double maxCorr = -1;
+        double minCorr = 1;
         for(int i = 1; i < arrayCorr.size(); i++){
             for(int j = 0; j < i; j++){
                 missingElements.add(arrayCorr.get(j).get(i));
+                if(arrayCorr.get(j).get(i) > maxCorr) maxCorr = arrayCorr.get(j).get(i);
+                if(arrayCorr.get(j).get(i) < minCorr) minCorr = arrayCorr.get(j).get(i);
             }
-            missingElements.add(0.);
+            missingElements.add(1.);
             arrayCorr.get(i).addAll(0, missingElements);
             missingElements.clear();
         }
+        ResolveForm.maxSystemCorr = maxCorr;
+        ResolveForm.minSystemCorr = minCorr;
         return arrayCorr;
     }
     public static double getStationSKO(double averageT, double[] temp){

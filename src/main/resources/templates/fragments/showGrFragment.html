@@ -55,10 +55,12 @@
                     $('#fileGeoDownload').attr("hidden", false);
                     if(isClusterizationEnd === true) $('#showOnMap').removeAttr('disabled');
                     $('#groupError').text("Расчет выполнен");
+                    $('#groupError').css('color', 'green');
                 },
                 error: function(){
                     $('#loaderGroup').attr("hidden", true);
                     $('#groupError').text("Ошибка вычислений");
+                    $('#groupError').css('color', 'red');
                 }
             });
         }

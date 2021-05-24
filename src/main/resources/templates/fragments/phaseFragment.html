@@ -179,10 +179,12 @@
                     //Расчет выполнен - убираем предупреждение
                     $('#clusterWarning').html('');
                     $('#errorPhase').text("Расчет выполнен (" + output + ")");
+                    $('#errorPhase').css('color', 'green');
                 },
                 error: function() {
                     $('#loaderPhase').attr("hidden", true);
                     $('#errorPhase').text("Ошибка вычислений");
+                    $('#errorPhase').css('color', 'red');
                 }
             });
 

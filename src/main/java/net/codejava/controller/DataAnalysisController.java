@@ -56,6 +56,8 @@ public class DataAnalysisController {
     @GetMapping("/systemAnalysis")
     public String systemAnalysis(Model model) throws ExecutionException, InterruptedException {
         model.addAttribute("corrTable", DataAnalysis.getGroupPhasesCorrTable());
+        model.addAttribute("maxCorr", ResolveForm.maxSystemCorr);
+        model.addAttribute("minCorr", ResolveForm.minSystemCorr);
         return "additionals/systemAnalysis";
     }
     @GetMapping("/temperatureChart")

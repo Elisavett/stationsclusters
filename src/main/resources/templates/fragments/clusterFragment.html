@@ -111,10 +111,12 @@
                     if(isGroopingEnd === true) $('#showOnMap').removeAttr('disabled');
 
                     $('#clusterError').text("Расчет выполнен");
+                    $('#clusterError').css('color', 'green');
                 },
                 error: function(){
                     $('#loaderCluster').attr("hidden", true);
                     $('#clusterError').text("Ошибка вычислений");
+                    $('#clusterError').css('color', 'red');
                 }
             });
 

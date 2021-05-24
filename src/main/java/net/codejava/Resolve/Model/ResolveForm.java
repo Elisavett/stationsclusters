@@ -51,6 +51,8 @@ public class ResolveForm {
     public static boolean isAccurate = true;
     public static LinkedHashMap<Integer, Double> frequencyAnalysis;
     public static LinkedHashMap<Integer, Double> SKO;
+    public static double maxSystemCorr = 0;
+    public static double minSystemCorr = 1;
 
     public static void addAllToModel(Model model){
         model.addAttribute("tempers", ResolveForm.tempFileName);
