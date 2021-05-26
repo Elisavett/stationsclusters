@@ -43,8 +43,10 @@ public class DataAnalysisController {
                 "temperature",
                 "line");
         LinkedHashMap<String, Double> typicalPhases = DataAnalysis.getTypicalPhase(groups[clusterNum-1].getPhases());
-        LinkedHashMap<String, Double> typicalAmpls = DataAnalysis.getTypicalAmplitudes(group);
+        LinkedHashMap<String, Double> typicalAmpls = DataAnalysis.getTypicalAmplitudesForChart(group);
         model.addAttribute("phases", typicalPhases);
+        model.addAttribute("phaseSpector", DataAnalysis.getPhaseSpector(clusterNum));
+        model.addAttribute("amplitudeSpector", DataAnalysis.getAmplitudeSpector(group));
         model.addAttribute("amplitudes", typicalAmpls);
         model.addAttribute("clusterModel", DataAnalysis.getClusterModel(groups[clusterNum-1].getPhases(), group));
         model.addAttribute("clusterNum", clusterNum);

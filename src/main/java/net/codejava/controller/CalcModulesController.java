@@ -17,7 +17,7 @@ public class CalcModulesController {
     @GetMapping("/resolveModules")
     public String resolve(Model model) {
         ResolveForm.addAllToModel(model);
-        ResolveForm.arrayPhase = null;
+        ResolveForm.countableCharacter = null;
         ResolveForm.arrayTypical = null;
         ResolveForm.arrayGroup = null;
         ResolveForm.isPhasesCounted = true;

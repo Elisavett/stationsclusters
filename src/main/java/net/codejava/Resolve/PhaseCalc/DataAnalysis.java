@@ -16,11 +16,6 @@ public class DataAnalysis{
     private static int dateDelta = Calendar.MONTH;
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static final Calendar date = Calendar.getInstance();
-    public static Date dateForChart (){
-        date.setTime(ResolveForm.startDate);
-        date.add(dateDelta, ResolveForm.TempData[0].length/3);
-        return date.getTime();
-    }
     public DataAnalysis(double[] temp) {
         this();
         this.frequencyAnalysis = new FrequencyAnalysis(temp);
@@ -33,6 +28,25 @@ public class DataAnalysis{
     public LinkedHashMap<Integer, Double> getFrequencySpector(){
         return frequencyAnalysis.spectorCalculation();
     }
+
+    public static LinkedHashMap<Integer, Double> getPhaseSpector(int groupNum){
+        List<Double> phase = ResolveForm.clusters.toArray(new Group[0])[groupNum].getPhases().getPhase();
+        double[] typicalPhase = new double[phase.size()];
+        for(int i = 0; i < phase.size(); i++){
+            typicalPhase[i] = phase.get(i);
+        }
+        FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis(typicalPhase);
+
+        return frequencyAnalysis.spectorCalculation();
+    }
+
+    public static LinkedHashMap<Integer, Double> getAmplitudeSpector(List<Integer> group){
+        FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis(getTypicalAmplitudes(group));
+
+        return frequencyAnalysis.spectorCalculation();
+    }
+
+
     public static LinkedHashMap<String, Double> getStationTemp(int station){
         double[] temp = ResolveForm.TempData[station].clone();
         LinkedHashMap<String, Double> temperatures = new LinkedHashMap<>();
@@ -99,7 +113,7 @@ public class DataAnalysis{
         List<Double> phaseMembs = phase.getPhase();
         int N = phaseMembs.size();
 
-        List<Double> amplitude = new ArrayList<>(getTypicalAmplitudes(group).values());
+        List<Double> amplitude = new ArrayList<>(getTypicalAmplitudesForChart(group).values());
 
         Double[] typicalTemps = getTypicalTemps(group);
         double sumT = 0;
@@ -121,18 +135,26 @@ public class DataAnalysis{
         }
         return chartData;
     }
-    public static LinkedHashMap<String, Double> getTypicalAmplitudes (List<Integer> group){
+    public static LinkedHashMap<String, Double> getTypicalAmplitudesForChart(List<Integer> group){
         LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
         date.setTime(ResolveForm.startDate);
+        double[] amplitude = getTypicalAmplitudes(group);
         for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
             date.add(dateDelta, 1);
+            chartData.put(dateFormat.format(date.getTime()), amplitude[j]);
+        }
+        return chartData;
+    }
+    public static double[] getTypicalAmplitudes(List<Integer> group){
+        double[] amplitude = new double[ResolveForm.TempData[0].length];
+        for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
             double averageAmpl = 0;
             for (Integer station : group) {
                 averageAmpl += ResolveForm.arrayAmplitude.get(station).getPhase().get(j);
             }
-            chartData.put(dateFormat.format(date.getTime()), Math.round(averageAmpl/group.size()*1000)/1000.0);
+            amplitude[j] = Math.round(averageAmpl/group.size()*1000)/1000.0;
         }
-        return chartData;
+        return amplitude;
     }
     //Таблица корреляции типовых фаз
     public static List<List<Double>> getGroupPhasesCorrTable() throws InterruptedException, ExecutionException {
@@ -201,10 +223,8 @@ public class DataAnalysis{
             LoadFunction();
             FFTCalculation();
             LinkedHashMap<Integer, Double> graphData = new LinkedHashMap<>();
-            date.setTime(ResolveForm.startDate);
             graphData.put(0, 0.);
             for (int i = 1; i < real.length; i++) {
-                date.add(dateDelta, 1);
                 graphData.put(i, Math.round(100 * Math.sqrt(imag[i] * imag[i] + real[i] * real[i])) / 100.);
             }
             return graphData;

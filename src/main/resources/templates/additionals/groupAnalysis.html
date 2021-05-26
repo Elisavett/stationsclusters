@@ -62,10 +62,24 @@
         </div>
     </div>
 
+    <div id="phaseSpectorDashboard" style="height: 500px">
+        <div id="phaseSpectorChart" style="height: 70%">
+        </div>
+        <div id="phaseSpectorControl" style="height: 17%; width: 94%; margin: 0 3%">
+        </div>
+    </div>
+
     <div id="amplitudesDashboard" style="height: 500px">
         <div id="amplitudesChart" style="height: 70%">
         </div>
         <div id="amplitudesControl" style="height: 17%; width: 94%; margin: 0 3%">
+        </div>
+    </div>
+
+    <div id="amplitudeSpectorDashboard" style="height: 500px">
+        <div id="amplitudeSpectorChart" style="height: 70%">
+        </div>
+        <div id="amplitudeSpectorControl" style="height: 17%; width: 94%; margin: 0 3%">
         </div>
     </div>
 
@@ -111,7 +125,9 @@
     var X_name = /*[[${X_name}]]*/'noValue';
     var id = /*[[${id}]]*/'noValue';
     var phasesChart = /*[[${phases}]]*/'noValue'
+    var phaseSpector = /*[[${phaseSpector}]]*/'noValue'
     var amplitudesChart = /*[[${amplitudes}]]*/'noValue'
+    var amplitudeSpectorChart = /*[[${amplitudeSpector}]]*/'noValue'
     var modelChart = /*[[${clusterModel}]]*/'noValue'
 
     $(document).ready(function() {
@@ -121,8 +137,10 @@
         });
         google.charts.setOnLoadCallback(drawTempChart);
         google.charts.setOnLoadCallback(drawPhaseChart);
+        google.charts.setOnLoadCallback(drawPhaseSpector);
         google.charts.setOnLoadCallback(drawAmplitudesChart);
         google.charts.setOnLoadCallback(drawModelChart);
+        google.charts.setOnLoadCallback(drawAmplitudesSpectorChart);
     });
 
     var data;
@@ -221,6 +239,44 @@
         dashboard.bind([control], [chart]);
         dashboard.draw(data);
     }
+    function drawPhaseSpector() {
+        let data = new google.visualization.DataTable();
+        data.addColumn('number', "Отсчеты");
+        data.addColumn('number', "Спектор фазы");
+        Object.keys(phaseSpector).forEach(function(key) {
+            var dataArray = [Number(key), Number(phaseSpector[key])];
+
+            data.addRow(dataArray);
+
+        });
+
+        let options = {
+            title : "Спектор фазы",
+            hAxis : {
+                title : "Отсчеты",
+            }
+        };
+        /*var chart = new google.visualization.LineChart(document
+            .getElementById('Chart'));*/
+        let chart = new google.visualization.ChartWrapper({
+            chartType: 'LineChart',
+            options: options,
+            containerId: 'phaseSpectorChart'
+        });
+        let control = new google.visualization.ControlWrapper({
+            controlType: 'ChartRangeFilter',
+            containerId: 'phaseSpectorControl',
+            state: {
+                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/2, 0) },
+            },
+            options: {
+                filterColumnIndex: 0,
+            }
+        });
+        let dashboard = new google.visualization.Dashboard(document.getElementById('phaseSpectorDashboard'));
+        dashboard.bind([control], [chart]);
+        dashboard.draw(data);
+    }
     function drawAmplitudesChart() {
         let data = new google.visualization.DataTable();
         data.addColumn('date', "Дата");
@@ -262,6 +318,44 @@
             }
         });
         let dashboard = new google.visualization.Dashboard(document.getElementById('amplitudesDashboard'));
+        dashboard.bind([control], [chart]);
+        dashboard.draw(data);
+    }
+    function drawAmplitudesSpectorChart() {
+        let data = new google.visualization.DataTable();
+        data.addColumn('number', "Отсчеты");
+        data.addColumn('number', "Спектор амплитуды");
+        Object.keys(amplitudeSpectorChart).forEach(function(key) {
+            var dataArray = [Number(key), Number(amplitudeSpectorChart[key])];
+
+            data.addRow(dataArray);
+
+        });
+
+        let options = {
+            title : "Спектор амплитуды",
+            hAxis : {
+                title : "Отсчеты",
+            }
+        };
+        /*var chart = new google.visualization.LineChart(document
+            .getElementById('Chart'));*/
+        let chart = new google.visualization.ChartWrapper({
+            chartType: 'LineChart',
+            options: options,
+            containerId: 'amplitudeSpectorChart'
+        });
+        let control = new google.visualization.ControlWrapper({
+            controlType: 'ChartRangeFilter',
+            containerId: 'amplitudeSpectorControl',
+            state: {
+                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/2, 0) },
+            },
+            options: {
+                filterColumnIndex: 0,
+            }
+        });
+        let dashboard = new google.visualization.Dashboard(document.getElementById('amplitudeSpectorDashboard'));
         dashboard.bind([control], [chart]);
         dashboard.draw(data);
     }

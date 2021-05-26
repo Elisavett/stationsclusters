@@ -46,13 +46,17 @@ public class ModulesCalc {
         //выполняем все задачи. главный поток ждет
 
         arrayAmplitude = executorService.invokeAll(amplitudeCalculationTasks);
+
+        ResolveForm.arrayPhase = ResolveForm.FutureToPlaneObj(arrayPhase);
+        ResolveForm.arrayAmplitude = ResolveForm.FutureToPlaneObj(arrayAmplitude);
+
         if (ResolveForm.isForPhases) {
-            ResolveForm.arrayPhase = ResolveForm.FutureToPlaneObj(arrayPhase);
-            ResolveForm.arrayAmplitude = ResolveForm.FutureToPlaneObj(arrayAmplitude);
-        } else {
-            ResolveForm.arrayPhase = ResolveForm.FutureToPlaneObj(arrayAmplitude);
-            ResolveForm.arrayAmplitude = ResolveForm.FutureToPlaneObj(arrayPhase);
+            ResolveForm.countableCharacter = ResolveForm.arrayPhase;
         }
+        else{
+            ResolveForm.countableCharacter = ResolveForm.arrayAmplitude;
+        }
+
         executorService.shutdown();
     }
 
@@ -63,7 +67,7 @@ public class ModulesCalc {
         int processors = Runtime.getRuntime().availableProcessors();
         ExecutorService executorService = Executors.newFixedThreadPool(processors);
         if (!ResolveForm.isPhasesCounted){
-            arrayPhase = ResolveForm.arrayPhase;
+            arrayPhase = ResolveForm.countableCharacter;
         }
         else{
             arrayPhase = new ArrayList<>();
@@ -114,7 +118,7 @@ public class ModulesCalc {
                     typical = new TypicalCalculation(stationCount, arrayPhase, group);
                 }
                 else{
-                    typical = new TypicalCalculation(stationCount, ResolveForm.arrayPhase, group);
+                    typical = new TypicalCalculation(stationCount, ResolveForm.countableCharacter, group);
                 }
                 Phase typicalPhase = typical.run();
                 group.setPhases(typicalPhase);
@@ -129,7 +133,6 @@ public class ModulesCalc {
             count++;
             arrayPrevGroup.clear();
             arrayPrevGroup.addAll(arrayGroup);
-//            System.out.println(count);
         } while (!check);
         ResolveForm.arrayTypical = arrayPhase;
         ResolveForm.arrayGroup = arrayPrevGroup;
@@ -168,7 +171,7 @@ public class ModulesCalc {
         List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
         for (int i = 0; i < groupStartPhases.length; i++) {
             Phase phase = groupStartPhases.clone()[i];
-            CorrelationCalculation corrThread = new CorrelationCalculation(phase, -1, ResolveForm.arrayPhase);
+            CorrelationCalculation corrThread = new CorrelationCalculation(phase, -1, ResolveForm.countableCharacter);
             corrThreadTasks.add(corrThread);
         }
         groupCorrs = ResolveForm.FutureToPlaneObj(executorService.invokeAll(corrThreadTasks));

@@ -14,6 +14,7 @@ public class ResolveForm {
     public static double[][] TempData;
     public static String[][] TempString;
     public static List<Phase> arrayPhase;
+    public static List<Phase> countableCharacter;
     public static String[] fileParams;
     public static List<Phase> arrayAmplitude;
     public static boolean phaseToZero = true;
