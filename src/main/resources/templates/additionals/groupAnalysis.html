@@ -41,41 +41,56 @@
         </div>
 
     </div>
+
     <div id="dashboard_div" style="height: 500px">
         <div id="Chart" style="height: 70%">
         </div>
         <div id="control_div" style="height: 17%; width: 94%; margin: 0 3%">
         </div>
     </div>
-
+    <h3>Модель температурного сигнала</h3>
     <div id="modelDashboard" style="height: 500px">
+        <form action="/clusterModel" id="clusterModel">
+            <div class="form-group row">
+                <h4 class="col-sm-3 col-form-label">Дотяжка фазы:
+                </h4>
+                <div class="col-sm-2">
+                    <input class="form-control" name="offset" type="number" step="0.5" autocomplete="off" id="offset">
+                </div>
+                <input type="hidden" name="clusterNum" th:attr="value=${clusterNum}">
+                <div class="col-sm-2">
+                    <input type="submit" value="Задать">
+                </div>
+            </div>
+        </form>
         <div id="modelChart" style="height: 70%">
         </div>
         <div id="modelControl" style="height: 17%; width: 94%; margin: 0 3%">
         </div>
-    </div>
 
+    </div>
+    <h3>График фазы</h3>
     <div id="phaseDashboard" style="height: 500px">
         <div id="phaseChart" style="height: 70%">
         </div>
         <div id="phaseControl" style="height: 17%; width: 94%; margin: 0 3%">
         </div>
     </div>
-
+    <h3>Спектор фазы</h3>
     <div id="phaseSpectorDashboard" style="height: 500px">
         <div id="phaseSpectorChart" style="height: 70%">
         </div>
         <div id="phaseSpectorControl" style="height: 17%; width: 94%; margin: 0 3%">
         </div>
     </div>
-
+    <h3>График амплитуды</h3>
     <div id="amplitudesDashboard" style="height: 500px">
         <div id="amplitudesChart" style="height: 70%">
         </div>
         <div id="amplitudesControl" style="height: 17%; width: 94%; margin: 0 3%">
         </div>
     </div>
-
+    <h3>Спектор амплитуды</h3>
     <div id="amplitudeSpectorDashboard" style="height: 500px">
         <div id="amplitudeSpectorChart" style="height: 70%">
         </div>
@@ -129,6 +144,34 @@
     var amplitudesChart = /*[[${amplitudes}]]*/'noValue'
     var amplitudeSpectorChart = /*[[${amplitudeSpector}]]*/'noValue'
     var modelChart = /*[[${clusterModel}]]*/'noValue'
+
+    $(function() {
+        $('form#clusterModel').submit(function(e) {
+            //отмена действия по умолчанию для кнопки submit
+            e.preventDefault();
+            $('#errorPhase').text("");
+            var $form = $(this);
+            $.ajax({
+                type: "GET",
+                url: "/clusterModel",
+                data: $form.serialize(),
+                success: function(data) {
+                    modelData.removeRows(0, modelData.getNumberOfRows());
+                    Object.keys(data).forEach(function(key) {
+                        var dataArray = [new Date(key), Number(data[key]), Number(real_data[key])];
+
+                        modelData.addRow(dataArray);
+                    });
+                    modelDashboard.draw(modelData);
+                },
+                error: function() {
+                    alert("error");
+                }
+            });
+
+        });
+    });
+
 
     $(document).ready(function() {
         google.charts.load('current', {
@@ -286,6 +329,7 @@
 
             data.addRow(dataArray);
 
+
         });
 
         let options = {
@@ -359,15 +403,17 @@
         dashboard.bind([control], [chart]);
         dashboard.draw(data);
     }
+    var modelData;
+    var modelDashboard;
     function drawModelChart() {
-        let data = new google.visualization.DataTable();
-        data.addColumn('date', "Дата");
-        data.addColumn('number', "Модель темп. сигнала");
-        data.addColumn('number', "Температура типовая");
+        modelData = new google.visualization.DataTable();
+        modelData.addColumn('date', "Дата");
+        modelData.addColumn('number', "Модель темп. сигнала");
+        modelData.addColumn('number', "Температура типовая");
         Object.keys(modelChart).forEach(function(key) {
             var dataArray = [new Date(key), Number(modelChart[key]), Number(real_data[key])];
 
-            data.addRow(dataArray);
+            modelData.addRow(dataArray);
 
         });
 
@@ -400,8 +446,8 @@
                 filterColumnIndex: 0,
             }
         });
-        let dashboard = new google.visualization.Dashboard(document.getElementById('modelDashboard'));
-        dashboard.bind([control], [chart]);
-        dashboard.draw(data);
+        modelDashboard = new google.visualization.Dashboard(document.getElementById('modelDashboard'));
+        modelDashboard.bind([control], [chart]);
+        modelDashboard.draw(modelData);
     }
 </script>

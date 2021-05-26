@@ -108,7 +108,7 @@ public class DataAnalysis{
         }
         return min;
     }
-    public static LinkedHashMap<String, Double> getClusterModel (Phase phase, List<Integer> group){
+    public static LinkedHashMap<String, Double> getClusterModel (Phase phase, List<Integer> group, double offset){
         LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
         List<Double> phaseMembs = phase.getPhase();
         int N = phaseMembs.size();
@@ -131,7 +131,7 @@ public class DataAnalysis{
 
         for(int i = 0; i < N; i++){
             date.add(dateDelta, 1);
-            chartData.put(dateFormat.format(date.getTime()), avgTypicalTemp + coefficient * amplitude.get(i) * Math.cos(phaseMembs.get(i) + (2*Math.PI*i*ResolveForm.windowCenter/N) + Math.PI));
+            chartData.put(dateFormat.format(date.getTime()), avgTypicalTemp + coefficient * amplitude.get(i) * Math.cos(phaseMembs.get(i) + (2*Math.PI*i*ResolveForm.windowCenter/N) + Math.PI + offset*Math.PI/4));
         }
         return chartData;
     }

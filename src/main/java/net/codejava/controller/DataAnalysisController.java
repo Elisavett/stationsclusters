@@ -3,6 +3,7 @@ package net.codejava.controller;
 import net.codejava.Resolve.Model.Group;
 import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.PhaseCalc.DataAnalysis;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,12 +49,20 @@ public class DataAnalysisController {
         model.addAttribute("phaseSpector", DataAnalysis.getPhaseSpector(clusterNum));
         model.addAttribute("amplitudeSpector", DataAnalysis.getAmplitudeSpector(group));
         model.addAttribute("amplitudes", typicalAmpls);
-        model.addAttribute("clusterModel", DataAnalysis.getClusterModel(groups[clusterNum-1].getPhases(), group));
+        model.addAttribute("clusterModel", DataAnalysis.getClusterModel(groups[clusterNum-1].getPhases(), group, 0.));
         model.addAttribute("clusterNum", clusterNum);
         model.addAttribute("corrTable", groups[clusterNum-1].getGroupCorrTable());
         model.addAttribute("groupMembers", group);
 
         return "additionals/groupAnalysis";
+    }
+    @GetMapping("/clusterModel")
+    public ResponseEntity<LinkedHashMap<String, Double>> clusterModel(String clusterNum, String offset) {
+        Group[] groups = new Group[ResolveForm.clusters.size()];
+        groups = ResolveForm.clusters.toArray(groups);
+        List<Integer> group = groups[Integer.parseInt(clusterNum)-1].getGroupMembers();
+
+        return ResponseEntity.ok().body(DataAnalysis.getClusterModel(groups[Integer.parseInt(clusterNum)-1].getPhases(), group, Double.parseDouble(offset)));
     }
     @GetMapping("/systemAnalysis")
     public String systemAnalysis(Model model) throws ExecutionException, InterruptedException {
