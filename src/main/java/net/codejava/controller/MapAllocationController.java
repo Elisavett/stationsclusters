@@ -86,7 +86,7 @@ public class MapAllocationController {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        return "/map1";
+        return "map1";
     }
 
     @GetMapping("/resolveAverage")
