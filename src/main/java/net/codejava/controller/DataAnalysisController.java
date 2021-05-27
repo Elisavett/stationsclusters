@@ -101,7 +101,7 @@ public class DataAnalysisController {
     }
 
 
-        @GetMapping("/SKOAnalysis")
+    @GetMapping("/SKOAnalysis")
     public String SKOAnalysis(Model model) {
         ResolveForm.SKO = DataAnalysis.getAllSKO();
         setCommonChartOptions(model, ResolveForm.SKO,

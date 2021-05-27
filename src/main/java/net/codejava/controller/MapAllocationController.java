@@ -48,6 +48,47 @@ public class MapAllocationController {
         return "fragments/additionalStationCharacter";
     }
 
+    @GetMapping("/tomskRegionStations")
+    public String tomskMap(Model model, @RequestParam(value = "correlation_coefficient", required = false) String corr) throws Exception {
+        ResolveForm.TempString = SplitInputFile.ReadServerFile("TomskTemps.txt", 't');
+        ResolveForm.TempData = new double[ResolveForm.TempString.length][ResolveForm.TempString[0].length];
+        for(int i = 0; i < ResolveForm.TempString.length; i++){
+            for(int j = 0; j < ResolveForm.TempString[i].length; j++){
+                ResolveForm.TempData[i][j] = Double.parseDouble(ResolveForm.TempString[i][j]);
+            }
+        }
+        ResolveForm.coordData = SplitInputFile.ReadServerFile("TomskCoords.txt", 'c');
+
+        ResolveForm.corrDOWN = Double.parseDouble(corr);
+
+        ResolveForm.windowCenter = ResolveForm.TempData[0].length / ResolveForm.dataType;
+        ResolveForm.isPhasesCounted = false;
+
+        ResolveForm.startDate = new Date(1955, Calendar.JANUARY, 1);
+
+        WindowChart.getWindowsChartData(false);
+        ResolveForm.windowLeft = ResolveForm.windowCenter - ResolveForm.windowDelta;
+        ResolveForm.windowRight = ResolveForm.windowCenter + ResolveForm.windowDelta;
+
+        ResolveForm.fileParams = new String[]{"Высота над уровнем моря", "true", "Название", "true"};
+        try {
+            ArrayList<String> json = new ArrayList<>();
+
+            Start start = new Start();
+            json = start.run();
+            model.addAttribute("json", json);
+            ResolveForm.calculateMapModel(model);
+
+        } catch (NumberFormatException e) {
+            String error = "Проверьте правильность данных";
+            model.addAttribute("error", error);
+            return "resolve/resolve";
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return "/map1";
+    }
+
     @GetMapping("/resolveAverage")
     public String resolveAverage() {
         return "resolve/resolveAverage";
