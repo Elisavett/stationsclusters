@@ -26,6 +26,26 @@ public class DownloadFilesController {
 
         return getFile("phases", stringPhase.toString());
     }
+    @RequestMapping("/downloadAmplitudeSpector")
+    public ResponseEntity<String> downloadAmplitudeSpector() {
+
+        StringBuilder stringAmplitude = new StringBuilder();
+        for (int i = 0; i < ResolveForm.amplitudeSpector.size(); i++) {
+            stringAmplitude.append(i).append(" ").append(ResolveForm.amplitudeSpector.get(i)).append("\n");
+        }
+
+        return getFile("amplitudeSpector", stringAmplitude.toString());
+    }
+    @RequestMapping("/downloadPhaseSpector")
+    public ResponseEntity<String> downloadPhaseSpector() {
+
+        StringBuilder stringPhase = new StringBuilder();
+        for (int i = 0; i < ResolveForm.phaseSpector.size(); i++) {
+            stringPhase.append(i).append(" ").append(ResolveForm.phaseSpector.get(i)).append("\n");
+        }
+
+        return getFile("phaseSpector", stringPhase.toString());
+    }
     @RequestMapping("/downloadFrequency")
     public ResponseEntity<String> downloadFrequency(){
 

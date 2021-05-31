@@ -87,13 +87,14 @@
 
 <link rel="stylesheet" th:href="@{/back.css}">
 <nav class="navbar navbar-expand-lg navbar-dark gradient-nav" style="background-color: #dcdede;">
-    <div class="container">
+
         <a href="/downloadReport" class="navbar-brand">[[${resolveTime}]]</a>
         <span style="color: white" class="nav-link">[[${corr}]]</span>
         <span style="color: white" class="nav-link">[[${window}]]</span>
         <span style="color: white" class="nav-link">[[${calcPeriod}]]</span>
-        <a style="color: white" href="/systemAnalysis" target='_blank' class="nav-link">Анализ системы</a>
-    </div>
+        <span style="color: white" class="nav-link">[[${isForPhase}]]</span>
+        <a style="color: white" href="/systemAnalysis" target='_blank' class="nav-link">Корреляция групп</a>
+
 </nav>
 
 <span for="json"></span><input type="text" th:value="*{json}" id="json" hidden="true">

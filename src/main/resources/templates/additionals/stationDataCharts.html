@@ -91,7 +91,7 @@
         };
 
         let chart = new google.visualization.ChartWrapper({
-            chartType: 'LineChart',
+            chartType: 'ColumnChart',
             options: options,
             containerId: 'frequencyChart'
         });
@@ -103,6 +103,9 @@
             },
             options: {
                 filterColumnIndex: 0,
+                ui: {
+                    chartType: 'AreaChart',
+                }
             }
         });
         let dashboard = new google.visualization.Dashboard(document.getElementById('frequency_dashboard'));
@@ -167,6 +170,7 @@
             },
             options: {
                 filterColumnIndex: 0,
+
             }
         });
         let dashboard = new google.visualization.Dashboard(document.getElementById('temperature_dashboard'));

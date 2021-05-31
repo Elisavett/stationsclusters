@@ -43,15 +43,19 @@ public class DataAnalysisController {
                 "Температура",
                 "temperature",
                 "line");
+        ResolveForm.phaseSpector = DataAnalysis.getPhaseSpector(clusterNum);
+        ResolveForm.amplitudeSpector = DataAnalysis.getAmplitudeSpector(group);
         LinkedHashMap<String, Double> typicalPhases = DataAnalysis.getTypicalPhase(groups[clusterNum-1].getPhases());
         LinkedHashMap<String, Double> typicalAmpls = DataAnalysis.getTypicalAmplitudesForChart(group);
         model.addAttribute("phases", typicalPhases);
-        model.addAttribute("phaseSpector", DataAnalysis.getPhaseSpector(clusterNum));
-        model.addAttribute("amplitudeSpector", DataAnalysis.getAmplitudeSpector(group));
+        model.addAttribute("phaseSpector", ResolveForm.phaseSpector);
+        model.addAttribute("amplitudeSpector", ResolveForm.amplitudeSpector);
         model.addAttribute("amplitudes", typicalAmpls);
         model.addAttribute("clusterModel", DataAnalysis.getClusterModel(groups[clusterNum-1].getPhases(), group, 0.));
         model.addAttribute("clusterNum", clusterNum);
         model.addAttribute("corrTable", groups[clusterNum-1].getGroupCorrTable());
+        model.addAttribute("maxCorr", groups[clusterNum-1].getMaxGroupCorr());
+        model.addAttribute("minCorr", groups[clusterNum-1].getMinGroupCorr());
         model.addAttribute("groupMembers", group);
 
         return "additionals/groupAnalysis";

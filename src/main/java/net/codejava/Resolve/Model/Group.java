@@ -11,6 +11,8 @@ public class Group implements Comparable<Group> {
     private final List<Integer> groupMembers;
     private final List<Double> correlations;
     @Setter private List<List<Double>> groupCorrTable;
+    @Setter private double maxGroupCorr;
+    @Setter private double minGroupCorr;
     @Setter private Phase phases;
     private final int index;
 

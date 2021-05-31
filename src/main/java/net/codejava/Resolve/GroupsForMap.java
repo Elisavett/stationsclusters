@@ -33,30 +33,40 @@ public class GroupsForMap {
                 //Удаление вхождений групп в другие группы
                 gr.deleteDoubles(groupList);
                 //Добавление таблицы корреляции между элементами группы
-                gr.setGroupCorrTable(getGroupCorrTable(gr.getGroupMembers()));
+                gr.setGroupCorrTable(getGroupCorrTable(gr));
             }
         }
         sortGroups = new TreeSet<>();
         sortGroups.addAll(groupList);
         ResolveForm.clusters = sortGroups;
     }
-    public static List<List<Double>> getGroupCorrTable(List<Integer> groupMembers){
+    public static List<List<Double>> getGroupCorrTable(Group group){
+        List<Integer> groupMembers = group.getGroupMembers();
         List<List<Double>> groupCorrTable = new ArrayList<>();
+        double minCorr = 1;
+        double maxCorr = -1;
+        double currCorr = Math.round(ResolveForm.arrayCorr.get(0).get(1)*1000)/1000.0;
         for(int member1 : groupMembers){
             List<Double> memberCorrs = new ArrayList<>();
             for(int member2 : groupMembers){
                 if (member1 > member2) {
-                    memberCorrs.add(Math.round(ResolveForm.arrayCorr.get(member2).get(member1 - member2 - 1)*1000)/1000.0);
+                    currCorr = Math.round(ResolveForm.arrayCorr.get(member2).get(member1 - member2 - 1)*1000)/1000.0;
+                    memberCorrs.add(currCorr);
                 }
-                else if (member1 < member2){
-                    memberCorrs.add(Math.round(ResolveForm.arrayCorr.get(member1).get(member2 - member1 - 1)*1000)/1000.0);
+                else if (member1 < member2) {
+                    currCorr = Math.round(ResolveForm.arrayCorr.get(member1).get(member2 - member1 - 1) * 1000) / 1000.0;
+                    memberCorrs.add(currCorr);
                 }
                 else{
                     memberCorrs.add(1.);
                 }
+                if(currCorr > maxCorr) maxCorr = currCorr;
+                if(currCorr < minCorr) minCorr = currCorr;
             }
             groupCorrTable.add(memberCorrs);
         }
+        group.setMaxGroupCorr(maxCorr);
+        group.setMinGroupCorr(minCorr);
         return groupCorrTable;
     }
 

@@ -51,6 +51,8 @@ public class ResolveForm {
     public static boolean classification = false;
     public static boolean isAccurate = true;
     public static LinkedHashMap<Integer, Double> frequencyAnalysis;
+    public static LinkedHashMap<Integer, Double> phaseSpector;
+    public static LinkedHashMap<Integer, Double> amplitudeSpector;
     public static LinkedHashMap<Integer, Double> SKO;
     public static double maxSystemCorr = 0;
     public static double minSystemCorr = 1;
@@ -76,9 +78,11 @@ public class ResolveForm {
             resolveTime = dateFormat.format(Calendar.getInstance().getTime());
         }
         model.addAttribute("resolveTime", "Расчет: " + resolveTime);
-        model.addAttribute("corr", "Коэф. кор.: " + corrDOWN + " - " + corrUP);
-        model.addAttribute("window", "Окно: " + Math.round(windowLeft) + " - " + Math.round(windowRight));
-        model.addAttribute("calcPeriod", "Рассч. период: " + periodString);
+        model.addAttribute("corr", "Коэффициент корреляции: " + corrDOWN + " - " + corrUP);
+        model.addAttribute("window", "Спектральное окно: " + Math.round(windowLeft) + " - " + Math.round(windowRight));
+        model.addAttribute("calcPeriod", "Рассчетный период: " + periodString);
+        if(ResolveForm.isForPhases) model.addAttribute("isForPhase", "Рассчет по фазе");
+        else model.addAttribute("isForPhase", "Рассчет по амплитуде");
         return model;
     }
     public static  <T> List<T> FutureToPlaneObj(List<Future<T>> futureObject) throws ExecutionException, InterruptedException {
