@@ -260,6 +260,7 @@ public class MapAllocationController {
         model.addAttribute("isModules", "false");
         return "resolve/resolve";
     }
+
     @PostMapping("/check")
     public String check(Model model, @RequestParam(value = "fileTemp") MultipartFile fileTemp,
                         @RequestParam(value = "fileCoordinates") MultipartFile fileCoordinates,
@@ -282,6 +283,7 @@ public class MapAllocationController {
         if("true".equals(isModules)) return "resolve/resolveModules";
         else return "resolve/paramsForm";
     }
+
     @PostMapping("/withNoCheck")
     public String withNoCheck(Model model, @RequestParam(value = "fileTemp", required = false) MultipartFile fileTemp,
                         @RequestParam(value = "fileCoordinates", required = false) MultipartFile fileCoordinates,
@@ -300,7 +302,7 @@ public class MapAllocationController {
         model.addAttribute("minGroupSize", ResolveForm.minGroupSize);
         ResolveForm.addAllToModel(model);
         if("true".equals(isModules)) return "resolve/resolveModules";
-        else return "resolve/resolve";
+        else return "resolve/paramsForm";
     }
     @GetMapping("/map")
     public String map() {

@@ -46,7 +46,7 @@
 <div class="mt-2" >
     <div>
 
-        <form action="javascript:;" method="post" enctype="multipart/form-data" id="form1" >
+        <form action="/check" method="post" enctype="multipart/form-data" id="form1" >
             <div class="p-3 border border-dark rounded">
                 <!--<div class="form-group row">
                     <span class="col-sm-12 col-form-label">
@@ -160,10 +160,10 @@
                         </div>
                         <input type="hidden" name="fileAdditionalParameters" id="fileAdditionalParameters">
                         <div style="float: right; margin-right: 10%">
-                            <input onclick="checkParams();getParams()"  id="submit"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Проверить" disabled/>
+                            <input formaction="/сheck" onclick="checkParams();getParams();submitForm('/check')" id="submit"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Проверить" disabled/>
                         </div>
                         <div style="float: right; margin-right: 10%">
-                            <input  id="submit2" formaction="/withNoCheck"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Расчет без проверки" />
+                            <input id="submit2" onclick="submitForm('/withNoCheck')"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Расчет без проверки" />
                         </div>
                     </div>
                 </div>
@@ -228,14 +228,19 @@
     function accurateCalc() {
         $(".errorClass").attr("hidden",true);
     }
+    var url;
+    function submitForm(uri){
+        url = uri;
+    }
     $(function() {
         $('form').submit(function(e) {
             //отмена действия по умолчанию для кнопки submit
-            e.preventDefault();
+
             var $form = $(this);
+            e.preventDefault();
             $.ajax({
                 type: "POST",
-                url: "/check",
+                url: url,
                 processData: false,
                 contentType: false,
                 data: new FormData($form[0]),
