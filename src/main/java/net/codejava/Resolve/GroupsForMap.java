@@ -43,25 +43,25 @@ public class GroupsForMap {
     public static List<List<Double>> getGroupCorrTable(Group group){
         List<Integer> groupMembers = group.getGroupMembers();
         List<List<Double>> groupCorrTable = new ArrayList<>();
-        double minCorr = 1;
-        double maxCorr = -1;
-        double currCorr = Math.round(ResolveForm.arrayCorr.get(0).get(1)*1000)/1000.0;
+        int m0 = groupMembers.get(0);
+        int m1 = groupMembers.get(groupMembers.size()-1);
+        double currCorr = 1;
+        if(groupMembers.size() > 1)
+            currCorr = Math.round(ResolveForm.arrayCorr.get(Math.min(m1, m0)).get(Math.abs(m1 - m0) -1)*1000)/1000.0;
+        double minCorr = currCorr;
+        double maxCorr = currCorr;
         for(int member1 : groupMembers){
             List<Double> memberCorrs = new ArrayList<>();
             for(int member2 : groupMembers){
-                if (member1 > member2) {
-                    currCorr = Math.round(ResolveForm.arrayCorr.get(member2).get(member1 - member2 - 1)*1000)/1000.0;
+                if(member1 == member2) memberCorrs.add(1.);
+                else {
+                    currCorr = Math.round(ResolveForm.arrayCorr.get(Math.min(member1, member2)).get(Math.abs(member1 - member2) - 1)*1000)/1000.0;
                     memberCorrs.add(currCorr);
                 }
-                else if (member1 < member2) {
-                    currCorr = Math.round(ResolveForm.arrayCorr.get(member1).get(member2 - member1 - 1) * 1000) / 1000.0;
-                    memberCorrs.add(currCorr);
-                }
-                else{
-                    memberCorrs.add(1.);
-                }
-                if(currCorr > maxCorr) maxCorr = currCorr;
-                if(currCorr < minCorr) minCorr = currCorr;
+                if(currCorr > maxCorr)
+                    maxCorr = currCorr;
+                if(currCorr < minCorr)
+                    minCorr = currCorr;
             }
             groupCorrTable.add(memberCorrs);
         }

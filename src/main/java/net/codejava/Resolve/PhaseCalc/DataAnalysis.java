@@ -122,10 +122,10 @@ public class DataAnalysis{
         }
         double avgTypicalTemp = sumT / typicalTemps.length;
         double maxTypical = getMax(typicalTemps);
-        double minTypical = Math.abs(getMin(typicalTemps));
+        double minTypical = getMin(typicalTemps);
         double maxAmpl = getMax(amplitude.toArray(new Double[N]));
 
-        double coefficient = (maxTypical+minTypical)/(2*maxAmpl);
+        double coefficient = (maxTypical-minTypical)/(2*maxAmpl);
 
         date.setTime(ResolveForm.startDate);
 
@@ -175,8 +175,8 @@ public class DataAnalysis{
         List<List<Double>> arrayCorr = ResolveForm.FutureToPlaneObj(executorService.invokeAll(corrThreadTasks));
         List<Double> missingElements = new ArrayList<>();
         arrayCorr.get(0).add(0, 1.);
-        double maxCorr = -1;
-        double minCorr = 1;
+        double maxCorr = arrayCorr.get(0).get(1);
+        double minCorr = arrayCorr.get(0).get(1);
         for(int i = 1; i < arrayCorr.size(); i++){
             for(int j = 0; j < i; j++){
                 missingElements.add(arrayCorr.get(j).get(i));
