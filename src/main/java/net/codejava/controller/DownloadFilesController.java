@@ -1,5 +1,6 @@
 package net.codejava.controller;
 
+import net.codejava.Resolve.Model.Group;
 import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.Report;
 import org.springframework.http.HttpHeaders;
@@ -56,6 +57,25 @@ public class DownloadFilesController {
         }
         return getFile("frequencyAnalysis", stringPhase.toString());
     }
+    @RequestMapping("/downloadClusterInfo")
+    public ResponseEntity<String> downloadClusterInfo(){
+
+        StringBuilder clusterInfo = new StringBuilder();
+        int i = 0;
+        clusterInfo.append("группа станция широта долгота").append("\n");
+        for(Group group : ResolveForm.clusters){
+            i++;
+            if(group.getGroupMembers().size() >= ResolveForm.minGroupSize) {
+                for (int member : group.getGroupMembers()) {
+                    clusterInfo.append(i).append(" ").append(member);
+                    clusterInfo.append(" ").append(ResolveForm.coordData[1][member]).append(" ").append(ResolveForm.coordData[2][member]);
+                    clusterInfo.append("\n");
+                }
+            }
+        }
+        return getFile("groupsInfo", clusterInfo.toString());
+    }
+
     @RequestMapping("/downloadTypicals")
     public ResponseEntity<String> downloadTypicals() {
 
