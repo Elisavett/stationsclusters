@@ -231,7 +231,7 @@
             controlType: 'ChartRangeFilter',
             containerId: 'control_div',
             state: {
-                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/3, 0) },
+                range: { start: data.getValue(0, 0), end: data.getValue(Math.round(data.getNumberOfRows()/3), 0) },
             },
             options: {
                 filterColumnIndex: 0,
@@ -269,7 +269,7 @@
             controlType: 'ChartRangeFilter',
             containerId: 'phaseControl',
             state: {
-                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/3, 0) },
+                range: { start: data.getValue(0, 0), end: data.getValue(Math.round(data.getNumberOfRows()/3), 0) },
             },
             options: {
                 filterColumnIndex: 0,
@@ -307,7 +307,7 @@
             controlType: 'ChartRangeFilter',
             containerId: 'phaseSpectorControl',
             state: {
-                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/2, 0) },
+                range: { start: data.getValue(0, 0), end: data.getValue(Math.round(data.getNumberOfRows()/2), 0) },
             },
             options: {
                 filterColumnIndex: 0,
@@ -355,7 +355,7 @@
             controlType: 'ChartRangeFilter',
             containerId: 'amplitudesControl',
             state: {
-                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/3, 0) },
+                range: { start: data.getValue(0, 0), end: data.getValue(Math.round(data.getNumberOfRows()/3), 0) },
             },
             options: {
                 filterColumnIndex: 0,
@@ -393,7 +393,7 @@
             controlType: 'ChartRangeFilter',
             containerId: 'amplitudeSpectorControl',
             state: {
-                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/2, 0) },
+                range: { start: data.getValue(0, 0), end: data.getValue(Math.round(data.getNumberOfRows()/2), 0) },
             },
             options: {
                 filterColumnIndex: 0,
@@ -443,7 +443,7 @@
             controlType: 'ChartRangeFilter',
             containerId: 'modelControl',
             state: {
-                range: { start: data.getValue(0, 0), end: data.getValue(data.getNumberOfRows()/3, 0) },
+                range: { start: data.getValue(0, 0), end: data.getValue(Math.round(data.getNumberOfRows()/3), 0) },
             },
             options: {
                 filterColumnIndex: 0,
