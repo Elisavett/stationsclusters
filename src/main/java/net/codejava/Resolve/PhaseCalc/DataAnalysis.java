@@ -29,19 +29,20 @@ public class DataAnalysis{
         return frequencyAnalysis.spectorCalculation();
     }
 
-    public static LinkedHashMap<Integer, Double> getPhaseSpector(int groupNum){
-        List<Double> phase = ResolveForm.clusters.toArray(new Group[0])[groupNum].getPhases().getPhase();
-        double[] typicalPhase = new double[phase.size()];
-        for(int i = 0; i < phase.size(); i++){
-            typicalPhase[i] = phase.get(i);
+
+    public static LinkedHashMap<Integer, Double> getCountableCharacterSpector(int groupNum){
+        List<Double> character = ResolveForm.clusters.toArray(new Group[0])[groupNum].getPhases().getPhase();
+        double[] typicalCharacter = new double[character.size()];
+        for(int i = 0; i < character.size(); i++){
+            typicalCharacter[i] = character.get(i);
         }
-        FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis(typicalPhase);
+        FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis(typicalCharacter);
 
         return frequencyAnalysis.spectorCalculation();
     }
 
-    public static LinkedHashMap<Integer, Double> getAmplitudeSpector(List<Integer> group){
-        FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis(getTypicalAmplitudes(group));
+    public static LinkedHashMap<Integer, Double> getSpecifiedCharacterSpector(List<Integer> group, List<Phase> specifiedChar){
+        FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis(getTypicalForSpecified(group, specifiedChar));
 
         return frequencyAnalysis.spectorCalculation();
     }
@@ -85,10 +86,11 @@ public class DataAnalysis{
         }
         return temps;
     }
-    public static LinkedHashMap<String, Double> getTypicalPhase (Phase phase){
+    public static LinkedHashMap<String, Double> getTypicalCountableCharacterChart (int groupNum){
+        List<Double> character = ResolveForm.clusters.toArray(new Group[0])[groupNum].getPhases().getPhase();
         LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
         date.setTime(ResolveForm.startDate);
-        for(Double el : phase.getPhase()){
+        for(Double el : character){
             date.add(dateDelta, 1);
             chartData.put(dateFormat.format(date.getTime()), Math.round(el*1000)/1000.0);
         }
@@ -108,12 +110,20 @@ public class DataAnalysis{
         }
         return min;
     }
-    public static LinkedHashMap<String, Double> getClusterModel (Phase phase, List<Integer> group, double offset){
+    public static LinkedHashMap<String, Double> getClusterModel (Phase countableCharacter, List<Integer> group, double offset){
         LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
-        List<Double> phaseMembs = phase.getPhase();
-        int N = phaseMembs.size();
+        List<Double> phase;
+        List<Double> amplitude;
+        if(ResolveForm.isForPhases){
+            phase = countableCharacter.getPhase();
+            amplitude = new ArrayList<>(getTypicalSpecifiedsForChart(group, ResolveForm.arrayAmplitude).values());
+        }
+        else{
+            phase = new ArrayList<>(getTypicalSpecifiedsForChart(group, ResolveForm.arrayPhase).values());
+            amplitude = countableCharacter.getPhase();
+        }
+        int N = phase.size();
 
-        List<Double> amplitude = new ArrayList<>(getTypicalAmplitudesForChart(group).values());
 
         Double[] typicalTemps = getTypicalTemps(group);
         double sumT = 0;
@@ -131,14 +141,14 @@ public class DataAnalysis{
 
         for(int i = 0; i < N; i++){
             date.add(dateDelta, 1);
-            chartData.put(dateFormat.format(date.getTime()), avgTypicalTemp + coefficient * amplitude.get(i) * Math.cos(phaseMembs.get(i) + (2*Math.PI*i*ResolveForm.windowCenter/N) + Math.PI + offset*Math.PI/4));
+            chartData.put(dateFormat.format(date.getTime()), avgTypicalTemp + coefficient * amplitude.get(i) * Math.cos(phase.get(i) + (2*Math.PI*i*ResolveForm.windowCenter/N) + Math.PI + offset*Math.PI/4));
         }
         return chartData;
     }
-    public static LinkedHashMap<String, Double> getTypicalAmplitudesForChart(List<Integer> group){
+    public static LinkedHashMap<String, Double> getTypicalSpecifiedsForChart(List<Integer> group, List<Phase> specifiedCharacters){
         LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
         date.setTime(ResolveForm.startDate);
-        double[] amplitude = getTypicalAmplitudes(group);
+        double[] amplitude = getTypicalForSpecified(group, specifiedCharacters);
         for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
             date.add(dateDelta, 1);
             chartData.put(dateFormat.format(date.getTime()), amplitude[j]);
@@ -146,15 +156,18 @@ public class DataAnalysis{
         return chartData;
     }
     public static double[] getTypicalAmplitudes(List<Integer> group){
-        double[] amplitude = new double[ResolveForm.TempData[0].length];
+        return getTypicalForSpecified(group, ResolveForm.arrayAmplitude);
+    }
+    public static double[] getTypicalForSpecified(List<Integer> group, List<Phase> specifiedCharacters){
+        double[] charecter = new double[ResolveForm.TempData[0].length];
         for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
-            double averageAmpl = 0;
+            double averageCharacter = 0;
             for (Integer station : group) {
-                averageAmpl += ResolveForm.arrayAmplitude.get(station).getPhase().get(j);
+                averageCharacter += specifiedCharacters.get(station).getPhase().get(j);
             }
-            amplitude[j] = Math.round(averageAmpl/group.size()*1000)/1000.0;
+            charecter[j] = Math.round(averageCharacter/group.size()*1000)/1000.0;
         }
-        return amplitude;
+        return charecter;
     }
     //Таблица корреляции типовых фаз
     public static List<List<Double>> getGroupPhasesCorrTable() throws InterruptedException, ExecutionException {

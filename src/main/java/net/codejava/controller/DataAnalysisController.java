@@ -43,10 +43,20 @@ public class DataAnalysisController {
                 "Температура",
                 "temperature",
                 "line");
-        ResolveForm.phaseSpector = DataAnalysis.getPhaseSpector(clusterNum);
-        ResolveForm.amplitudeSpector = DataAnalysis.getAmplitudeSpector(group);
-        LinkedHashMap<String, Double> typicalPhases = DataAnalysis.getTypicalPhase(groups[clusterNum-1].getPhases());
-        LinkedHashMap<String, Double> typicalAmpls = DataAnalysis.getTypicalAmplitudesForChart(group);
+        LinkedHashMap<String, Double> typicalPhases;
+        LinkedHashMap<String, Double> typicalAmpls;
+        if(ResolveForm.isForPhases){
+            ResolveForm.phaseSpector = DataAnalysis.getCountableCharacterSpector(clusterNum);
+            ResolveForm.amplitudeSpector = DataAnalysis.getSpecifiedCharacterSpector(group, ResolveForm.arrayAmplitude);
+            typicalPhases = DataAnalysis.getTypicalCountableCharacterChart(clusterNum-1);
+            typicalAmpls = DataAnalysis.getTypicalSpecifiedsForChart(group, ResolveForm.arrayAmplitude);
+        }
+        else{
+            ResolveForm.phaseSpector = DataAnalysis.getSpecifiedCharacterSpector(group, ResolveForm.arrayPhase);
+            ResolveForm.amplitudeSpector = DataAnalysis.getCountableCharacterSpector(clusterNum);
+            typicalPhases = DataAnalysis.getTypicalSpecifiedsForChart(group, ResolveForm.arrayPhase);
+            typicalAmpls = DataAnalysis.getTypicalCountableCharacterChart(clusterNum-1);
+        }
         model.addAttribute("phases", typicalPhases);
         model.addAttribute("phaseSpector", ResolveForm.phaseSpector);
         model.addAttribute("amplitudeSpector", ResolveForm.amplitudeSpector);
