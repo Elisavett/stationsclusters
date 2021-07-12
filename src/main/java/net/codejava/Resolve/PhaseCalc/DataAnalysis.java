@@ -65,26 +65,47 @@ public class DataAnalysis{
         }
         return averageT / temp.length;
     }
-    public static LinkedHashMap<String, Double> getTypicalTempsChart(List<Integer> group){
-        LinkedHashMap<String, Double> temps = new LinkedHashMap<>();
+    public static LinkedHashMap<String, Double[]> getTypicalTempsChart(List<Integer> group){
+        LinkedHashMap<String, Double[]> temps = new LinkedHashMap<>();
         date.setTime(ResolveForm.startDate);
-        Double[] typicals = getTypicalTemps(group);
+        Double[][] typicals = getTypicalTemps(group);
         for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
             date.add(dateDelta, 1);
-            temps.put(dateFormat.format(date.getTime()), typicals[j]);
+            temps.put(dateFormat.format(date.getTime()), new Double[]{typicals[0][j], typicals[1][j], typicals[2][j], typicals[3][j]});
         }
         return temps;
     }
-    public static Double[] getTypicalTemps(List<Integer> group){
+    public static Double[][] getTypicalTemps(List<Integer> group){
         Double[] temps = new Double[ResolveForm.TempData[0].length];
+        Double[] maxTemps = new Double[ResolveForm.TempData[0].length];
+        Double[] minTemps = new Double[ResolveForm.TempData[0].length];
+        Double[] skos = new Double[ResolveForm.TempData[0].length];
         for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
             double averageTemp = 0;
+            double max = ResolveForm.TempData[0][j];
+            double min = ResolveForm.TempData[0][j];
             for (Integer station : group) {
-                averageTemp += ResolveForm.TempData[station][j];
+                double element = ResolveForm.TempData[station][j];
+                averageTemp += element;
+                if(element > max) max = element;
+                if(element < min) min = element;
             }
             temps[j] = Math.round(averageTemp/group.size()*1000)/1000.0;
+            double sko_temp = 0;
+            for (Integer station : group) {
+                double element = ResolveForm.TempData[station][j];
+                sko_temp += (element - temps[j])*(element - temps[j]);
+            }
+            skos[j] = Math.sqrt(sko_temp / (group.size() - 1));
+            minTemps[j] = min;
+            maxTemps[j] = max;
         }
-        return temps;
+        Double[][] tempMinMaxSko = new Double[4][];
+        tempMinMaxSko[0] = temps;
+        tempMinMaxSko[1] = minTemps;
+        tempMinMaxSko[2] = maxTemps;
+        tempMinMaxSko[3] = skos;
+        return tempMinMaxSko;
     }
     public static LinkedHashMap<String, Double> getTypicalCountableCharacterChart (int groupNum){
         List<Double> character = ResolveForm.clusters.toArray(new Group[0])[groupNum].getPhases().getPhase();
@@ -125,7 +146,7 @@ public class DataAnalysis{
         int N = phase.size();
 
 
-        Double[] typicalTemps = getTypicalTemps(group);
+        Double[] typicalTemps = getTypicalTemps(group)[0];
         double sumT = 0;
         for (Double v : typicalTemps) {
             sumT += v;

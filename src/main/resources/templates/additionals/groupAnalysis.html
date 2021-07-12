@@ -201,8 +201,13 @@
         data = new google.visualization.DataTable();
         data.addColumn('date', X_name);
         data.addColumn('number', "Температура, С");
+        data.addColumn('number', "+СКО");
+        data.addColumn('number', "-СКО");
+
         Object.keys(real_data).forEach(function(key) {
-            var dataArray = [new Date(key), Number(real_data[key])];
+            var dataArray = [new Date(key), Number(real_data[key][0]),
+                Number(real_data[key][0]) + Number(real_data[key][3]),
+                Number(real_data[key][0]) - Number(real_data[key][3])];
 
             data.addRow(dataArray);
 

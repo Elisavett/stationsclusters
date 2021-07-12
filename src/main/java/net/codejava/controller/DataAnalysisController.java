@@ -35,7 +35,7 @@ public class DataAnalysisController {
         Group[] groups = new Group[ResolveForm.clusters.size()];
         groups = ResolveForm.clusters.toArray(groups);
         List<Integer> group = groups[clusterNum-1].getGroupMembers();
-        LinkedHashMap<String,Double> typicalTemps = DataAnalysis.getTypicalTempsChart(group);
+        LinkedHashMap<String,Double[]> typicalTemps = DataAnalysis.getTypicalTempsChart(group);
 
         setCommonChartOptions(model,
                 typicalTemps,
