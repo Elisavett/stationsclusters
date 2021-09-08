@@ -50,43 +50,14 @@ public class MapAllocationController {
 
     @GetMapping("/tomskRegionStations")
     public String tomskMap(Model model, @RequestParam(value = "correlation_coefficient", required = false) String corr) throws Exception {
-        ResolveForm.TempString = SplitInputFile.ReadServerFile("TomskTemps.txt", 't');
-        ResolveForm.TempData = new double[ResolveForm.TempString.length][ResolveForm.TempString[0].length];
-        for(int i = 0; i < ResolveForm.TempString.length; i++){
-            for(int j = 0; j < ResolveForm.TempString[i].length; j++){
-                ResolveForm.TempData[i][j] = Double.parseDouble(ResolveForm.TempString[i][j]);
-            }
-        }
-        ResolveForm.coordsIsStationsOnY = true;
-        ResolveForm.coordData = SplitInputFile.ReadServerFile("TomskCoords.txt", 'c');
-
-        ResolveForm.minGroupSize = 2;
-        ResolveForm.isForPhases = false;
-        ResolveForm.phaseToZero = false;
-        ResolveForm.classification = true;
-
-        if(corr != null)
-            ResolveForm.corrDOWN = Double.parseDouble(corr);
-        else
-            ResolveForm.corrDOWN = 0.95;
-
-        ResolveForm.windowCenter = ResolveForm.TempData[0].length / ResolveForm.dataType;
-        ResolveForm.isPhasesCounted = false;
-
-        ResolveForm.startDate = new Date(1955, Calendar.JANUARY, 1);
-
-        WindowChart.getWindowsChartData(false);
-        ResolveForm.windowLeft = ResolveForm.windowCenter - ResolveForm.windowDelta;
-        ResolveForm.windowRight = ResolveForm.windowCenter + ResolveForm.windowDelta;
+        Calendar calendarStart = new GregorianCalendar(1961, Calendar.JANUARY , 1);
+        Calendar calendarEnd = new GregorianCalendar(2010, Calendar.DECEMBER , 31);
 
         ResolveForm.fileParams = new String[]{"Высота над уровнем моря", "true", "Название", "true"};
         try {
-            ArrayList<String> json = new ArrayList<>();
-
-            Start start = new Start();
-            //Расчет не из предыдущих - из исходных
-            boolean isFromPrev = false;
-            json = start.run(isFromPrev);
+            ArrayList<String> json = calculateRegion(calendarStart.getTime(), calendarEnd.getTime(), corr,
+                    "TomskTemps.txt", "TomskCoords.txt", true,
+                    false, 2, false);
             model.addAttribute("json", json);
             ResolveForm.calculateMapModel(model);
 
@@ -100,37 +71,66 @@ public class MapAllocationController {
         return "map1";
     }
 
-    @GetMapping("/bptStations")
-    public String bptMap(Model model, @RequestParam(value = "correlation_coefficient", required = false) String corr) throws Exception {
-        ResolveForm.TempString = SplitInputFile.ReadServerFile("BPT-Temp.txt", 't');
+    public ArrayList<String> calculateRegion(Date periodStart, Date periodEnd, String corr,
+                                              String tempFileName, String cordFileName,
+                                             boolean isStationOnY, boolean isForPhase,
+                                             int minGroupSize, boolean isFromPrev) throws Exception {
+        ResolveForm.TempString = SplitInputFile.ReadServerFile(tempFileName, 't');
         ResolveForm.TempData = new double[ResolveForm.TempString.length][ResolveForm.TempString[0].length];
         for(int i = 0; i < ResolveForm.TempString.length; i++){
             for(int j = 0; j < ResolveForm.TempString[i].length; j++){
                 ResolveForm.TempData[i][j] = Double.parseDouble(ResolveForm.TempString[i][j]);
             }
         }
-        ResolveForm.coordsIsStationsOnY = false;
-        ResolveForm.coordData = SplitInputFile.ReadServerFile("BPT-Coord.txt", 'c');
+        ResolveForm.coordsIsStationsOnY = isStationOnY;
+        ResolveForm.coordData = SplitInputFile.ReadServerFile(cordFileName, 'c');
 
-        ResolveForm.corrDOWN = Double.parseDouble(corr);
+        ResolveForm.minGroupSize = minGroupSize;
+        ResolveForm.isForPhases = isForPhase;
+        ResolveForm.phaseToZero = false;
+        ResolveForm.classification = true;
+
+        if(corr != null)
+            ResolveForm.corrDOWN = Double.parseDouble(corr);
+        else
+            ResolveForm.corrDOWN = 0.95;
 
         ResolveForm.windowCenter = ResolveForm.TempData[0].length / ResolveForm.dataType;
-        ResolveForm.fileParams = new String[1];
         ResolveForm.isPhasesCounted = false;
 
-        ResolveForm.startDate = new Date(1972, Calendar.JANUARY, 1);
+        ResolveForm.startDate = periodStart;
+
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        ResolveForm.periodStart = formatter.format(ResolveForm.startDate);
+        ResolveForm.periodEnd = formatter.format(periodEnd);
+
+        DateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
+
+        ResolveForm.periodString = "c " + formatter2.format(periodStart) + " по " + formatter2.format(periodEnd);
+
+
 
         WindowChart.getWindowsChartData(false);
         ResolveForm.windowLeft = ResolveForm.windowCenter - ResolveForm.windowDelta;
         ResolveForm.windowRight = ResolveForm.windowCenter + ResolveForm.windowDelta;
 
-        try {
-            ArrayList<String> json = new ArrayList<>();
+        Start start = new Start();
 
-            Start start = new Start();
-            //Расчет из предыдущих
-            boolean isFromPrev = true;
-            json = start.run(isFromPrev);
+        return start.run(isFromPrev);
+
+    }
+
+    @GetMapping("/bptStations")
+    public String bptMap(Model model, @RequestParam(value = "correlation_coefficient", required = false) String corr) throws Exception {
+        ResolveForm.fileParams = new String[1];
+
+        Calendar calendarStart = new GregorianCalendar(1980, Calendar.JANUARY , 1);
+        Calendar calendarEnd = new GregorianCalendar(2018, Calendar.DECEMBER , 31);
+        try {
+            ArrayList<String> json = calculateRegion(calendarStart.getTime(), calendarEnd.getTime(), corr,
+                    "BPT-Temp.txt", "BPT-Coord.txt", false,
+                    true, 2, true);
             model.addAttribute("json", json);
             ResolveForm.calculateMapModel(model);
 
@@ -270,7 +270,7 @@ public class MapAllocationController {
     @GetMapping("/showOnMap")
     public String toMap(Model model){
         try {
-            ArrayList<String> json = new ArrayList<>();
+            ArrayList<String> json;
 
             Start start = new Start();
             boolean isFromPrev = true;
