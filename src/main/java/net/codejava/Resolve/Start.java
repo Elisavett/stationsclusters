@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.concurrent.*;
 
 public class Start {
-    public ArrayList<String> run() throws InterruptedException, ExecutionException {
+    public ArrayList<String> run(boolean isFromPrev) throws InterruptedException, ExecutionException {
 
         ModulesCalc.PhaseAmplCalc();
-        ModulesCalc.ClustersCalc(true);
+        ModulesCalc.ClustersCalc(isFromPrev);
         if (ResolveForm.classification) {
             ModulesCalc.ClassesCalc();
         }

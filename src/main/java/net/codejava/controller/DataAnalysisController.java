@@ -101,12 +101,13 @@ public class DataAnalysisController {
     }
     @GetMapping("/dataAnalysisForStation")
     public String dataAnalysisForStation(Model model, @RequestParam Integer station) {
-        double avgTemp = DataAnalysis.getAvgTemp(ResolveForm.TempData[station].clone());
-        double sko = DataAnalysis.getStationSKO(avgTemp, ResolveForm.TempData[station].clone());
-        model.addAttribute("temperaturesData", DataAnalysis.getStationTemp(station));
+        int indexStation = station - 1;
+        double avgTemp = DataAnalysis.getAvgTemp(ResolveForm.TempData[indexStation].clone());
+        double sko = DataAnalysis.getStationSKO(avgTemp, ResolveForm.TempData[indexStation].clone());
+        model.addAttribute("temperaturesData", DataAnalysis.getStationTemp(indexStation));
         model.addAttribute("additionalData", new double[]{avgTemp + sko, avgTemp - sko});
 
-        double[] temp = ResolveForm.TempData[station].clone();
+        double[] temp = ResolveForm.TempData[indexStation].clone();
         DataAnalysis dataAnalysis = new DataAnalysis(temp);
         ResolveForm.frequencyAnalysis = dataAnalysis.getFrequencySpector();
         model.addAttribute("frequencyData", ResolveForm.frequencyAnalysis);

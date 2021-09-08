@@ -10,65 +10,48 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
+<!--                    <li class="nav-item">
                         <a class="nav-link" th:href="@{/resolve}">Расчет по температурам</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/resolveModules}">Модульный расчет</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/resolveFunction}">Расчет по функциям</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/resolveAverage}">Расчет по средним темп</a>
-                    </li>
-                    <!--<li class="nav-item">
-                        <a class="nav-link" th:href="@{/resolveHistory}">Ход расчета</a>
                     </li>-->
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/showData}">Данные датчиков</a>
+                        <div class="dropdown">
+                            <button class="nav-link btn btn-link dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Мониторинг климатических зон
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                <a class="dropdown-item" th:href="@{/resolveModules}">Рассчет климатических кластеров (полный)</a>
+                                <a class="dropdown-item" th:href="@{/resolveFunction}">Рассчет по непериодическим характеристикам</a>
+                                <a class="dropdown-item" th:href="@{/resolveAverage}">Рассчет по средним температурам</a>
+                                <a class="dropdown-item" th:href="@{/tomskRegionStations}">Томская область</a>
+                                <a class="dropdown-item" th:href="@{/bptStations?correlation_coefficient=0.8}">Байкальская природная территория</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <button class="nav-link btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Индикационные характеристики
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <a class="dropdown-item" href=""></a>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <button class="nav-link btn btn-link dropdown-toggle" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Мониторинг по метеодатчикам
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenu3">
+                                <a class="dropdown-item" th:href="@{/showData}">Данные датчиков</a>
+                            </div>
+                        </div>
                     </li>
                     <li th:if="${path == 'map'}" class="nav-item">
                         <a class="nav-link" data-toggle="modal" data-target="#modal-1">Изменить маркер</a>
                     </li>
                 </ul>
-                <!-- <div th:with="know = ${session['SPRING_SECURITY_CONTEXT']}">
-                     <div th:if="${know}">
-                         <div th:with="user = ${know.authentication.principal}">
-                             <ul class="navbar-nav mr-auto">
-                                 <li class="nav-item">
-                                     <a class="nav-link" th:href="@{'/user/' + ${user.Id}}"><span
-                                             th:text="${user.username}"></span></a>
-                                 </li>
-                                 <li>
-                                     &lt;!&ndash;Выйти&ndash;&gt;
-                                     <div>
-                                         <form th:action="@{/logout}" method="post">
-                                             <input class="btn btn-info" type="submit"
-                                                    value="Выйти"/>
-                                         </form>
-                                     </div>
-                                 </li>
-                                 <div th:if="${user.isAdmin()}">
-                                     <li class="nav-item">
-                                         <a class="nav-link text-danger" th:href="@{/admin}">Панель администратора</a>
-                                     </li>
-                                 </div>
-                             </ul>
-                         </div>
-                     </div>
-                     <div th:unless="${know}">
-                         <ul class="navbar-nav mr-auto">
-                             <li class="nav-item">
-                                 <a class="btn btn-info"
-                                    th:href="@{/registration}">Регистрация</a>
-                             </li>
-                             <li class="nav-item">
-                                 <a class="btn btn-info mx-2" th:href="@{/login}">Войти</a>
-                             </li>
-                         </ul>
-                     </div>
-                 </div>-->
+
             </div>
         </div>
     </nav>
