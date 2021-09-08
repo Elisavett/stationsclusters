@@ -56,8 +56,7 @@ public class MapAllocationController {
         ResolveForm.fileParams = new String[]{"Высота над уровнем моря", "true", "Название", "true"};
         try {
             ArrayList<String> json = calculateRegion(calendarStart.getTime(), calendarEnd.getTime(), corr,
-                    "TomskTemps.txt", "TomskCoords.txt", true,
-                    false, 2, false);
+                    "TomskTemps.txt", "TomskCoords.txt", true);
             model.addAttribute("json", json);
             ResolveForm.calculateMapModel(model);
             model.addAttribute("fromRegions", true);
@@ -73,8 +72,7 @@ public class MapAllocationController {
 
     public ArrayList<String> calculateRegion(Date periodStart, Date periodEnd, String corr,
                                               String tempFileName, String cordFileName,
-                                             boolean isStationOnY, boolean isForPhase,
-                                             int minGroupSize, boolean isFromPrev) throws Exception {
+                                             boolean isStationOnY) throws Exception {
         ResolveForm.TempString = SplitInputFile.ReadServerFile(tempFileName, 't');
         ResolveForm.TempData = new double[ResolveForm.TempString.length][ResolveForm.TempString[0].length];
         for(int i = 0; i < ResolveForm.TempString.length; i++){
@@ -85,8 +83,8 @@ public class MapAllocationController {
         ResolveForm.coordsIsStationsOnY = isStationOnY;
         ResolveForm.coordData = SplitInputFile.ReadServerFile(cordFileName, 'c');
 
-        ResolveForm.minGroupSize = minGroupSize;
-        ResolveForm.isForPhases = isForPhase;
+        ResolveForm.minGroupSize = 2;
+        ResolveForm.isForPhases = false;
         ResolveForm.phaseToZero = false;
         ResolveForm.classification = true;
 
@@ -117,7 +115,7 @@ public class MapAllocationController {
 
         Start start = new Start();
 
-        return start.run(isFromPrev);
+        return start.run(true);
 
     }
 
@@ -128,9 +126,8 @@ public class MapAllocationController {
         Calendar calendarStart = new GregorianCalendar(1980, Calendar.JANUARY , 1);
         Calendar calendarEnd = new GregorianCalendar(2018, Calendar.DECEMBER , 31);
         try {
-            ArrayList<String> json = calculateRegion(calendarStart.getTime(), calendarEnd.getTime(), corr,
-                    "BPT-Temp.txt", "BPT-Coord.txt", false,
-                    true, 2, true);
+            ArrayList<String> json = calculateRegion(calendarStart.getTime(), calendarEnd.getTime(), "0.93",
+                    "BPT-Temp.txt", "BPT-Coord.txt", false);
             model.addAttribute("json", json);
             ResolveForm.calculateMapModel(model);
             model.addAttribute("fromRegions", true);
