@@ -93,8 +93,9 @@
         <span style="color: white" class="nav-link">[[${window}]]</span>
         <span style="color: white" class="nav-link">[[${calcPeriod}]]</span>
         <span style="color: white" class="nav-link">[[${isForPhase}]]</span>
-        <a style="color: white" href="/systemAnalysis" target='_blank' class="nav-link">Корреляция групп</a>
 
+        <a href="/systemAnalysis" target='_blank' class="nav-link">Корреляция групп</a>
+        <a th:if="${fromRegions == true}" href="/resolveModules" class="nav-link">Указать параметры расчета</a>
 </nav>
 
 <span for="json"></span><input type="text" th:value="*{json}" id="json" hidden="true">

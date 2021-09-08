@@ -60,7 +60,7 @@ public class MapAllocationController {
                     false, 2, false);
             model.addAttribute("json", json);
             ResolveForm.calculateMapModel(model);
-
+            model.addAttribute("fromRegions", true);
         } catch (NumberFormatException e) {
             String error = "Проверьте правильность данных";
             model.addAttribute("error", error);
@@ -133,7 +133,7 @@ public class MapAllocationController {
                     true, 2, true);
             model.addAttribute("json", json);
             ResolveForm.calculateMapModel(model);
-
+            model.addAttribute("fromRegions", true);
         } catch (NumberFormatException e) {
             String error = "Проверьте правильность данных";
             model.addAttribute("error", error);
@@ -279,6 +279,7 @@ public class MapAllocationController {
             model.addAttribute("json", json);
 
             ResolveForm.calculateMapModel(model);
+
         } catch (NumberFormatException e) {
             String error = "Проверьте правильность данных";
             model.addAttribute("error", error);

@@ -78,9 +78,9 @@ public class ResolveForm {
             resolveTime = dateFormat.format(Calendar.getInstance().getTime());
         }
         model.addAttribute("resolveTime", "Расчет: " + resolveTime);
-        model.addAttribute("corr", "Коэффициент корреляции: " + corrDOWN + " - " + corrUP);
-        model.addAttribute("window", "Спектральное окно: " + Math.round(windowLeft) + " - " + Math.round(windowRight));
-        model.addAttribute("calcPeriod", "Рассчетный период: " + periodString);
+        model.addAttribute("corr", "Коэф. корреляции: " + corrDOWN + " - " + corrUP);
+        model.addAttribute("window", "Спектр. окно: " + Math.round(windowLeft) + " - " + Math.round(windowRight));
+        model.addAttribute("calcPeriod", "Рассч. период: " + periodString);
         if(ResolveForm.isForPhases) model.addAttribute("isForPhase", "Рассчет по фазе");
         else model.addAttribute("isForPhase", "Рассчет по амплитуде");
         return model;
