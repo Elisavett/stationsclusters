@@ -15,7 +15,6 @@ public class DataAnalysis{
     FrequencyAnalysis frequencyAnalysis;
     private static int dateDelta = Calendar.MONTH;
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private static final Calendar date = Calendar.getInstance();
     public DataAnalysis(double[] temp) {
         this();
         this.frequencyAnalysis = new FrequencyAnalysis(temp);
@@ -49,6 +48,7 @@ public class DataAnalysis{
 
 
     public static LinkedHashMap<String, Double> getStationTemp(int station){
+        Calendar date = Calendar.getInstance();
         double[] temp = ResolveForm.TempData[station].clone();
         LinkedHashMap<String, Double> temperatures = new LinkedHashMap<>();
         date.setTime(ResolveForm.startDate);
@@ -66,6 +66,7 @@ public class DataAnalysis{
         return averageT / temp.length;
     }
     public static LinkedHashMap<String, Double[]> getTypicalTempsChart(List<Integer> group){
+        Calendar date = Calendar.getInstance();
         LinkedHashMap<String, Double[]> temps = new LinkedHashMap<>();
         date.setTime(ResolveForm.startDate);
         Double[][] typicals = getTypicalTemps(group);
@@ -108,6 +109,7 @@ public class DataAnalysis{
         return tempMinMaxSko;
     }
     public static LinkedHashMap<String, Double> getTypicalCountableCharacterChart (int groupNum){
+        Calendar date = Calendar.getInstance();
         List<Double> character = ResolveForm.clusters.toArray(new Group[0])[groupNum].getPhases().getPhase();
         LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
         date.setTime(ResolveForm.startDate);
@@ -132,6 +134,7 @@ public class DataAnalysis{
         return min;
     }
     public static LinkedHashMap<String, Double> getClusterModel (Phase countableCharacter, List<Integer> group, double offset){
+        Calendar date = Calendar.getInstance();
         LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
         List<Double> phase;
         List<Double> amplitude;
@@ -167,6 +170,7 @@ public class DataAnalysis{
         return chartData;
     }
     public static LinkedHashMap<String, Double> getTypicalSpecifiedsForChart(List<Integer> group, List<Phase> specifiedCharacters){
+        Calendar date = Calendar.getInstance();
         LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
         date.setTime(ResolveForm.startDate);
         double[] amplitude = getTypicalForSpecified(group, specifiedCharacters);
