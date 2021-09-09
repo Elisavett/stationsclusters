@@ -55,8 +55,8 @@ public class MapAllocationController {
 
         ResolveForm.fileParams = new String[]{"Высота над уровнем моря", "true", "Название", "true"};
         try {
-            ArrayList<String> json = calculateRegion(calendarStart.getTime(), calendarEnd.getTime(), corr,
-                    "TomskTemps.txt", "TomskCoords.txt", true);
+            ArrayList<String> json = calculateRegion(calendarStart.getTime(), calendarEnd.getTime(), "0.95",
+                    "TomskTemps.txt", "TomskCoords.txt", true, false);
             model.addAttribute("json", json);
             ResolveForm.calculateMapModel(model);
             model.addAttribute("fromRegions", true);
@@ -72,7 +72,7 @@ public class MapAllocationController {
 
     public ArrayList<String> calculateRegion(Date periodStart, Date periodEnd, String corr,
                                               String tempFileName, String cordFileName,
-                                             boolean isStationOnY) throws Exception {
+                                             boolean isStationOnY, boolean isFromPrev) throws Exception {
         ResolveForm.TempString = SplitInputFile.ReadServerFile(tempFileName, 't');
         ResolveForm.TempData = new double[ResolveForm.TempString.length][ResolveForm.TempString[0].length];
         for(int i = 0; i < ResolveForm.TempString.length; i++){
@@ -115,7 +115,7 @@ public class MapAllocationController {
 
         Start start = new Start();
 
-        return start.run(true);
+        return start.run(isFromPrev);
 
     }
 
@@ -127,7 +127,7 @@ public class MapAllocationController {
         Calendar calendarEnd = new GregorianCalendar(2018, Calendar.DECEMBER , 31);
         try {
             ArrayList<String> json = calculateRegion(calendarStart.getTime(), calendarEnd.getTime(), "0.93",
-                    "BPT-Temp.txt", "BPT-Coord.txt", false);
+                    "BPT-Temp.txt", "BPT-Coord.txt", false, true);
             model.addAttribute("json", json);
             ResolveForm.calculateMapModel(model);
             model.addAttribute("fromRegions", true);

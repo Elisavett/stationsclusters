@@ -59,7 +59,7 @@
 
     $(document).ready(function() {
         google.charts.load('current', {
-            packages : [ 'corechart', 'bar', 'controls'],
+            packages : [ 'corechart', 'line', 'bar', 'controls'],
             'language': 'ru'
         });
         google.charts.setOnLoadCallback(drawTemperatureChart);
@@ -91,7 +91,7 @@
         };
 
         let chart = new google.visualization.ChartWrapper({
-            chartType: 'ColumnChart',
+            chartType: 'LineChart',
             options: options,
             containerId: 'frequencyChart'
         });
