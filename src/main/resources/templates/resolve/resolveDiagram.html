@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <div th:replace="fragments/scripts :: scripts"></div>
+    <title>Карта</title>
+    <span style="display:none;" class="anychart">
+            <link href="https://playground.anychart.com/gallery/Maps_Point_Maps_(Dot_Maps)/Airplane_Crashes_since_1970_till_2009/iframe"
+                  rel="canonical">
+            <meta content="AJAX Chart,Chart from JSON,Dot Chart,Dot Map,Geo Chart,Geo Visualization,JSON Chart,JSON Plot,Marker Chart,Point Map,Statistical Data,Tooltip"
+                  name="keywords">
+            <meta content="AnyChart - JavaScript Charts designed to be embedded and integrated" name="description">
+            <link href="https://cdn.anychart.com/releases/v8/css/anychart-ui.min.css?hcode=c11e6e3cfefb406e8ce8d99fa8368d33"
+                  rel="stylesheet" type="text/css">
+            <link href="https://cdn.anychart.com/releases/v8/fonts/css/anychart-font.min.css?hcode=c11e6e3cfefb406e8ce8d99fa8368d33"
+                  rel="stylesheet" type="text/css">
+        </span>
+    <style>
+        html, body{
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        #map{
+            position: absolute;
+            width: 100%;
+            height: 89%;
+            padding: 0;
+
+        }
+        .dropbtn {
+
+            background-color: #1b4d6e;
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+            width: 100%;
+        }
+
+        /* The container <div> - needed to position the dropdown content */
+        .dropdown1 {
+            display: inline-block;
+            position: relative;
+            float: right;
+            width: 12%;
+            margin: 1%;
+        }
+
+        /* Dropdown Content (Hidden by Default) */
+        .dropdown-content {
+            display: none;
+
+            background-color: #f1f1f1;
+            min-width: 100px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        /* Links inside the dropdown */
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        html,
+        body,
+        .container128 {
+            width: 100%;
+            height: 97%;
+            position: absolute;
+        }
+
+        /* Change color of dropdown links on hover */
+        .dropdown-content a:hover {background-color: #ddd;}
+
+        /* Show the dropdown menu on hover */
+        .dropdown1:hover .dropdown-content {display: block;}
+
+        /* Change the background color of the dropdown button when the dropdown content is shown */
+        .dropdown1:hover .dropbtn {background-color: #376b8e;}
+        .strelka{
+            margin: 0 15px;
+            padding: 0;
+            height: 30px;
+            width: 160px;
+            float: top;
+            z-index: 1000;
+            font-weight: bold;
+            line-height: 0.8;
+            color: white;
+            font-size: xx-large;
+            -moz-user-select: none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            user-select: none;
+
+        }
+        .unselectable{
+
+        }
+        .diagramElement{
+            /* Размеры */
+            display: block;
+            width: 190px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .diagramInside{
+            width: 160px; height: 55px;
+            margin: 0 15px;
+            background: #f3f3df; /* Цвет фона */
+            border-radius: 10px; /* Радиус скругления */
+            display: block;
+            float: top;
+            -moz-user-select: none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .diagramElement a{
+            text-align: center;
+            font-size: larger;
+            font-weight: bold;
+            text-decoration: black;
+            margin: 0;
+        }
+        .diagramInside:hover {
+            outline: 2px solid #000; /* Чёрная рамка */
+        }
+    </style>
+
+</head>
+<header>
+    <div th:replace="fragments/navbar :: navbar (${'resolve'})"></div>
+</header>
+<link rel="stylesheet" th:href="@{/back.css}">
+<div style="position: absolute; z-index: 999; width: 100%; height: 100%; background: rgba(205, 214, 219, 0.3);">
+    <div id="myPaletteDiv" style="height: 100px; width: 100%; padding-top: 20px; margin-right: 2px; background-color: #282c34;">
+        <div id="analyseData" data-link="/countPhase" class="diagramElement unselectable" style="float: left" ondragstart="falseFunc()">
+            <div id="strelkaanalyseData" class="strelka unselectable" hidden>&#129047;</div>
+            <div class="diagramInside unselectable">
+                <a>Анализ данных</a>
+            </div>
+        </div>
+        <div id="amplPhaseCalc" data-loader="loaderPhase" data-link="/countPhase" class="diagramElement unselectable" style="float: left" ondragstart="falseFunc()">
+            <div id="strelkaamplPhaseCalc" class="strelka unselectable" hidden>&#129047;</div>
+            <div class="diagramInside unselectable">
+                <a>Рассчет фазы</a><br>
+                <div id="loaderPhase" class="loader" style="width: 20px; height: 20px; margin-left: 70px; border-width: 4px; border-top-width: 4px" hidden="true" ></div>
+                <span></span>
+            </div>
+        </div>
+        <div id="clusters" data-loader="loaderCluster" data-link="/countClusters" class="diagramElement" style="float: left" ondragstart="falseFunc()">
+            <div id="strelkaclusters" class="strelka unselectable" hidden>&#129047;</div>
+            <div class="diagramInside unselectable">
+                <a>Кластеризация</a><br>
+                <div id="loaderCluster" class="loader" style="width: 20px; height: 20px; margin-left: 70px; border-width: 4px; border-top-width: 4px" hidden="true" ></div>
+                <span></span>
+            </div>
+        </div>
+        <div id="classes" data-loader="loaderClasses" data-link="/countClasses" class="diagramElement" style="float: left" ondragstart="falseFunc()">
+            <div id="strelkaclasses" class="strelka unselectable" hidden>&#129047;</div>
+            <div class="diagramInside unselectable">
+                <a>Класcификация</a><br>
+                <div id="loaderClasses" class="loader" style="width: 20px; height: 20px; margin-left: 70px; border-width: 4px; border-top-width: 4px" hidden="true" ></div>
+                <span></span>
+            </div>
+        </div>
+        <div id="showOnMap" data-loader="loadershowOnMap" data-link="/getJsonToMap" class="diagramElement" style="float: left" ondragstart="falseFunc()">
+            <div id="strelkashowOnMap" class="strelka unselectable" hidden>&#129047;</div>
+            <div class="diagramInside unselectable">
+                <a>На карту</a>
+                <div id="loadershowOnMap" class="loader" style="width: 20px; height: 20px; margin-left: 70px; border-width: 4px; border-top-width: 4px" hidden="true" ></div>
+                <span></span>
+            </div>
+        </div>
+        <div id="getData" data-loader="loaderData" data-link="/countPhase" class="diagramElement" style="float: right" ondragstart="falseFunc()">
+            <div id="strelkagetData" class="strelka unselectable" hidden>&#129047;</div>
+            <div class="diagramInside unselectable">
+                <a>Получить данные</a>
+                <div id="loaderData" class="loader" style="width: 20px; height: 20px; margin-left: 70px; border-width: 4px; border-top-width: 4px" hidden="true" ></div>
+            </div>
+        </div>
+    </div>
+    <span id="mapBlock" hidden>
+        <span for="json"></span><input type="text" id="json" hidden="true">
+        <!--<div th:replace="fragments/navbar :: navbar (${'map'})"></div>-->
+        <input type="text" id="groupNum" hidden="true">
+        <!-- Anychart map -->
+
+        <span style="display:none;" class="anychart">
+            <script type="text/javascript" th:src="@{https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js}"></script>
+            <script type="text/javascript" th:src="@{https://oss.maxcdn.com/respond/1.4.2/respond.min.js}"></script>
+            <script type="text/javascript"
+                    th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-base.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
+            <script type="text/javascript" th:src="@{/world.js}"></script>
+            <script type="text/javascript" th:src="@{/proj4.js}"></script>
+
+            <script type="text/javascript"
+                    th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
+            <script type="text/javascript"
+                    th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-exports.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
+            <script type="text/javascript"
+                    th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-map.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
+            <script type="text/javascript"
+                    th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-data-adapter.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
+
+            <div class="container128" id="container">
+            </div>
+        </span>
+
+        <!-- ///Anychart map -->
+
+        <!-- Yandex map -->
+
+        <span class="yandex">
+            <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=00edbb4c-85c6-4375-8249-f0baae6a12c2" type="text/javascript"></script>
+
+            <div id="map"></div>
+        </span>
+
+<div class="dropdown1">
+    <button class="dropbtn">Вид карты</button>
+    <div class="dropdown-content">
+        <a href="#" onclick="setMap('.anychart');setType('yandex#map')">Обычная</a>
+        <a href="#" onclick="setMap('.yandex');setType('yandex#map')">Подробная</a>
+        <a href="#" onclick="setMap('.yandex');setType('yandex#satellite')">Со спутника</a>
+        <a href="#" onclick="setMap('.yandex');setType('yandex#hybrid')">Комбинированная</a>
+    </div>
+</div>
+<span class="yandex">
+    <div class="dropdown1">
+        <button class="dropbtn">Отображение групп</button>
+        <div class="dropdown-content">
+            <a href="#" onclick="setObjectType('rect')">Прямоугольное</a>
+            <a href="#" onclick="setObjectType('circ')">Точечное</a>
+            <a href="#" onclick="setObjectType('both')">Комбинированое</a>
+        </div>
+    </div>
+    <div id="exampleItem" class="slider__item" >
+                    <div class="div1" style="background: orange;"></div>
+                     <div class="div2"></div>
+    </div>
+    <div class="input-group centers">
+      <input id="stationToOutline" type="text" class="form-control" placeholder="Найти станцию по номеру" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+           <button onclick="outlineStation($('#stationToOutline').val())" class="btn btn-outline-secondary" type="button"><img height="15px" width="15px" th:src="@{/img/search.svg}"></button>
+      </div>
+    </div>
+
+    <div class="centers div2">
+            <input type="checkbox" name="isCentersShow" checked="checked" id="centersShow">&nbsp;&nbsp;Отображать центры
+    </div>
+    <div class="slider">
+
+        <h4 class="div2" style="text-align: center">Группы</h4>
+        <div class="slider__wrapper">
+        </div>
+
+        <a class="slider__control slider__control_left" href="#" role="button"></a>
+        <a class="slider__control slider__control_right" href="#" role="button"></a>
+
+    </div>
+
+</span>
+
+    </span>
+
+        <div id="myDiagramDiv" class="droppable" style="position: absolute; float: left;  display: block; height: 540px; float: left; padding-top: 20px; margin-top: 80px; width: 200px; background-color: #282c34;">
+            <div id="addData" class="diagramElement">
+                <div class="diagramInside">
+                    <a>Данные</a>
+                </div>
+            </div>
+        </div>
+        <span id="dataForm">
+            <div id="forma" style="z-index: auto; position: absolute; float: left; border-radius: 20px; display: block; height: 540px; padding-top: 20px; margin: 80px 0 0 220px; float: left; width: 85%; background-color: #f3f3df">
+            <div id="formParams">
+                <form method="post" enctype="multipart/form-data" id="form1" >
+                    <div class="p-3 border border-dark rounded">
+
+                        <div class="form-group row">
+                            <label ></label>
+                            <label th:text="'Файл температур:&nbsp;&nbsp;&nbsp;' + (${tempers}?${tempers}:'')" class="col-sm-3 col-form-label">
+                            </label>
+                            <div class="col-sm-4">
+
+                                <input  type="file" class="custom-file-input" name="fileTemp" accept="text/plain"
+                                        onchange="checkParams();" autocomplete="off" id="fileTemp"  th:attr="value=${tempers}">
+                                <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл..')" class="custom-file-label" data-browse="Загрузить" for="fileTemp"></label>
+                            </div>
+                            <div class="col-sm-5 row">
+                                <label class="col-sm-4 pl-3">Отсчеты:</label>
+                                <div class="col-sm-4">
+                                    <input class="form-check-input" type="radio" name="tempType" id="tempsLine" value="true">
+                                    <label class="form-check-label">В строку</label>
+                                    <img data-toggle="tooltip" title="<img src='/img/TempsStrEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-check-input" checked type="radio" name="tempType" id="tempsCol" value="false">
+                                    <label class="form-check-label">В столбец</label>
+                                    <img data-toggle="tooltip" title="<img src='/img/TempsColEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="temps" th:attr="value=${tempers}">
+                        <input type="hidden" id="coords" th:attr="value=${coords}">
+                        <input type="hidden" id="dataType" th:attr="value=${dataType}">
+                        <input type="hidden" id="tempType" th:attr="value=${tempType}">
+                        <input type="hidden" id="cordType" th:attr="value=${cordType}">
+                        <input type="hidden" id="isForPhase" th:attr="value=${isForPhase}">
+                        <input type="hidden" id="isModules" name="isModules" th:attr="value=${isModules}">
+                        <input type="hidden" id="isStationsOnY" th:attr="value=${isStationsOnY}">
+                        <div class="form-group row">
+
+                            <label th:text="'Файл координат:&nbsp;&nbsp;&nbsp;' + (${coords}?${coords}:'')" class="col-sm-3 col-form-label">
+                            </label>
+
+                            <div class="col-sm-4">
+                                <input  type="file" class="custom-file-input" name="fileCoordinates" accept="text/plain"
+                                        onchange="checkParams()" autocomplete="off" id="fileCoordinates" th:attr="value=${coords}">
+                                <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл..')" class="custom-file-label" data-browse="Загрузить" for="fileCoordinates"></label>
+                            </div>
+                            <div class="col-sm-5 row">
+                                <label class="col-sm-4 pl-3">Координаты:</label>
+                                <div class="col-sm-4">
+                                    <input class="form-check-input" type="radio" name="cordsType" id="cordsLine" value="false">
+                                    <label class="form-check-label">В строку</label>
+                                    <img data-toggle="tooltip" title="<img src='/img/CordsStrEx.jpg' width='185' height='180'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-check-input" checked type="radio" name="cordsType" id="cordsCol" value="true">
+                                    <label class="form-check-label">В столбец</label>
+                                    <img data-toggle="tooltip" title="<img src='/img/CordsColEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div id="message" hidden class="row p-3">
+                            <span style="color: gray" id="TextMessage"></span>
+                        </div>
+                        <div class="row">
+                            <button onclick="setAdditionalParams()" type="button" class="btn btn-link">Дополнительные параметры в файле координат&nbsp;&nbsp;<img data-toggle="tooltip" title="По умолчанию 3 обязательных парамтра: номер, широта, долгота. Возможно указать дополнительные парамерты в порядке следования в файле (Название станции, н.у.м и др.)" src="/img/question-circle-regular.svg" width='12' height='12'>
+                            </button>
+                        </div>
+                        <div id="parentAdditional" hidden="true" >
+                            <div id="fileParameters"></div>
+                            <div class="optional row p-1 mt-0" onclick="setAdditionalParams()">
+                                <img src="/img/add.png" width='25' height='25' style="margin-left: auto;margin-right: auto;">
+
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="periodStart" class="col-sm-4 col-form-label">Данные получены за период с:
+                            </label>
+                            <div class="col-sm-3">
+                                <input class="form-control" type="date" name="periodStart" onkeyup="checkParams()" autocomplete="off"
+                                       th:attr="value=${periodStart}" id="periodStart" >
+                            </div>
+                            <label class="col-sm-1 col-form-label">
+                            </label>
+                            <label for="periodEnd" class="col-sm-1 col-form-label">по:
+                            </label>
+                            <div class="col-sm-3">
+                                <input class="form-control" type="date" name="periodEnd" onkeyup="checkParams()" autocomplete="off"
+                                       th:attr="value=${periodEnd}" id="periodEnd" >
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-form-label">Периодичность данных:
+                            </label>
+                            <div class="col-sm-12">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" checked type="radio" name="dataType" id="avrgMonth" value="12">
+                                    <label class="form-check-label" for="avrgMonth">Среднемесячные</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="dataType" id="avrgDay" value="365">
+                                    <label class="form-check-label" for="avrgDay">Среднесуточные</label>
+                                </div>
+                                <input type="hidden" name="fileAdditionalParameters" id="fileAdditionalParameters">
+                                <div style="float: right; margin-right: 10%">
+                                    <input id="submit" style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Проверить" disabled/>
+                                </div>
+                                <div style="float: right; margin-right: 10%">
+                                    <input id="submit2" style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Расчет без проверки" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </span>
+    <script>
+                window.onload = function (){
+                    $('img[data-toggle="tooltip"]').tooltip({
+                        html: true
+                    });
+
+                    var cordType = $('#cordType').val();
+                    if(cordType!=null) $('input[name="cordsType"][value='+cordType+']').prop('checked', true);
+                    var tempType = $('#tempType').val();
+                    if(tempType!=null) $('input[name="tempType"][value='+tempType+']').prop('checked', true);
+                    var isForPhase = $('#isForPhase').val();
+                    if(isForPhase!=null) $('input[name="isForPhase"][value='+isForPhase+']').prop('checked', true);
+
+                    var type = $('#dataType').val();
+                    if(type!=null) $('input[name="dataType"][value='+type+']').prop('checked', true);
+
+                    checkParams();
+                }
+
+                //стиль закрузки файла
+                $(".custom-file-input").on("change", function () {
+                    var fileName = $(this).val().split("\\").pop();
+                    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+                });
+
+                //проверка
+                function checkParams() {
+                    var temps = $('#temps').val();
+                    var coords = $('#coords').val();
+
+                    if ((fileTemp.value != 0 || temps !== "") && (fileCoordinates.value != 0 || coords !== "")) {
+                        $('#submit').removeAttr('disabled');
+                        $('#submit2').removeAttr('disabled');
+                    } else {
+                        $('#submit').attr('disabled', 'disabled');
+                        $('#submit2').attr('disabled', 'disabled');
+                    }
+
+                }
+                function getParams(){
+                    var params = "";
+                    $('.parameter').each(function (index, element) {
+                        if(index % 2 !== 0){
+                            params += $(element).prop('checked') + "delimiter";
+                        }
+                        else {
+                            params += $(element).val() + "delimiter";
+                        }
+                    });
+                    $("#fileAdditionalParameters").val(params);
+                }
+                function submitForm(f) {
+                    //отмена действия по умолчанию для кнопки submit
+                    var $form = $(f);
+                    let returnValue = false;
+                    $.ajax({
+                        type: "POST",
+                        async: false,
+                        processData: false,
+                        contentType: false,
+                        url: "/recieveParams",
+                        cache: false,
+                        data: new FormData($form[0]),
+                        success: function (response) {
+                            $("#dataForm").html('');
+                            $.ajax({
+                                url: "/getJsonStations",
+                                success: function (json) {
+                                    returnValue = true;
+                                    $('#mapBlock').removeAttr("hidden");
+                                    $("#json").attr("value", "[" + json + "]");
+                                    $("#groupNum").attr("value", 0);
+                                    loadScript();
+                                }
+                            });
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert(XMLHttpRequest.responseText);
+                        }
+                    });
+                    return returnValue;
+                }
+                function ajaxResolve(element){
+                    //removeDragListeners();
+                    let loaderId = element.dataset.loader;
+                    let returnValue = false;
+                    $('#' + loaderId).attr("hidden", false);
+                    $.ajax({
+                        url: element.dataset.link + "?isVisual=true",
+                        success: function (data) {
+                            //Скрываем значок загрузки
+                            $('#' + loaderId).attr("hidden", true);
+                            if(loaderId === "loadershowOnMap"){
+                                $("#json").attr("value", "[" + data + "]");
+                                $("#map").html('');
+                                loadScript();
+                            }
+                            else{
+                                if(!data)
+                                    data = "V";
+                                element.lastElementChild.lastElementChild.textContent = data;
+                                //element.lastElementChild.append(data);
+                            }
+                            //addDragListeners();
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert(XMLHttpRequest.responseText);
+                            //addDragListeners();
+                        }
+                    });
+                    return returnValue;
+                }
+            </script>
+</div>
+
+<div class="container">
+    <div class="modal fade" id="modal-1" tabindex="-1" role="dialog" aria-labelledby="modalLabel1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel1">Измените маркер</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        Номер группы, маркер которой необходимо поменять: <br>
+                        <input type="number" id="number" name="number" min="1">
+                    </div>
+                    <br>
+                    <div>
+                        Задайте имя:<br>
+                        <input type="text" id="name" name="name" maxlength="5">
+                    </div>
+                    <br>
+                    <label>
+                        Задайте цвет:
+                        <input type="color" id="color" name="color">
+                    </label><br><br>
+                    <input type="button" onclick="update()" data-dismiss="modal" value="Изменить">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    let map;
+    let circlesToShow = [];
+    let rectangleClusters = [];
+    let circleClusters = [];
+    let stationNums = [];
+    let centerClusters = [];
+    let clusterCordsSumm = [];
+    let currentClusterNums = new Set();
+    let mode = 'rect';
+    let isChecked = true;
+
+
+    function loadScript(){
+        let script = document.createElement('script');
+        script.src = "/map1.js";
+        document.body.append(script);
+    }
+    let form = document.getElementById("form1");
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        submitForm(form);
+        addDragListeners();
+    });
+
+    let element3 = document.getElementById("amplPhaseCalc");
+    let element4 = document.getElementById("clusters");
+    let element5 = document.getElementById("classes");
+    let element6 = document.getElementById("showOnMap");
+
+    function addDragListeners(){
+        element3.addEventListener('mousedown', e => dragElement(e, element3, "left"));
+        element4.addEventListener('mousedown', e => dragElement(e, element4, "left"));
+        element5.addEventListener('mousedown', e => dragElement(e, element5, "left"));
+        element6.addEventListener('mousedown', e => dragElement(e, element6, "left"));
+    }
+    function removeDragListeners(){
+        element3.removeEventListener('mousedown', e => dragElement(e, element3, "left"));
+        element4.removeEventListener('mousedown', e => dragElement(e, element4, "left"));
+        element5.removeEventListener('mousedown', e => dragElement(e, element5, "left"));
+        element6.removeEventListener('mousedown', e => dragElement(e, element6, "left"));
+    }
+
+    let currentDroppable = null;
+    let diagramFlour = document.getElementById("myDiagramDiv");
+    let paletteFlour = document.getElementById("myPaletteDiv");
+    let isOnDroppable = false;
+
+    function falseFunc() {
+        return false;
+    }
+    $(function () {
+        // функция с параметрами idModal1 (1 модальное окно)
+        var twoModal = function (idModal1) {
+            $(idModal1).modal('hide');
+        };
+        twoModal('#modal-1');
+    });
+    function setMap(map){
+        $(map).css('display', 'inline');
+        let hiddenmap = map==='.yandex'?'.anychart':'.yandex';
+        $(hiddenmap).css('display', 'none');
+    }
+
+
+    function dragElement(e, ball, float) {
+        let shiftX = e.clientX - ball.getBoundingClientRect().left;
+        let shiftY = e.clientY - ball.getBoundingClientRect().top;
+
+        moveAt(e.pageX - shiftX, e.pageY - shiftY);
+        // переносит мяч на координаты (pageX, pageY),
+        // дополнительно учитывая изначальный сдвиг относительно указателя мыши
+        function moveAt(pageX, pageY) {
+            ball.style.left = pageX - 10 + 'px';
+            ball.style.top = pageY + 'px';
+        }
+
+        function onMouseMove(event) {
+            ball.style.position = 'absolute';
+            ball.style.zIndex = 1000;
+            document.body.append(ball);
+
+            ball.hidden = true;
+            let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
+            ball.hidden = false;
+
+            //if (!elemBelow) return;
+
+            let droppableBelow = elemBelow?.closest('.droppable');
+            if (currentDroppable !== droppableBelow) {
+                if (currentDroppable) { // null если мы были не над droppable до этого события
+                    // (например, над пустым пространством)
+                    isOnDroppable = false;
+                }
+                currentDroppable = droppableBelow;
+                if (currentDroppable) { // null если мы не над droppable сейчас, во время этого события
+                    // (например, только что покинули droppable)
+                    isOnDroppable = true;
+                }
+            }
+            if(isOnDroppable) {
+                let strelka = ball.firstElementChild;
+                strelka.setAttribute("hidden", "hidden");
+            }
+            moveAt(event.pageX - shiftX, event.pageY);
+
+        }
+        document.addEventListener('mousemove', onMouseMove);
+
+        // отпустить мяч, удалить ненужные обработчики
+        ball.onmouseup = function() {
+            if(isOnDroppable) enterDroppable();
+            else leaveDroppable();
+            document.removeEventListener('mousemove', onMouseMove);
+            ball.onmouseup = null;
+            ball.addEventListener('click', e => {
+                console.log(isOnDroppable);
+            });
+        };
+        function enterDroppable() {
+            ball.style.position = 'static';
+            ball.style.float = 'top';
+            diagramFlour.append(ball);
+            ball.contextmenu = 'menu';
+            let strelka = ball.firstElementChild;
+            strelka.removeAttribute("hidden");
+            resolve(ball);
+        }
+        function leaveDroppable() {
+            ball.style.position = 'static';
+            ball.style.float = float;
+            paletteFlour.append(ball);
+            ball.contextmenu = '';
+            ball.lastElementChild.lastElementChild.textContent = '';
+        }
+        function resolve(element){
+            ajaxResolve(element);
+
+        }
+    }
+</script>
+
+</html>

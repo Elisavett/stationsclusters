@@ -66,19 +66,26 @@ public class CalcModulesController {
     }
     @GetMapping("/countPhase")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<String> countPhase(@RequestParam(value = "isDelta", required = false) String isDelta,
+    public ResponseEntity<String> countPhase(@RequestParam(value = "isVisual", required = false) String isVisual,
+                                             @RequestParam(value = "isDelta", required = false) String isDelta,
                                              @RequestParam(value = "isForPhase", required = false) String isForPhase,
                                              @RequestParam(value = "windowCounted", required = false) String windowCounted,
                                              @RequestParam(value = "isWindowManually", required = false) String isWindowManually,
                                              @RequestParam(value = "windowLeft", required = false) String windowLeft,
                                              @RequestParam(value = "windowRight", required = false) String  windowRight,
                                              @RequestParam(value = "toZero", required = false) String  toZero) throws InterruptedException, ExecutionException {
-        //Рассчет по фазе или по амплитуде
-        ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
-        //Выполнение дотяжки
-        ResolveForm.phaseToZero = Boolean.parseBoolean(toZero);
-        //Отмечаем, что фаза считалась
-        ResolveForm.isPhasesCounted = false;
+        //Если расчет в визуальном виде - нет параметров
+        if(Boolean.parseBoolean(isVisual)){
+            isWindowManually = "0";
+        }
+        else {
+            //Рассчет по фазе или по амплитуде
+            ResolveForm.isForPhases = Boolean.parseBoolean(isForPhase);
+            //Выполнение дотяжки
+            ResolveForm.phaseToZero = Boolean.parseBoolean(toZero);
+            //Отмечаем, что фаза считалась
+            ResolveForm.isPhasesCounted = false;
+        }
         //Если окно уже было подсчитано (через вывод графика)
         if(windowCounted != null){
             //Устанавливаем граныцы окна
@@ -122,32 +129,46 @@ public class CalcModulesController {
     }
     @GetMapping("/countClusters")
     @ResponseStatus(value = HttpStatus.OK)
-    public void countClusters(@RequestParam(value = "corrUP", required = false) String corrUP,
+    public void countClusters(@RequestParam(value = "isVisual", required = false) String isVisual,
+                              @RequestParam(value = "corrUP", required = false) String corrUP,
                               @RequestParam(value = "corrDOWN", required = false) String corrDOWN,
                               @RequestParam(value = "isAccurate", required = false) String isAccurate,
                               @RequestParam(value = "sigma", required = false) String sigma,
-                              String isFromPrev
+                              @RequestParam(value = "isFromPrev", required = false) String isFromPrev
     ) throws InterruptedException, ExecutionException {
-        ResolveForm.isAccurate = Boolean.parseBoolean(isAccurate);
-        ResolveForm.corrUP = Double.parseDouble(corrUP);
-        ResolveForm.corrDOWN = Double.parseDouble(corrDOWN);
-        ResolveForm.sigma = sigma;
+        if(!Boolean.parseBoolean(isVisual)) {
+            ResolveForm.isAccurate = Boolean.parseBoolean(isAccurate);
+            ResolveForm.corrUP = Double.parseDouble(corrUP);
+            ResolveForm.corrDOWN = Double.parseDouble(corrDOWN);
+            ResolveForm.sigma = sigma;
+        }
+        else
+        {
+            isFromPrev = "true";
+        }
         ModulesCalc.ClustersCalc(Boolean.parseBoolean(isFromPrev));
     }
     @GetMapping("/countClasses")
     @ResponseStatus(value = HttpStatus.OK)
-    public void countClasses(@RequestParam String classCoefDOWN, @RequestParam String classCoefUP) throws InterruptedException, ExecutionException{
-        ResolveForm.classCoefDOWN = Double.parseDouble(classCoefDOWN);
-        ResolveForm.classCoefUP = Double.parseDouble(classCoefUP);
+    public void countClasses(@RequestParam(value = "isVisual", required = false) String isVisual,
+                             @RequestParam(value = "classCoefDOWN", required = false) String classCoefDOWN,
+                             @RequestParam(value = "classCoefUP", required = false) String classCoefUP) throws InterruptedException, ExecutionException{
+        if(!Boolean.parseBoolean(isVisual)) {
+            ResolveForm.classCoefDOWN = Double.parseDouble(classCoefDOWN);
+            ResolveForm.classCoefUP = Double.parseDouble(classCoefUP);
+        }
         ModulesCalc.ClassesCalc();
     }
     @GetMapping("/toMap")
     @ResponseStatus(value = HttpStatus.OK)
-    public void toMap(@RequestParam(value = "minGroupSize", required = false) String minGroupSize,
+    public void toMap(@RequestParam(value = "isVisual", required = false) String isVisual,
+                      @RequestParam(value = "minGroupSize", required = false) String minGroupSize,
                       @RequestParam(value = "groupCross", required = false) String groupCross) {
         ResolveForm.resolveTime = "";
-        ResolveForm.minGroupSize = Integer.parseInt(minGroupSize);
-        ResolveForm.groupCross = groupCross.equals("true");
+        if(!Boolean.parseBoolean(isVisual)) {
+            ResolveForm.minGroupSize = Integer.parseInt(minGroupSize);
+            ResolveForm.groupCross = groupCross.equals("true");
+        }
         ResolveForm.json = new ArrayList<>();
         ResolveForm.json.addAll(ModulesCalc.JsonCalc());
     }

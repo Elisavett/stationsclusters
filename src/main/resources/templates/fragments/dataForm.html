@@ -1,0 +1,152 @@
+<form action="/check" style="margin: 20px; padding: 0" method="post" enctype="multipart/form-data" id="form1" xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="p-3 border border-dark rounded">
+        <div class="form-group row">
+            <label ></label>
+            <label th:text="'Файл температур:&nbsp;&nbsp;&nbsp;' + (${tempers}?${tempers}:'')" class="col-sm-3 col-form-label">
+            </label>
+            <div class="col-sm-4">
+                <input  type="file" class="custom-file-input" name="fileTemp" accept="text/plain"
+                        onchange="checkParams();" autocomplete="off" id="fileTemp"  th:attr="value=${tempers}">
+                <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл..')" class="custom-file-label" data-browse="Загрузить" for="fileTemp"></label>
+            </div>
+            <div class="col-sm-5 row">
+                <label class="col-sm-4 pl-3">Отсчеты:</label>
+                <div class="col-sm-4">
+                    <input class="form-check-input" type="radio" name="tempType" id="tempsLine" value="true">
+                    <label class="form-check-label">В строку</label>
+                    <img data-toggle="tooltip" title="<img src='/img/TempsStrEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+                </div>
+                <div class="col-sm-4">
+                    <input class="form-check-input" checked type="radio" name="tempType" id="tempsCol" value="false">
+                    <label class="form-check-label">В столбец</label>
+                    <img data-toggle="tooltip" title="<img src='/img/TempsColEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="temps" th:attr="value=${tempers}">
+        <input type="hidden" id="coords" th:attr="value=${coords}">
+        <input type="hidden" id="dataType" th:attr="value=${dataType}">
+        <input type="hidden" id="tempType" th:attr="value=${tempType}">
+        <input type="hidden" id="cordType" th:attr="value=${cordType}">
+        <input type="hidden" id="isForPhase" th:attr="value=${isForPhase}">
+        <input type="hidden" id="isModules" name="isModules" th:attr="value=${isModules}">
+        <input type="hidden" id="isStationsOnY" th:attr="value=${isStationsOnY}">
+        <div class="form-group row">
+
+            <label th:text="'Файл координат:&nbsp;&nbsp;&nbsp;' + (${coords}?${coords}:'')" class="col-sm-3 col-form-label">
+            </label>
+
+            <div class="col-sm-4">
+                <input  type="file" class="custom-file-input" name="fileCoordinates" accept="text/plain"
+                        onchange="checkParams()" autocomplete="off" id="fileCoordinates" th:attr="value=${coords}">
+                <label th:text="(${tempers}?'Выбрать другой файл':'Добавить txt файл..')" class="custom-file-label" data-browse="Загрузить" for="fileCoordinates"></label>
+            </div>
+            <div class="col-sm-5 row">
+                <label class="col-sm-4 pl-3">Координаты:</label>
+                <div class="col-sm-4">
+                    <input class="form-check-input" type="radio" name="cordsType" id="cordsLine" value="false">
+                    <label class="form-check-label">В строку</label>
+                    <img data-toggle="tooltip" title="<img src='/img/CordsStrEx.jpg' width='185' height='180'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+
+                </div>
+                <div class="col-sm-4">
+                    <input class="form-check-input" checked type="radio" name="cordsType" id="cordsCol" value="true">
+                    <label class="form-check-label">В столбец</label>
+                    <img data-toggle="tooltip" title="<img src='/img/CordsColEx.jpg' width='185' height='175'/>" src="/img/question-circle-regular.svg" width='12' height='12'>
+                </div>
+            </div>
+        </div>
+        <div id="message" hidden class="row p-3">
+            <span style="color: gray" id="TextMessage"></span>
+        </div>
+        <div class="row">
+            <button onclick="setAdditionalParams()" type="button" class="btn btn-link">Дополнительные параметры в файле координат&nbsp;&nbsp;<img data-toggle="tooltip" title="По умолчанию 3 обязательных парамтра: номер, широта, долгота. Возможно указать дополнительные парамерты в порядке следования в файле (Название станции, н.у.м и др.)" src="/img/question-circle-regular.svg" width='12' height='12'>
+            </button>
+        </div>
+        <div id="parentAdditional" hidden="true" >
+            <div id="fileParameters"></div>
+            <div class="optional row p-1 mt-0" onclick="setAdditionalParams()">
+                <img src="/img/add.png" width='25' height='25' style="margin-left: auto;margin-right: auto;">
+
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="periodStart" class="col-sm-4 col-form-label">Данные получены за период с:
+            </label>
+            <div class="col-sm-3">
+                <input class="form-control" type="date" name="periodStart" onkeyup="checkParams()" autocomplete="off"
+                       th:attr="value=${periodStart}" id="periodStart" >
+            </div>
+            <label class="col-sm-1 col-form-label">
+            </label>
+            <label for="periodEnd" class="col-sm-1 col-form-label">по:
+            </label>
+            <div class="col-sm-3">
+                <input class="form-control" type="date" name="periodEnd" onkeyup="checkParams()" autocomplete="off"
+                       th:attr="value=${periodEnd}" id="periodEnd" >
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-12 col-form-label">Периодичность данных:
+            </label>
+            <div class="col-sm-12">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" checked type="radio" name="dataType" id="avrgMonth" value="12">
+                    <label class="form-check-label" for="avrgMonth">Среднемесячные</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="dataType" id="avrgDay" value="365">
+                    <label class="form-check-label" for="avrgDay">Среднесуточные</label>
+                </div>
+                <input type="hidden" name="fileAdditionalParameters" id="fileAdditionalParameters">
+                <div style="float: right; margin-right: 10%">
+                    <input formaction="/сheck" onclick="checkParams();getParams();submitForm('/check')" id="submit"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Проверить" disabled/>
+                </div>
+                <div style="float: right; margin-right: 10%">
+                    <input id="submit2" onclick="submitForm('/withNoCheck')"  style="width: 120%" type="submit" class="btn btn-outline-secondary btn-block" value="Расчет без проверки" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    window.onload = function (){
+        $('img[data-toggle="tooltip"]').tooltip({
+            html: true
+        });
+
+        var cordType = $('#cordType').val();
+        if(cordType!=null) $('input[name="cordsType"][value='+cordType+']').prop('checked', true);
+        var tempType = $('#tempType').val();
+        if(tempType!=null) $('input[name="tempType"][value='+tempType+']').prop('checked', true);
+        var isForPhase = $('#isForPhase').val();
+        if(isForPhase!=null) $('input[name="isForPhase"][value='+isForPhase+']').prop('checked', true);
+
+        var type = $('#dataType').val();
+        if(type!=null) $('input[name="dataType"][value='+type+']').prop('checked', true);
+
+        checkParams();
+    }
+
+    //стиль закрузки файла
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+    //проверка
+    function checkParams() {
+        var temps = $('#temps').val();
+        var coords = $('#coords').val();
+
+        if ((fileTemp.value != 0 || temps !== "") && (fileCoordinates.value != 0 || coords !== "")) {
+            $('#submit').removeAttr('disabled');
+            $('#submit2').removeAttr('disabled');
+        } else {
+            $('#submit').attr('disabled', 'disabled');
+            $('#submit2').attr('disabled', 'disabled');
+        }
+
+    }
+</script>

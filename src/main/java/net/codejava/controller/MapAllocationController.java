@@ -10,8 +10,10 @@ import com.google.gson.GsonBuilder;
 import net.codejava.Resolve.*;
 import net.codejava.Resolve.Model.GroupAndCoordinates;
 import net.codejava.Resolve.Model.ResolveForm;
+import net.codejava.Resolve.Modules.ModulesCalc;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -315,7 +317,24 @@ public class MapAllocationController {
         model.addAttribute("isModules", "false");
         return "resolve/resolve";
     }
-
+    @PostMapping("/recieveParams")
+    public ResponseEntity<String> recieveParams(Model model, @RequestParam(value = "fileTemp") MultipartFile fileTemp,
+                              @RequestParam(value = "fileCoordinates") MultipartFile fileCoordinates,
+                              @RequestParam(value = "tempType", required = false) String tempType,
+                              @RequestParam(value = "isModules", required = false) String isModules,
+                              @RequestParam(value = "cordsType", required = false) String cordsType,
+                              @RequestParam(value = "dataType", required = false) String dataType,
+                              @RequestParam(value = "fileAdditionalParameters") String additionalParams,
+                              @RequestParam(value = "periodStart", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodStart,
+                              @RequestParam(value = "periodEnd", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodEnd) {
+        saveParamsFromCheck(Boolean.parseBoolean(tempType), Boolean.parseBoolean(cordsType),
+                fileTemp, fileCoordinates,
+                Integer.parseInt(dataType),
+                periodStart, periodEnd);
+        ResolveForm.fileParams = additionalParams.split("delimiter");
+        ResolveForm.addAllToModel(model);
+        return ResponseEntity.ok().body("success");
+    }
     @PostMapping("/check")
     public String check(Model model, @RequestParam(value = "fileTemp") MultipartFile fileTemp,
                         @RequestParam(value = "fileCoordinates") MultipartFile fileCoordinates,
