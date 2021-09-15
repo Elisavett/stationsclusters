@@ -53,8 +53,8 @@ public class DataAnalysis{
         LinkedHashMap<String, Double> temperatures = new LinkedHashMap<>();
         date.setTime(ResolveForm.startDate);
         for (double v : temp) {
-            date.add(dateDelta, 1);
             temperatures.put(dateFormat.format(date.getTime()), Math.round(100 * v) / 100.);
+            date.add(dateDelta, 1);
         }
         return temperatures;
     }
@@ -71,9 +71,8 @@ public class DataAnalysis{
         date.setTime(ResolveForm.startDate);
         Double[][] typicals = getTypicalTemps(group);
         for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
-            date.add(dateDelta, 1);
             temps.put(dateFormat.format(date.getTime()), new Double[]{typicals[0][j], typicals[1][j], typicals[2][j], typicals[3][j]});
-        }
+            date.add(dateDelta, 1);}
         return temps;
     }
     public static Double[][] getTypicalTemps(List<Integer> group){
@@ -114,8 +113,8 @@ public class DataAnalysis{
         LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
         date.setTime(ResolveForm.startDate);
         for(Double el : character){
-            date.add(dateDelta, 1);
             chartData.put(dateFormat.format(date.getTime()), Math.round(el*1000)/1000.0);
+            date.add(dateDelta, 1);
         }
         return chartData;
     }
@@ -164,8 +163,8 @@ public class DataAnalysis{
         date.setTime(ResolveForm.startDate);
 
         for(int i = 0; i < N; i++){
-            date.add(dateDelta, 1);
             chartData.put(dateFormat.format(date.getTime()), avgTypicalTemp + coefficient * amplitude.get(i) * Math.cos(phase.get(i) + (2*Math.PI*i*ResolveForm.windowCenter/N) + Math.PI + offset*Math.PI/4));
+            date.add(dateDelta, 1);
         }
         return chartData;
     }
@@ -175,8 +174,8 @@ public class DataAnalysis{
         date.setTime(ResolveForm.startDate);
         double[] amplitude = getTypicalForSpecified(group, specifiedCharacters);
         for (int j = 0; j < ResolveForm.TempData[0].length; j++) {
-            date.add(dateDelta, 1);
             chartData.put(dateFormat.format(date.getTime()), amplitude[j]);
+            date.add(dateDelta, 1);
         }
         return chartData;
     }
