@@ -110,7 +110,7 @@
             th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-base.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
     <script type="text/javascript" th:src="@{/world.js}"></script>
     <script type="text/javascript" th:src="@{/proj4.js}"></script>
-    <script type="module" th:src="@{/map1.js}" ></script>
+    <!--<script type="module" th:src="@{/map1.js}" ></script>-->
 
     <script type="text/javascript"
             th:src="@{https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js?hcode=c11e6e3cfefb406e8ce8d99fa8368d33}"></script>
@@ -216,6 +216,22 @@
 </body>
 
 <script>
+    let map;
+    let circlesToShow = [];
+    let rectangleClusters = [];
+    let circleClusters = [];
+    let stationNums = [];
+    let centerClusters = [];
+    let clusterCordsSumm = [];
+    let currentClusterNums = new Set();
+    let mode = 'rect';
+    let isChecked = true;
+    function loadScript(){
+        let script = document.createElement('script');
+        script.src = "/map1.js";
+        document.body.append(script);
+    }
+    window.onload = loadScript();
     $(function () {
         // функция с параметрами idModal1 (1 модальное окно)
         var twoModal = function (idModal1) {
