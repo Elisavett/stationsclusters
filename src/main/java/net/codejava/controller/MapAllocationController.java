@@ -123,7 +123,8 @@ public class MapAllocationController {
 
     @GetMapping("/bptStations")
     public String bptMap(Model model, @RequestParam(value = "correlation_coefficient", required = false) String corr) throws Exception {
-        ResolveForm.fileParams = new String[1];
+        ResolveForm.fileParams = new String[]{"Название", "false"};
+
 
         Calendar calendarStart = new GregorianCalendar(1980, Calendar.JANUARY , 1);
         Calendar calendarEnd = new GregorianCalendar(2018, Calendar.DECEMBER , 31);
