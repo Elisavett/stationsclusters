@@ -139,6 +139,7 @@
 </header>
 <link rel="stylesheet" th:href="@{/back.css}">
 <div style="position: absolute; z-index: 999; width: 100%; height: 100%; background: rgba(205, 214, 219, 0.3);">
+    <div id="paletteCover" style="z-index: 1001; display: none; height: 100px; position: absolute; width: 100%; padding-top: 20px; margin-right: 2px;"></div>
     <div id="myPaletteDiv" style="height: 100px; width: 100%; padding-top: 20px; margin-right: 2px; background-color: #282c34;">
         <div id="analyseData" data-link="/countPhase" class="diagramElement unselectable" style="float: left" ondragstart="falseFunc()">
             <div id="strelkaanalyseData" class="strelka unselectable" hidden>&#129047;</div>
@@ -269,15 +270,16 @@
 </span>
 
     </span>
-
-        <div id="myDiagramDiv" class="droppable" style="position: absolute; float: left;  display: block; height: 540px; float: left; padding-top: 20px; margin-top: 80px; width: 200px; background-color: #282c34;">
+    <div id="myDiagramDiv" class="droppable" style="position: absolute; display: block; height: 540px; float: left; padding-top: 20px; margin-top: 80px; width: 200px; background-color: #282c34;">
             <div id="addData" class="diagramElement">
                 <div class="diagramInside">
                     <a>Данные</a>
                 </div>
             </div>
         </div>
-        <span id="dataForm">
+    <div id="diagramCover" style="position: absolute; z-index: 1001; display: none; height: 540px; float: left; padding-top: 20px; margin-top: 80px; width: 200px;"></div>
+
+    <span id="dataForm">
             <div id="forma" style="z-index: auto; position: absolute; float: left; border-radius: 20px; display: block; height: 540px; padding-top: 20px; margin: 80px 0 0 220px; float: left; width: 85%; background-color: #f3f3df">
             <div id="formParams">
                 <form method="post" enctype="multipart/form-data" id="form1" >
@@ -482,6 +484,8 @@
                     return returnValue;
                 }
                 function ajaxResolve(element){
+                    document.getElementById("paletteCover").style.display = "inline";
+                    document.getElementById("diagramCover").style.display = "block";
                     //removeDragListeners();
                     let loaderId = element.dataset.loader;
                     let returnValue = false;
@@ -502,11 +506,17 @@
                                 element.lastElementChild.lastElementChild.textContent = data;
                                 //element.lastElementChild.append(data);
                             }
+                            document.getElementById("paletteCover").style.display = "none";
+                            document.getElementById("diagramCover").style.display = "none";
                             //addDragListeners();
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown) {
-                            alert(XMLHttpRequest.responseText);
+                            $('#' + loaderId).attr("hidden", true);
+                            element.lastElementChild.lastElementChild.textContent = "\tОшибка";
                             //addDragListeners();
+
+                            document.getElementById("paletteCover").style.display = "none";
+                            document.getElementById("diagramCover").style.display = "none";
                         }
                     });
                     return returnValue;
@@ -587,6 +597,7 @@
         element4.removeEventListener('mousedown', e => dragElement(e, element4, "left"));
         element5.removeEventListener('mousedown', e => dragElement(e, element5, "left"));
         element6.removeEventListener('mousedown', e => dragElement(e, element6, "left"));
+        document.onmousemove = null;
     }
 
     let currentDroppable = null;
@@ -661,9 +672,6 @@
             else leaveDroppable();
             document.removeEventListener('mousemove', onMouseMove);
             ball.onmouseup = null;
-            ball.addEventListener('click', e => {
-                console.log(isOnDroppable);
-            });
         };
         function enterDroppable() {
             ball.style.position = 'static';
