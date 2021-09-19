@@ -112,7 +112,7 @@
         .diagramInside{
             width: 160px; height: 55px;
             margin: 0 15px;
-            background: #f3f3df; /* Цвет фона */
+            background: #e2f7fa; /* Цвет фона */
             border-radius: 10px; /* Радиус скругления */
             display: block;
             float: top;
@@ -138,16 +138,10 @@
     <div th:replace="fragments/navbar :: navbar (${'resolve'})"></div>
 </header>
 <link rel="stylesheet" th:href="@{/back.css}">
-<div style="position: absolute; z-index: 999; width: 100%; height: 100%; background: rgba(205, 214, 219, 0.3);">
+<div style="position: absolute; z-index: 999; width: 100%; height: 100%;">
     <div id="paletteCover" style="z-index: 1001; display: none; height: 100px; position: absolute; width: 100%; padding-top: 20px; margin-right: 2px;"></div>
     <div id="myPaletteDiv" style="height: 100px; width: 100%; padding-top: 20px; margin-right: 2px; background-color: #282c34;">
-        <div id="analyseData" data-link="/countPhase" class="diagramElement unselectable" style="float: left" ondragstart="falseFunc()">
-            <div id="strelkaanalyseData" class="strelka unselectable" hidden>&#129047;</div>
-            <div class="diagramInside unselectable">
-                <a>Анализ данных</a>
-            </div>
-        </div>
-        <div id="amplPhaseCalc" data-loader="loaderPhase" data-link="/countPhase" class="diagramElement unselectable" style="float: left" ondragstart="falseFunc()">
+        <div id="amplPhaseCalc" data-loader="loaderPhase" data-link="/countPhase" data-file="/downloadPhases" class="diagramElement unselectable" style="float: left" ondragstart="falseFunc()">
             <div id="strelkaamplPhaseCalc" class="strelka unselectable" hidden>&#129047;</div>
             <div class="diagramInside unselectable">
                 <a>Рассчет фазы</a><br>
@@ -155,7 +149,7 @@
                 <span></span>
             </div>
         </div>
-        <div id="clusters" data-loader="loaderCluster" data-link="/countClusters" class="diagramElement" style="float: left" ondragstart="falseFunc()">
+        <div id="clusters" data-loader="loaderCluster" data-link="/countClusters" data-file="/downloadGroups" class="diagramElement" style="float: left" ondragstart="falseFunc()">
             <div id="strelkaclusters" class="strelka unselectable" hidden>&#129047;</div>
             <div class="diagramInside unselectable">
                 <a>Кластеризация</a><br>
@@ -163,7 +157,7 @@
                 <span></span>
             </div>
         </div>
-        <div id="classes" data-loader="loaderClasses" data-link="/countClasses" class="diagramElement" style="float: left" ondragstart="falseFunc()">
+        <div id="classes" data-loader="loaderClasses" data-link="/countClasses" data-file="/downloadGroups" class="diagramElement" style="float: left" ondragstart="falseFunc()">
             <div id="strelkaclasses" class="strelka unselectable" hidden>&#129047;</div>
             <div class="diagramInside unselectable">
                 <a>Класcификация</a><br>
@@ -171,7 +165,7 @@
                 <span></span>
             </div>
         </div>
-        <div id="showOnMap" data-loader="loadershowOnMap" data-link="/getJsonToMap" class="diagramElement" style="float: left" ondragstart="falseFunc()">
+        <div id="showOnMap" data-loader="loadershowOnMap" data-link="/getJsonToMap" data-file="/downloadReport" class="diagramElement" style="float: left" ondragstart="falseFunc()">
             <div id="strelkashowOnMap" class="strelka unselectable" hidden>&#129047;</div>
             <div class="diagramInside unselectable">
                 <a>На карту</a>
@@ -179,11 +173,12 @@
                 <span></span>
             </div>
         </div>
-        <div id="getData" data-loader="loaderData" data-link="/countPhase" class="diagramElement" style="float: right" ondragstart="falseFunc()">
+        <div id="getData" data-loader="loaderData" data-link="/getData" class="diagramElement element7" style="float: right;" ondragstart="falseFunc()">
             <div id="strelkagetData" class="strelka unselectable" hidden>&#129047;</div>
             <div class="diagramInside unselectable">
                 <a>Получить данные</a>
                 <div id="loaderData" class="loader" style="width: 20px; height: 20px; margin-left: 70px; border-width: 4px; border-top-width: 4px" hidden="true" ></div>
+                <form method="get"></form>
             </div>
         </div>
     </div>
@@ -280,7 +275,7 @@
     <div id="diagramCover" style="position: absolute; z-index: 1001; display: none; height: 540px; float: left; padding-top: 20px; margin-top: 80px; width: 200px;"></div>
 
     <span id="dataForm">
-            <div id="forma" style="z-index: auto; position: absolute; float: left; border-radius: 20px; display: block; height: 540px; padding-top: 20px; margin: 80px 0 0 220px; float: left; width: 85%; background-color: #f3f3df">
+            <div id="forma" style="z-index: auto; position: absolute; float: left; border-radius: 20px; display: block; height: 540px; padding-top: 20px; margin: 80px 0 0 220px; width: 85%; background-color: #e2f7fa;">
             <div id="formParams">
                 <form method="post" enctype="multipart/form-data" id="form1" >
                     <div class="p-3 border border-dark rounded">
@@ -585,21 +580,33 @@
     let element4 = document.getElementById("clusters");
     let element5 = document.getElementById("classes");
     let element6 = document.getElementById("showOnMap");
+    let element7 = document.getElementById("getData");
 
     function addDragListeners(){
         element3.addEventListener('mousedown', e => dragElement(e, element3, "left"));
         element4.addEventListener('mousedown', e => dragElement(e, element4, "left"));
         element5.addEventListener('mousedown', e => dragElement(e, element5, "left"));
         element6.addEventListener('mousedown', e => dragElement(e, element6, "left"));
+        element7.addEventListener('mousedown', e => getDataDrag(e, element7));
     }
-    function removeDragListeners(){
-        element3.removeEventListener('mousedown', e => dragElement(e, element3, "left"));
-        element4.removeEventListener('mousedown', e => dragElement(e, element4, "left"));
-        element5.removeEventListener('mousedown', e => dragElement(e, element5, "left"));
-        element6.removeEventListener('mousedown', e => dragElement(e, element6, "left"));
-        document.onmousemove = null;
-    }
+    function getDataDrag(event, element){
+        element.hidden = true;
+        let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
+        element.hidden = false;
+        dragElement(event, element, "right");
 
+        if (paletteFlour === elemBelow) {
+            let el = element.cloneNode(true);
+            el.addEventListener('mousedown', e => getDataDrag(e, el));
+            paletteFlour.append(el);
+            element.hidden = true;
+        }
+
+        element.addEventListener('mouseup', function () {
+
+        });
+
+    }
     let currentDroppable = null;
     let diagramFlour = document.getElementById("myDiagramDiv");
     let paletteFlour = document.getElementById("myPaletteDiv");
@@ -655,6 +662,7 @@
                 if (currentDroppable) { // null если мы не над droppable сейчас, во время этого события
                     // (например, только что покинули droppable)
                     isOnDroppable = true;
+
                 }
             }
             if(isOnDroppable) {
@@ -676,11 +684,14 @@
         function enterDroppable() {
             ball.style.position = 'static';
             ball.style.float = 'top';
+            ball.style.float = 'left';
             diagramFlour.append(ball);
             ball.contextmenu = 'menu';
             let strelka = ball.firstElementChild;
             strelka.removeAttribute("hidden");
             resolve(ball);
+
+
         }
         function leaveDroppable() {
             ball.style.position = 'static';
@@ -688,9 +699,22 @@
             paletteFlour.append(ball);
             ball.contextmenu = '';
             ball.lastElementChild.lastElementChild.textContent = '';
+            if (ball.classList.contains('element7')) {
+                ball.hidden = false;
+                if (currentDroppable !== diagramFlour) {
+                    paletteFlour.lastElementChild.remove();
+                }
+            }
         }
         function resolve(element){
-            ajaxResolve(element);
+            if (element.classList.contains('element7')) {
+                element.lastElementChild.lastElementChild.action = element.previousSibling.dataset.file;
+                element.lastElementChild.lastElementChild.submit();
+            }
+            else {
+                ajaxResolve(element);
+            }
+
 
         }
     }

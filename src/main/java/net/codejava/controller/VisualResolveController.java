@@ -55,5 +55,9 @@ public class VisualResolveController {
         ResolveForm.resolveTime = "";
         return ResponseEntity.ok().body(ModulesCalc.JsonCalc());
     }
+    @GetMapping("/getData")
+    public ResponseEntity<String> getData() {
+        return ResponseEntity.ok().body("/downloadPhases");
+    }
 
 }
