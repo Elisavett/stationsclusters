@@ -1,6 +1,8 @@
 package net.codejava.Resolve.Model;
 
+import net.codejava.Resolve.SplitInputFile;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -91,5 +93,67 @@ public class ResolveForm {
             planeObject.add(item.get());
         }
         return planeObject;
+    }
+    public static void setWindowLimits(int delta){
+        ResolveForm.windowLeft = ResolveForm.windowCenter - delta;
+        ResolveForm.windowRight = ResolveForm.windowCenter + delta;
+    }
+    public static String compareDates(Date periodStart, Date periodEnd){
+        Calendar date1 = Calendar.getInstance();
+        Calendar date2 = Calendar.getInstance();
+        date1.setTime(periodStart);
+        date2.setTime(periodEnd);
+        //Добавляем 1 день, чтобы сопоставить даты
+        date2.add(Calendar.DATE, 1);
+
+        int yearsBetween;
+        String message;
+        //Сопоставляем номер месяца и день месяца
+        if(date1.get(Calendar.DAY_OF_MONTH) == date2.get(Calendar.DAY_OF_MONTH) && date1.get(Calendar.MONTH) == date2.get(Calendar.MONTH))
+        {
+            //Находим количество лет между датами
+            yearsBetween = date2.get(Calendar.YEAR) - date1.get(Calendar.YEAR);
+
+            //Если совпадает с подсчитанным центом окна - период указан верно
+            if(yearsBetween == ResolveForm.windowCenter){
+                int period1 = ResolveForm.TempString.length;
+                int period2 = ResolveForm.coordData[0].length;
+                if(period1 == period2) {
+                    message = "Период выбран верно";
+                }
+                else
+                {
+                    message = "Количество станций в файлах не совпадает";
+                }
+            }
+            else{
+                message = "Указанный период (" + yearsBetween +") не совпадает с количеством данных в файле с температурами (" + (int)ResolveForm.windowCenter + ")";
+            }
+        }
+        else
+        {
+            message = "Неверно указан период. Данные должны быть выбраны за ровное количество лет (Пример: 01.01.1955-31.12.2017)";
+        }
+        return message;
+    }
+    public static void saveParams(boolean tempType, boolean cordsType,
+                                  MultipartFile fileTemp, MultipartFile fileCoordinates,
+                                  int dataType,
+                                  Date periodStart, Date periodEnd){
+        SplitInputFile.saveFilesInfo(tempType, cordsType, fileTemp, fileCoordinates);
+
+        ResolveForm.startDate = periodStart;
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        DateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
+
+        ResolveForm.periodStart = formatter.format(periodStart);
+        ResolveForm.periodEnd = formatter.format(periodEnd);
+
+        ResolveForm.periodString = "c " + formatter2.format(periodStart) + " по " + formatter2.format(periodEnd);
+
+        ResolveForm.dataType = dataType;
+
+        ResolveForm.windowCenter = ResolveForm.TempData[0].length / ResolveForm.dataType;
     }
 }

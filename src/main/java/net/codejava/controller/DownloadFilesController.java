@@ -11,8 +11,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.nio.charset.Charset;
 
+/*
+    Контроллер для загрузки файлов с данными
+ */
+
 @Controller
 public class DownloadFilesController {
+
+    /********************************
+           Файлы с формы рассчета
+     ************************************/
+    //Файл с данными о фазах
     @RequestMapping("/downloadPhases")
     public ResponseEntity<String> downloadFile1() {
 
@@ -27,36 +36,8 @@ public class DownloadFilesController {
 
         return getFile("phases", stringPhase.toString());
     }
-    @RequestMapping("/downloadAmplitudeSpector")
-    public ResponseEntity<String> downloadAmplitudeSpector() {
 
-        StringBuilder stringAmplitude = new StringBuilder();
-        for (int i = 0; i < ResolveForm.amplitudeSpector.size(); i++) {
-            stringAmplitude.append(i).append(" ").append(ResolveForm.amplitudeSpector.get(i)).append("\n");
-        }
-
-        return getFile("amplitudeSpector", stringAmplitude.toString());
-    }
-    @RequestMapping("/downloadPhaseSpector")
-    public ResponseEntity<String> downloadPhaseSpector() {
-
-        StringBuilder stringPhase = new StringBuilder();
-        for (int i = 0; i < ResolveForm.phaseSpector.size(); i++) {
-            stringPhase.append(i).append(" ").append(ResolveForm.phaseSpector.get(i)).append("\n");
-        }
-
-        return getFile("phaseSpector", stringPhase.toString());
-    }
-    @RequestMapping("/downloadFrequency")
-    public ResponseEntity<String> downloadFrequency(){
-
-        StringBuilder stringPhase = new StringBuilder();
-        for(int i = 1; i< ResolveForm.frequencyAnalysis.size(); i++) {
-            stringPhase.append(i).append(" ").append(ResolveForm.frequencyAnalysis.get(i));
-            stringPhase.append("\n");
-        }
-        return getFile("frequencyAnalysis", stringPhase.toString());
-    }
+    //Файл с данными о кластерах
     @RequestMapping("/downloadClusterInfo")
     public ResponseEntity<String> downloadClusterInfo(){
 
@@ -76,6 +57,7 @@ public class DownloadFilesController {
         return getFile("groupsInfo", clusterInfo.toString());
     }
 
+    //Файл с данными о типовых температурах
     @RequestMapping("/downloadTypicals")
     public ResponseEntity<String> downloadTypicals() {
 
@@ -90,6 +72,8 @@ public class DownloadFilesController {
 
         return getFile("typicals", stringPhase.toString());
     }
+
+    //Файл с данными о группах
     @RequestMapping("/downloadGroups")
     public ResponseEntity<String> downloadGroups() {
 
@@ -104,20 +88,28 @@ public class DownloadFilesController {
 
         return getFile("groups", stringPhase.toString());
     }
+
+    //Файл с преобразованными данными о группах для отображения на карте
     @RequestMapping("/downloadJSON")
     public ResponseEntity<String> downloadJSON(){
         StringBuilder stringPhase = new StringBuilder();
         for (int i = 0; i < ResolveForm.json.size(); i++) {
             stringPhase.append(ResolveForm.json.get(i)).append("\n");
         }
-
         return getFile("groups", stringPhase.toString());
     }
+
+    //Файл-отчет о рассчете
     @RequestMapping("/downloadReport")
     public ResponseEntity<String> downloadGeographicCharacters() {
         return getFile(ResolveForm.resolveTime, Report.getReport());
     }
 
+    /****************************************
+            Файлы со страницы анализа данных
+     *********************************************/
+
+    //Файл с данными СКО
     @RequestMapping("/downloadSKO")
     public ResponseEntity<String> downloadSKO(){
         StringBuilder stringPhase = new StringBuilder();
@@ -126,10 +118,46 @@ public class DownloadFilesController {
             stringPhase.append(i).append(" ").append(ResolveForm.SKO.get(i));
             stringPhase.append("\n");
         }
-
-
         return getFile("SKO", stringPhase.toString());
     }
+
+    //Файл с данными о спектре амплитуд
+    @RequestMapping("/downloadAmplitudeSpector")
+    public ResponseEntity<String> downloadAmplitudeSpector() {
+
+        StringBuilder stringAmplitude = new StringBuilder();
+        for (int i = 0; i < ResolveForm.amplitudeSpector.size(); i++) {
+            stringAmplitude.append(i).append(" ").append(ResolveForm.amplitudeSpector.get(i)).append("\n");
+        }
+
+        return getFile("amplitudeSpector", stringAmplitude.toString());
+    }
+
+    //Файл с данными о спектре фаз
+    @RequestMapping("/downloadPhaseSpector")
+    public ResponseEntity<String> downloadPhaseSpector() {
+
+        StringBuilder stringPhase = new StringBuilder();
+        for (int i = 0; i < ResolveForm.phaseSpector.size(); i++) {
+            stringPhase.append(i).append(" ").append(ResolveForm.phaseSpector.get(i)).append("\n");
+        }
+
+        return getFile("phaseSpector", stringPhase.toString());
+    }
+
+    //Файл с данными о частотном анализе
+    @RequestMapping("/downloadFrequency")
+    public ResponseEntity<String> downloadFrequency(){
+
+        StringBuilder stringPhase = new StringBuilder();
+        for(int i = 1; i< ResolveForm.frequencyAnalysis.size(); i++) {
+            stringPhase.append(i).append(" ").append(ResolveForm.frequencyAnalysis.get(i));
+            stringPhase.append("\n");
+        }
+        return getFile("frequencyAnalysis", stringPhase.toString());
+    }
+
+    //Формирование файла из строки данных
     private ResponseEntity<String> getFile(String fileName, String outputStr){
         MediaType mediaType = new MediaType("text", "plain", Charset.defaultCharset());
         return ResponseEntity.ok()

@@ -396,127 +396,6 @@
             </div>
         </div>
     </span>
-    <script>
-                window.onload = function (){
-                    $('img[data-toggle="tooltip"]').tooltip({
-                        html: true
-                    });
-
-                    var cordType = $('#cordType').val();
-                    if(cordType!=null) $('input[name="cordsType"][value='+cordType+']').prop('checked', true);
-                    var tempType = $('#tempType').val();
-                    if(tempType!=null) $('input[name="tempType"][value='+tempType+']').prop('checked', true);
-                    var isForPhase = $('#isForPhase').val();
-                    if(isForPhase!=null) $('input[name="isForPhase"][value='+isForPhase+']').prop('checked', true);
-
-                    var type = $('#dataType').val();
-                    if(type!=null) $('input[name="dataType"][value='+type+']').prop('checked', true);
-
-                    checkParams();
-                }
-
-                //стиль закрузки файла
-                $(".custom-file-input").on("change", function () {
-                    var fileName = $(this).val().split("\\").pop();
-                    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-                });
-
-                //проверка
-                function checkParams() {
-                    var temps = $('#temps').val();
-                    var coords = $('#coords').val();
-
-                    if ((fileTemp.value != 0 || temps !== "") && (fileCoordinates.value != 0 || coords !== "")) {
-                        $('#submit').removeAttr('disabled');
-                        $('#submit2').removeAttr('disabled');
-                    } else {
-                        $('#submit').attr('disabled', 'disabled');
-                        $('#submit2').attr('disabled', 'disabled');
-                    }
-
-                }
-                function getParams(){
-                    var params = "";
-                    $('.parameter').each(function (index, element) {
-                        if(index % 2 !== 0){
-                            params += $(element).prop('checked') + "delimiter";
-                        }
-                        else {
-                            params += $(element).val() + "delimiter";
-                        }
-                    });
-                    $("#fileAdditionalParameters").val(params);
-                }
-                function submitForm(f) {
-                    //отмена действия по умолчанию для кнопки submit
-                    var $form = $(f);
-                    let returnValue = false;
-                    $.ajax({
-                        type: "POST",
-                        async: false,
-                        processData: false,
-                        contentType: false,
-                        url: "/recieveParams",
-                        cache: false,
-                        data: new FormData($form[0]),
-                        success: function (response) {
-                            $("#dataForm").html('');
-                            $.ajax({
-                                url: "/getJsonStations",
-                                success: function (json) {
-                                    returnValue = true;
-                                    $('#mapBlock').removeAttr("hidden");
-                                    $("#json").attr("value", "[" + json + "]");
-                                    $("#groupNum").attr("value", 0);
-                                    loadScript();
-                                }
-                            });
-                        },
-                        error: function(XMLHttpRequest, textStatus, errorThrown) {
-                            alert(XMLHttpRequest.responseText);
-                        }
-                    });
-                    return returnValue;
-                }
-                function ajaxResolve(element){
-                    document.getElementById("paletteCover").style.display = "inline";
-                    document.getElementById("diagramCover").style.display = "block";
-                    //removeDragListeners();
-                    let loaderId = element.dataset.loader;
-                    let returnValue = false;
-                    $('#' + loaderId).attr("hidden", false);
-                    $.ajax({
-                        url: element.dataset.link + "?isVisual=true",
-                        success: function (data) {
-                            //Скрываем значок загрузки
-                            $('#' + loaderId).attr("hidden", true);
-                            if(loaderId === "loadershowOnMap"){
-                                $("#json").attr("value", "[" + data + "]");
-                                $("#map").html('');
-                                loadScript();
-                            }
-                            else{
-                                if(!data)
-                                    data = "V";
-                                element.lastElementChild.lastElementChild.textContent = data;
-                                //element.lastElementChild.append(data);
-                            }
-                            document.getElementById("paletteCover").style.display = "none";
-                            document.getElementById("diagramCover").style.display = "none";
-                            //addDragListeners();
-                        },
-                        error: function(XMLHttpRequest, textStatus, errorThrown) {
-                            $('#' + loaderId).attr("hidden", true);
-                            element.lastElementChild.lastElementChild.textContent = "\tОшибка";
-                            //addDragListeners();
-
-                            document.getElementById("paletteCover").style.display = "none";
-                            document.getElementById("diagramCover").style.display = "none";
-                        }
-                    });
-                    return returnValue;
-                }
-            </script>
 </div>
 
 <div class="container">
@@ -562,6 +441,126 @@
     let currentClusterNums = new Set();
     let mode = 'rect';
     let isChecked = true;
+
+    window.onload = function (){
+        $('img[data-toggle="tooltip"]').tooltip({
+            html: true
+        });
+
+        var cordType = $('#cordType').val();
+        if(cordType!=null) $('input[name="cordsType"][value='+cordType+']').prop('checked', true);
+        var tempType = $('#tempType').val();
+        if(tempType!=null) $('input[name="tempType"][value='+tempType+']').prop('checked', true);
+        var isForPhase = $('#isForPhase').val();
+        if(isForPhase!=null) $('input[name="isForPhase"][value='+isForPhase+']').prop('checked', true);
+
+        var type = $('#dataType').val();
+        if(type!=null) $('input[name="dataType"][value='+type+']').prop('checked', true);
+
+        checkParams();
+    }
+
+    //стиль закрузки файла
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+    //проверка
+    function checkParams() {
+        var temps = $('#temps').val();
+        var coords = $('#coords').val();
+
+        if ((fileTemp.value != 0 || temps !== "") && (fileCoordinates.value != 0 || coords !== "")) {
+            $('#submit').removeAttr('disabled');
+            $('#submit2').removeAttr('disabled');
+        } else {
+            $('#submit').attr('disabled', 'disabled');
+            $('#submit2').attr('disabled', 'disabled');
+        }
+
+    }
+    function getParams(){
+        var params = "";
+        $('.parameter').each(function (index, element) {
+            if(index % 2 !== 0){
+                params += $(element).prop('checked') + "delimiter";
+            }
+            else {
+                params += $(element).val() + "delimiter";
+            }
+        });
+        $("#fileAdditionalParameters").val(params);
+    }
+    function submitForm(f) {
+        //отмена действия по умолчанию для кнопки submit
+        var $form = $(f);
+        let returnValue = false;
+        $.ajax({
+            type: "POST",
+            async: false,
+            processData: false,
+            contentType: false,
+            url: "/recieveParams",
+            cache: false,
+            data: new FormData($form[0]),
+            success: function (response) {
+                $("#dataForm").html('');
+                $.ajax({
+                    url: "/getJsonStations",
+                    success: function (json) {
+                        returnValue = true;
+                        $('#mapBlock').removeAttr("hidden");
+                        $("#json").attr("value", "[" + json + "]");
+                        $("#groupNum").attr("value", 0);
+                        loadScript();
+                    }
+                });
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.responseText);
+            }
+        });
+        return returnValue;
+    }
+    function ajaxResolve(element){
+        document.getElementById("paletteCover").style.display = "inline";
+        document.getElementById("diagramCover").style.display = "block";
+        //removeDragListeners();
+        let loaderId = element.dataset.loader;
+        let returnValue = false;
+        $('#' + loaderId).attr("hidden", false);
+        $.ajax({
+            url: element.dataset.link + "?isVisual=true",
+            success: function (data) {
+                //Скрываем значок загрузки
+                $('#' + loaderId).attr("hidden", true);
+                if(loaderId === "loadershowOnMap"){
+                    $("#json").attr("value", "[" + data + "]");
+                    $("#map").html('');
+                    loadScript();
+                }
+                else{
+                    if(!data)
+                        data = "V";
+                    element.lastElementChild.lastElementChild.textContent = data;
+                    //element.lastElementChild.append(data);
+                }
+                document.getElementById("paletteCover").style.display = "none";
+                document.getElementById("diagramCover").style.display = "none";
+                //addDragListeners();
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $('#' + loaderId).attr("hidden", true);
+                element.lastElementChild.lastElementChild.textContent = "\tОшибка";
+                //addDragListeners();
+
+                document.getElementById("paletteCover").style.display = "none";
+                document.getElementById("diagramCover").style.display = "none";
+            }
+        });
+        return returnValue;
+    }
 
 
     function loadScript(){

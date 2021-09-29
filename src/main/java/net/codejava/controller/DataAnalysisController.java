@@ -3,6 +3,7 @@ package net.codejava.controller;
 import net.codejava.Resolve.Model.Group;
 import net.codejava.Resolve.Model.ResolveForm;
 import net.codejava.Resolve.PhaseCalc.DataAnalysis;
+import net.codejava.Resolve.PhaseCalc.WindowChart;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,14 +15,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/*
+    Контроллер для анализв данных и отображения гарфиков
+ */
 
 @Controller
 public class DataAnalysisController {
+
+    //Рассчет частотного спектра
     @GetMapping("/frequencyAnalysis")
     public String frequencyAnalysis(Model model, @RequestParam Integer station){
         double[] temp = ResolveForm.TempData[station].clone();
+        //Анализ данных температуры - рассчет частотного спектра
         DataAnalysis dataAnalysis = new DataAnalysis(temp);
         ResolveForm.frequencyAnalysis = dataAnalysis.getFrequencySpector();
+        //Формирование данных для отображения на графике
         setCommonChartOptions(model,
                 ResolveForm.frequencyAnalysis,
                 "Отсчеты", "Модуль спектра",
@@ -30,13 +38,16 @@ public class DataAnalysisController {
                 "corechart");
         return "additionals/frequencyChart";
     }
+
+    //Анализ группы
     @RequestMapping("/showClusterAnalysis")
     public String showClusterAnalysis(Model model, @RequestParam Integer clusterNum){
         Group[] groups = new Group[ResolveForm.clusters.size()];
         groups = ResolveForm.clusters.toArray(groups);
         List<Integer> group = groups[clusterNum-1].getGroupMembers();
+        //Данные для графика типовых температур
         LinkedHashMap<String,Double[]> typicalTemps = DataAnalysis.getTypicalTempsChart(group);
-
+        //Формировнаие дданных типовых темепратур для отображения на графике
         setCommonChartOptions(model,
                 typicalTemps,
                 "Отсчеты", "Значение температуры",
@@ -45,6 +56,7 @@ public class DataAnalysisController {
                 "line");
         LinkedHashMap<String, Double> typicalPhases;
         LinkedHashMap<String, Double> typicalAmpls;
+        //Рассчет спекра амплитуды или фазы в зависимости от того, по какой характеристике проводился рассчет
         if(ResolveForm.isForPhases){
             ResolveForm.phaseSpector = DataAnalysis.getCountableCharacterSpector(clusterNum);
             ResolveForm.amplitudeSpector = DataAnalysis.getSpecifiedCharacterSpector(group, ResolveForm.arrayAmplitude);
@@ -57,6 +69,7 @@ public class DataAnalysisController {
             typicalPhases = DataAnalysis.getTypicalSpecifiedsForChart(group, ResolveForm.arrayPhase);
             typicalAmpls = DataAnalysis.getTypicalCountableCharacterChart(clusterNum-1);
         }
+        //Данные для передачи на страницу анализа группы
         model.addAttribute("phases", typicalPhases);
         model.addAttribute("phaseSpector", ResolveForm.phaseSpector);
         model.addAttribute("amplitudeSpector", ResolveForm.amplitudeSpector);
@@ -70,6 +83,8 @@ public class DataAnalysisController {
 
         return "additionals/groupAnalysis";
     }
+
+    //Рассчет модели для группы с указанием сдвига по фазе
     @GetMapping("/clusterModel")
     public ResponseEntity<LinkedHashMap<String, Double>> clusterModel(String clusterNum, String offset) {
         Group[] groups = new Group[ResolveForm.clusters.size()];
@@ -78,6 +93,8 @@ public class DataAnalysisController {
 
         return ResponseEntity.ok().body(DataAnalysis.getClusterModel(groups[Integer.parseInt(clusterNum)-1].getPhases(), group, Double.parseDouble(offset)));
     }
+
+    //Рассчет корреляции групп
     @GetMapping("/systemAnalysis")
     public String systemAnalysis(Model model) throws ExecutionException, InterruptedException {
         model.addAttribute("corrTable", DataAnalysis.getGroupPhasesCorrTable());
@@ -85,6 +102,8 @@ public class DataAnalysisController {
         model.addAttribute("minCorr", ResolveForm.minSystemCorr);
         return "additionals/systemAnalysis";
     }
+
+    //Рассчет СКО, средней и подготовка данных для отображения графика температуры
     @GetMapping("/temperatureChart")
     public String temperatureChart(Model model, @RequestParam Integer station){
         double avgTemp = DataAnalysis.getAvgTemp(ResolveForm.TempData[station].clone());
@@ -99,6 +118,8 @@ public class DataAnalysisController {
         model.addAttribute("additionalY_names", new String[]{"Средняя", "+СКО", "-СКО"});
         return "additionals/frequencyChart";
     }
+
+    //Анализ данных для станции (СКО, средняя температура, частотный анализ)
     @GetMapping("/dataAnalysisForStation")
     public String dataAnalysisForStation(Model model, @RequestParam Integer station) {
         int indexStation = station - 1;
@@ -115,7 +136,7 @@ public class DataAnalysisController {
         return "additionals/stationDataCharts";
     }
 
-
+    //Рассчет СКО по станциям и график
     @GetMapping("/SKOAnalysis")
     public String SKOAnalysis(Model model) {
         ResolveForm.SKO = DataAnalysis.getAllSKO();
@@ -126,6 +147,21 @@ public class DataAnalysisController {
                 "corechart");
         return "additionals/frequencyChart";
     }
+
+    //Отображение графика для выбора окна фильтрации
+    @GetMapping("/showChart")
+    public String showChart(Model model,
+                            @RequestParam(value = "isWindowManually") String isWindowManually) throws ExecutionException, InterruptedException {
+        boolean assimetricWindow = false;
+        if (Integer.parseInt(isWindowManually) == 2) assimetricWindow = true;
+        WindowChart.getWindowsChartData(assimetricWindow);
+        model.addAttribute("chartData", WindowChart.chartData);
+        model.addAttribute("window", ResolveForm.windowDelta);
+        model.addAttribute("windowCenter", ResolveForm.windowCenter);
+        return "additionals/windowChart";
+    }
+
+    //Добавление данных для отображения графика
     private void setCommonChartOptions(Model model,
                                        Object data,
                                        String X, String Y,

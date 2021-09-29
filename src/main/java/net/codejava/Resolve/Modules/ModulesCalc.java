@@ -1,13 +1,14 @@
 package net.codejava.Resolve.Modules;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.codejava.Resolve.Clustering.*;
 import net.codejava.Resolve.GroupsForMap;
 import net.codejava.Resolve.Model.*;
 import net.codejava.Resolve.PhaseCalc.AmplitudeCalculation;
 import net.codejava.Resolve.PhaseCalc.PhaseCalculation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeSet;
+
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -228,6 +229,33 @@ public class ModulesCalc {
         GroupsForMap.sortGroups();
 
         return GroupsForMap.getJson();
+    }
+    //Получить данные для первоначального отображения станций на карте (до выполнения рассчета)
+    public static ArrayList<String> JsonWOResolve() {
+        Gson GSON = new GsonBuilder().create();
+        //формирую json файл
+        ArrayList<String> json = new ArrayList<>();
+        for (int j = 0; j < ResolveForm.coordData[0].length; j++) {
+            Map<String, String> additional = new HashMap<>();
+            if (ResolveForm.coordData.length > 3 && ResolveForm.fileParams.length > 1) {
+                int limit = Math.min((ResolveForm.coordData.length - 3), ResolveForm.fileParams.length / 2);
+                for (int i = 0; i < limit; i++) {
+                    if (Boolean.parseBoolean(ResolveForm.fileParams[i * 2 + 1]))
+                        additional.put(ResolveForm.fileParams[i * 2], ResolveForm.coordData[i + 3][j]);
+                }
+            }
+            GroupAndCoordinates groupAndCoordinates = new GroupAndCoordinates(
+                    Double.parseDouble(ResolveForm.coordData[0][j]),
+                    Double.parseDouble(ResolveForm.coordData[1][j]),
+                    Double.parseDouble(ResolveForm.coordData[2][j]),
+                    1,
+                    true,
+                    additional);
+            String jsonData = GSON.toJson(groupAndCoordinates);
+            json.add(jsonData);
+        }
+
+        return json;
     }
 
 }
