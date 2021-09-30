@@ -11,14 +11,13 @@ import java.util.concurrent.Future;
 
 /**
  * Класс служит для проверки конца итерации
- *
- * @version 1.0
  */
 public class EndChecking {
     private final List<Phase> previousPhases;
     private final List<Phase> nextPhases;
     private final ExecutorService executorService;
 
+    //Передается текущая и следующая фаза
     public EndChecking(List<Phase> arrayPhase, List<Phase> typicalPhases, ExecutorService executorService) {
         this.previousPhases = arrayPhase;
         this.nextPhases = typicalPhases;
@@ -33,8 +32,7 @@ public class EndChecking {
         return checkEnd();
     }
 
-
-
+    //Конец итерации - разница элементов фазы больше sigma
     private boolean checkEnd() {
         double max = Math.abs(previousPhases.get(0).getPhase().get(0) - nextPhases.get(0).getPhase().get(0));
         for (int i = 0; i < previousPhases.size(); i++) {
@@ -47,8 +45,6 @@ public class EndChecking {
             }
         }
         return !(max >= Double.parseDouble(ResolveForm.sigma));
-        /*if (!previousPhase.equals(nextPhase)) return false;
-        else return true;*/
     }
 
     private List<Future<Phase>> savePhase() throws InterruptedException {
@@ -61,9 +57,6 @@ public class EndChecking {
         }
         return executorService.invokeAll(tasks);
     }
-
-
-
 
     static class MyCallable implements Callable<Phase> {
         int position;

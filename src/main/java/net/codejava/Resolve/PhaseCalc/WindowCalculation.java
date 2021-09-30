@@ -3,6 +3,10 @@ package net.codejava.Resolve.PhaseCalc;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
+/*
+    Класс для рассчета окна
+ */
+
 public class WindowCalculation extends PhaseCalculationAbstract implements Callable<Integer> {
 
     double[] imagFTT;
@@ -32,18 +36,22 @@ public class WindowCalculation extends PhaseCalculationAbstract implements Calla
         FFTCalculation();
         imagFTT = imag.clone();
         realFTT = real.clone();
+        //Выбор окна фильтрации (автоматический режим)
+        //Сжимаем окно и как только фаза перестает рваться, возвращаем полученную delta
         while (true) {
             imag = imagFTT.clone();
             real = realFTT.clone();
-            //Filtration(delta>=center?1:(center - delta), delta==center?!assimetric?center + delta - 1: center + delta : center + delta);
+            //Фильтрация для симметричного окна
             if(assimetric)
                 Filtration(delta>=center?1:(center - delta), center + delta);
+            //Фильтрация для симметричного окна
             else
                 Filtration(center - delta, center + delta);
             IFFTCalculation();
             phase = new ArrayList<>();
             PhaseCalculation();
             PhaseLinking();
+            //Для асиметричного окна
             if(assimetric){
                 if(delta<temp.length) {
                     if (isPhaseUnbroken()) {
@@ -54,7 +62,9 @@ public class WindowCalculation extends PhaseCalculationAbstract implements Calla
                     return lastDelta;
                 }
             }
+            //Для симетричного окна
             else {
+                //Если фаза не рвется
                 if (isPhaseUnbroken()) {
                     return delta;
                 }

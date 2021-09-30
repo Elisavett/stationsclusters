@@ -7,6 +7,10 @@ import net.codejava.Resolve.Model.Phase;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    Класс для рассчета типовой
+ */
+
 public class TypicalCalculation {
     ArrayList<ArrayList<Double>> phases = new ArrayList<>();
     ArrayList<Double> typical = new ArrayList<>();
@@ -28,6 +32,7 @@ public class TypicalCalculation {
         return saveTypical();
     }
 
+    //Получение членов группы
     private void loadGroup() {
         members.addAll(group.getGroupMembers());
     }

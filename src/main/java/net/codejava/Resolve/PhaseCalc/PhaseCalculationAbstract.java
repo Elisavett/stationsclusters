@@ -5,6 +5,10 @@ import net.codejava.Resolve.Model.Phase;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    Базовый класс для рассчета фазы и амплитуды
+ */
+
 public abstract class PhaseCalculationAbstract {
     double[] real;
     double[] imag;
@@ -22,11 +26,13 @@ public abstract class PhaseCalculationAbstract {
     }
 
 
+    //Преобразование Фурье
     public void FFTCalculation() {
         imag = new double[N];
         FFT.transform(real, imag);
     }
 
+    //Обратное преобразование Фурье
     public void IFFTCalculation() {
         FFT.inverseTransform(real, imag);
     }
@@ -46,6 +52,7 @@ public abstract class PhaseCalculationAbstract {
         }
     }
 
+    //Рассчет фазы
     public void PhaseCalculation() {
         phase = new ArrayList<>();
         for (int i = 0; i < N; i++) {
@@ -54,6 +61,7 @@ public abstract class PhaseCalculationAbstract {
 
     }
 
+    //Сшивание фазы
     protected void PhaseLinking() {
         double c = 0;
         double d = phase.get(1) - phase.get(0);
@@ -81,6 +89,7 @@ public abstract class PhaseCalculationAbstract {
         }
     }
 
+    //Вычитает прямую
     protected void RemoveLinear() {
         finals = new ArrayList<>();
         double k = (phase.get(N - 1) - phase.get(0)) / (N - 1);
@@ -93,6 +102,7 @@ public abstract class PhaseCalculationAbstract {
         return new Phase(finals);
     }
 
+    //Проверка не рвется ли фаза
     protected boolean isPhaseUnbroken(){
         for (int i = 1; i < N-1; i++) {
             if ((phase.get(i+1) - phase.get(i))<0) return false;

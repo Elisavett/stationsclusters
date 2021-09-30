@@ -1,9 +1,9 @@
 package net.codejava.controller;
 
 import net.codejava.Resolve.Model.ResolveForm;
+import net.codejava.Resolve.Modules.ModulesCalc;
 import net.codejava.Resolve.PhaseCalc.WindowChart;
 import net.codejava.Resolve.SplitInputFile;
-import net.codejava.Resolve.Start;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -121,9 +121,12 @@ public class CalcRegionsController {
         ResolveForm.windowRight = ResolveForm.windowCenter + ResolveForm.windowDelta;
 
         //Рассчет
-        Start start = new Start();
-
-        return start.run(isFromPrev);
+        ModulesCalc.PhaseAmplCalc();
+        ModulesCalc.ClustersCalc(isFromPrev);
+        if (ResolveForm.classification) {
+            ModulesCalc.ClassesCalc();
+        }
+        return ModulesCalc.JsonCalc();
 
     }
 }

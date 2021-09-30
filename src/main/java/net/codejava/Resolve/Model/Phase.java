@@ -5,6 +5,10 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    Фаза
+ */
+
 public class Phase{
     @Getter private final List<Double> phase;
 

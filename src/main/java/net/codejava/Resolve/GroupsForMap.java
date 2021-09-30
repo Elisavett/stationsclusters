@@ -9,7 +9,6 @@ import java.util.*;
 /**
  * Класс служит для сопоставления данных о температуре с соответствующими кординатами станции
  *
- * @version 1.0
  */
 public class GroupsForMap {
     private static ArrayList<Group> groupList;
@@ -40,6 +39,8 @@ public class GroupsForMap {
         sortGroups.addAll(groupList);
         ResolveForm.clusters = sortGroups;
     }
+
+    //Таблица корреляции групп
     public static List<List<Double>> getGroupCorrTable(Group group){
         List<Integer> groupMembers = group.getGroupMembers();
         List<List<Double>> groupCorrTable = new ArrayList<>();
@@ -70,7 +71,7 @@ public class GroupsForMap {
         return groupCorrTable;
     }
 
-
+    //Преобразование данных для отображения на карте
     public static ArrayList<String> getJson() {
         Gson GSON = new GsonBuilder().create();
         //формирую json файл

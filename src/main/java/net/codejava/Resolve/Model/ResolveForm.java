@@ -10,6 +10,10 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+/*
+    Класс с параметрами рассчета и вспомогательными методами / характеристиками
+ */
+
 public class ResolveForm {
 
     public static String resolveTime = "";
@@ -59,6 +63,7 @@ public class ResolveForm {
     public static double maxSystemCorr = 0;
     public static double minSystemCorr = 1;
 
+    //Добавление в модель стандартных значений параметров
     public static void addAllToModel(Model model){
         model.addAttribute("tempers", ResolveForm.tempFileName);
         model.addAttribute("coords", ResolveForm.coordFileName);
@@ -72,8 +77,9 @@ public class ResolveForm {
         model.addAttribute("isForPhase", ResolveForm.isForPhases);
         model.addAttribute("classification", ResolveForm.classification);
     }
-    public static Model calculateMapModel(Model model) {
 
+    //Модель для отображения на карте параметров рассчета
+    public static void calculateMapModel(Model model) {
         model.addAttribute("groupNum", groupNum);
         if(resolveTime.equals("")) {
             DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh.mm.ss");
@@ -85,19 +91,9 @@ public class ResolveForm {
         model.addAttribute("calcPeriod", "Рассч. период: " + periodString);
         if(ResolveForm.isForPhases) model.addAttribute("isForPhase", "Рассчет по фазе");
         else model.addAttribute("isForPhase", "Рассчет по амплитуде");
-        return model;
     }
-    public static  <T> List<T> FutureToPlaneObj(List<Future<T>> futureObject) throws ExecutionException, InterruptedException {
-        List<T> planeObject = new ArrayList<>();
-         for(Future<T> item: futureObject){
-            planeObject.add(item.get());
-        }
-        return planeObject;
-    }
-    public static void setWindowLimits(int delta){
-        ResolveForm.windowLeft = ResolveForm.windowCenter - delta;
-        ResolveForm.windowRight = ResolveForm.windowCenter + delta;
-    }
+
+    //Сравнение введенных в форме прериодов и вывод ошибки (если есть)
     public static String compareDates(Date periodStart, Date periodEnd){
         Calendar date1 = Calendar.getInstance();
         Calendar date2 = Calendar.getInstance();
@@ -136,6 +132,7 @@ public class ResolveForm {
         }
         return message;
     }
+    //Сохранить параметры из формы
     public static void saveParams(boolean tempType, boolean cordsType,
                                   MultipartFile fileTemp, MultipartFile fileCoordinates,
                                   int dataType,
@@ -155,5 +152,16 @@ public class ResolveForm {
         ResolveForm.dataType = dataType;
 
         ResolveForm.windowCenter = ResolveForm.TempData[0].length / ResolveForm.dataType;
+    }
+    public static  <T> List<T> FutureToPlaneObj(List<Future<T>> futureObject) throws ExecutionException, InterruptedException {
+        List<T> planeObject = new ArrayList<>();
+        for(Future<T> item: futureObject){
+            planeObject.add(item.get());
+        }
+        return planeObject;
+    }
+    public static void setWindowLimits(int delta){
+        ResolveForm.windowLeft = ResolveForm.windowCenter - delta;
+        ResolveForm.windowRight = ResolveForm.windowCenter + delta;
     }
 }

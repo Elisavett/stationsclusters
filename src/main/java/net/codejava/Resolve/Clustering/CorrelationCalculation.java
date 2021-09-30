@@ -8,9 +8,7 @@ import java.util.concurrent.Callable;
 
 
 /**
- * Класс служит для расчета корреляции
- *
- * @version 1.0
+ * Класс служит для расчета корреляции очередной фазы с остальными фазами
  */
 public class CorrelationCalculation implements Callable<List<Double>> {
     private final int firstIndex;
@@ -19,8 +17,20 @@ public class CorrelationCalculation implements Callable<List<Double>> {
     private List<Double> secondStation;
     private final Phase[] arrayPhase;
 
+    public CorrelationCalculation(Phase station, int firstIndex, List<Phase> arrayPhase) {
+        this.firstStation = station.getPhase();
+        this.firstIndex = firstIndex;
+        this.correlation = new ArrayList<>();
+        this.arrayPhase = new Phase[arrayPhase.size()];
+        //Из листа в массив
+        for (int i = 0; i < arrayPhase.size(); i++){
+            this.arrayPhase[i] = arrayPhase.get(i);
+        }
+    }
+
     @Override
     public List<Double> call(){
+        //В цикле выбирается фаза для рассчета и выполняется рассчет корреляции
         for (int i = firstIndex + 1; i < arrayPhase.length; i++) {
             secondStation = loadStantion(i);
             correlation.add(correlationCalc());
@@ -28,29 +38,12 @@ public class CorrelationCalculation implements Callable<List<Double>> {
         return new ArrayList<>(correlation);
     }
 
-    public CorrelationCalculation(Phase station, int firstIndex, List<Phase> arrayPhase) {
-        this.firstStation = station.getPhase();
-        this.firstIndex = firstIndex;
-        this.correlation = new ArrayList<>();
-        this.arrayPhase = new Phase[arrayPhase.size()];
-        for (int i = 0; i < arrayPhase.size(); i++){
-            this.arrayPhase[i] = arrayPhase.get(i);
-        }
-
-    }
-
-    public CorrelationCalculation(Phase station, int firstIndex, Phase[] arrayPhase){
-        this.firstStation = station.getPhase();
-        this.firstIndex = firstIndex;
-        this.correlation = new ArrayList<>();
-        this.arrayPhase = arrayPhase;
-    }
-
-
+    //Получить фазу станции
     private List<Double> loadStantion(int index){
         return arrayPhase[index].getPhase();
     }
-//расчет взаимной корреляции между двумя хронологическими рядами
+
+    //расчет взаимной корреляции между двумя хронологическими рядами
     private double correlationCalc() {
         double average1 = 0, average2 = 0;
         int num = firstStation.size();

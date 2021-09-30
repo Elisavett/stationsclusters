@@ -14,7 +14,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+/*
+    Класс для модульного рассчета
+ */
+
 public class ModulesCalc {
+
+    //Рассчет фазы / амлитуды
     public static void PhaseAmplCalc() throws InterruptedException, ExecutionException {
         List<Future<Phase>> arrayPhase;
         List<Future<Phase>> arrayAmplitude;
@@ -38,7 +44,6 @@ public class ModulesCalc {
         arrayPhase = executorService.invokeAll(phaseCalculationTasks);
 
         List<AmplitudeCalculation> amplitudeCalculationTasks = new ArrayList<>();
-        //long startExec = System.currentTimeMillis(); //время старта вычислений
         for (int i = 0; i < stationCount; i++) {
             double[] temp = ResolveForm.TempData[i].clone();
             AmplitudeCalculation phaseCalculation = new AmplitudeCalculation(temp, ResolveForm.windowLeft, ResolveForm.windowRight);
@@ -61,12 +66,14 @@ public class ModulesCalc {
         executorService.shutdown();
     }
 
+    //Рассчет кластеризации
     public static void ClustersCalc(boolean isFromPrev) throws InterruptedException, ExecutionException {
         int count = 0;
         List<Phase> arrayPhase;
         int stationCount = ResolveForm.TempData.length;
         int processors = Runtime.getRuntime().availableProcessors();
         ExecutorService executorService = Executors.newFixedThreadPool(processors);
+        //Если фаза не рассчитана
         if (!ResolveForm.isPhasesCounted){
             arrayPhase = ResolveForm.countableCharacter;
         }
@@ -89,6 +96,7 @@ public class ModulesCalc {
             // создаем лист задач
             List<CorrelationCalculation> corrThreadTasks = new ArrayList<>();
             for (int i = 0; i < stationCount; i++) {
+                //Рассчет корреляции
                 CorrelationCalculation corrThread = new CorrelationCalculation(arrayPhase.get(i), i, arrayPhase);
                 corrThreadTasks.add(corrThread);
             }
@@ -135,11 +143,13 @@ public class ModulesCalc {
             arrayPrevGroup.clear();
             arrayPrevGroup.addAll(arrayGroup);
         } while (!check);
+        //Запоминаем группы и фазы
         ResolveForm.arrayTypical = arrayPhase;
         ResolveForm.arrayGroup = arrayPrevGroup;
         executorService.shutdown();
     }
 
+    //Рассчет классификации
     public static void ClassesCalc() throws InterruptedException, ExecutionException {
         TreeSet<Group> sortGroups = new TreeSet<>(ResolveForm.arrayGroup);
         ArrayList<Group> tmpGroup = new ArrayList<>(sortGroups);
@@ -224,6 +234,7 @@ public class ModulesCalc {
             ResolveForm.arrayGroup.get(i).setPhases(groupStartPhases[i]);
         }
     }
+    //Преобразование данных о группах для отображения на карте
     public static ArrayList<String> JsonCalc() {
         GroupsForMap.loadGroups();
         GroupsForMap.sortGroups();

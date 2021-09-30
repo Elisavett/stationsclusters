@@ -6,6 +6,10 @@ import lombok.Getter;
 
 import java.util.Map;
 
+/*
+    Класс для построения json и передач данных о группах на карту
+ */
+
 @Getter
 public class GroupAndCoordinates {
     private final double lat;

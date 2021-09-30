@@ -81,10 +81,15 @@ public class MapAllocationController {
         try {
             ArrayList<String> json;
 
-            Start start = new Start();
-            boolean isFromPrev = true;
             //Расчет из предыдущих
-            json = start.run(isFromPrev);
+            boolean isFromPrev = true;
+            //Процесс рассчета
+            ModulesCalc.PhaseAmplCalc();
+            ModulesCalc.ClustersCalc(isFromPrev);
+            if (ResolveForm.classification) {
+                ModulesCalc.ClassesCalc();
+            }
+            json = ModulesCalc.JsonCalc();
             model.addAttribute("json", json);
 
             ResolveForm.calculateMapModel(model);

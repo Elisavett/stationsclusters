@@ -7,10 +7,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 
-/**
- * Класс служит расчета фазы
- *
- * @version 1.0
+/*
+ * Класс служит расчета амплитуды
  */
 public class AmplitudeCalculation extends PhaseCalculationAbstract implements Callable<Phase> {
 
@@ -21,6 +19,7 @@ public class AmplitudeCalculation extends PhaseCalculationAbstract implements Ca
         this.leftLimit = leftLimit;
         this.rightLimit = rightLimit;
     }
+    //Весь процесс рассчета амплитуды (в базовом классе)
     @Override
     public Phase call(){
         LoadFunction();
@@ -29,6 +28,7 @@ public class AmplitudeCalculation extends PhaseCalculationAbstract implements Ca
         IFFTCalculation();
         return new Phase(amplitudeCalculation());
     }
+    //Рассчет амплитуды
     public List<Double> amplitudeCalculation(){
         phase = new ArrayList<>();
         for (int i = 0; i < N; i++) {

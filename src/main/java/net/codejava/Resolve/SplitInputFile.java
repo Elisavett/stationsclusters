@@ -11,8 +11,7 @@ import java.util.Scanner;
 
 /**
  * Класс служит для разделения входных данных
- *
- * @version 1.0
+ * Считывание данных с файлов температур и координат
  */
 public class SplitInputFile {
 

@@ -8,7 +8,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
+/*
+    Отчет о рассчете
+ */
 public class Report {
+
+    //Класс для представления располажения кластера
     private static class clusterGeography{
         private final double max_lat;
         private final double max_long;
@@ -39,6 +44,8 @@ public class Report {
                     max_long + " " + min_long + "\n";
         }
     }
+
+    //Вычисление географических характеристик кластера
     public static String getGeoCharacteristics(){
         StringBuilder stringClusterGeo = new StringBuilder("\nГеографические характеристики\n" +
                 "1.номер_кластера 2.широта_центра 3.долгота_центра 4.макс_широта 5.мин_широта 6.макс_долгота 7.мин_долгота  \n");
@@ -67,6 +74,8 @@ public class Report {
         }
         return stringClusterGeo.toString();
     }
+
+    //Для отображения рассчетных характеристик
     public static StringBuilder getCalcCharacteristics(){
         if(ResolveForm.resolveTime.equals("")) {
             DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh.mm.ss");
@@ -80,11 +89,12 @@ public class Report {
         outputString.append("Минимальное кол-во эл. в кластере: ").append(ResolveForm.minGroupSize).append("\n");
         return outputString;
     }
+
+    //Формирование отчета
     public static String getReport() {
         StringBuilder outputString = getCalcCharacteristics();
         outputString.append("\nТиповые температуры" + "\n");
         StringBuilder stringAmpl = new StringBuilder(ResolveForm.isForPhases ? "\nТиповые амплитуды\n" : "\nТиповые фазы\n");
-        //StringBuilder stringPhase = new StringBuilder(ResolveForm.isForPhases ? "\nТиповые фазы\n" : "\nТиповые амплитуды\n");
         StringBuilder stringPhase = new StringBuilder(ResolveForm.isForPhases ? "\nТиповые фазы\n" : "\nТиповые амплитуды\n");
         StringBuilder stringStations = new StringBuilder();
         int l = 0;

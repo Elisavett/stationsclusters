@@ -10,6 +10,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/*
+    Класс для анализа данных
+ */
+
 public class DataAnalysis{
 
     FrequencyAnalysis frequencyAnalysis;
@@ -24,11 +28,13 @@ public class DataAnalysis{
             dateDelta = Calendar.DATE;
         }
     }
+
+    //Частотный спектр
     public LinkedHashMap<Integer, Double> getFrequencySpector(){
         return frequencyAnalysis.spectorCalculation();
     }
 
-
+    //Спектр по величине, по которой выполнялся рассчет (амплитуда / фаза)
     public static LinkedHashMap<Integer, Double> getCountableCharacterSpector(int groupNum){
         List<Double> character = ResolveForm.clusters.toArray(new Group[0])[groupNum].getPhases().getPhase();
         double[] typicalCharacter = new double[character.size()];
@@ -40,13 +46,14 @@ public class DataAnalysis{
         return frequencyAnalysis.spectorCalculation();
     }
 
+    //Спектр по величине, по которой не выполнялся рассчет (амплитуда / фаза)
     public static LinkedHashMap<Integer, Double> getSpecifiedCharacterSpector(List<Integer> group, List<Phase> specifiedChar){
         FrequencyAnalysis frequencyAnalysis = new FrequencyAnalysis(getTypicalForSpecified(group, specifiedChar));
 
         return frequencyAnalysis.spectorCalculation();
     }
 
-
+    //Температура для станции
     public static LinkedHashMap<String, Double> getStationTemp(int station){
         Calendar date = Calendar.getInstance();
         double[] temp = ResolveForm.TempData[station].clone();
@@ -58,6 +65,7 @@ public class DataAnalysis{
         }
         return temperatures;
     }
+    //Средняя температура
     public static double getAvgTemp(double[] temp){
         double averageT = 0;
         for (double v : temp) {
@@ -65,6 +73,8 @@ public class DataAnalysis{
         }
         return averageT / temp.length;
     }
+
+    //Типовая температура для графика
     public static LinkedHashMap<String, Double[]> getTypicalTempsChart(List<Integer> group){
         Calendar date = Calendar.getInstance();
         LinkedHashMap<String, Double[]> temps = new LinkedHashMap<>();
@@ -75,6 +85,8 @@ public class DataAnalysis{
             date.add(dateDelta, 1);}
         return temps;
     }
+
+    //Рассчет типовой, средней, максимально, минимальной температур и СКО
     public static Double[][] getTypicalTemps(List<Integer> group){
         Double[] temps = new Double[ResolveForm.TempData[0].length];
         Double[] maxTemps = new Double[ResolveForm.TempData[0].length];
@@ -107,6 +119,8 @@ public class DataAnalysis{
         tempMinMaxSko[3] = skos;
         return tempMinMaxSko;
     }
+
+    //Типовая для величины, по которой выполнялся рассчет для графика
     public static LinkedHashMap<String, Double> getTypicalCountableCharacterChart (int groupNum){
         Calendar date = Calendar.getInstance();
         List<Double> character = ResolveForm.clusters.toArray(new Group[0])[groupNum].getPhases().getPhase();
@@ -132,6 +146,8 @@ public class DataAnalysis{
         }
         return min;
     }
+
+    //Модель для группы
     public static LinkedHashMap<String, Double> getClusterModel (Phase countableCharacter, List<Integer> group, double offset){
         Calendar date = Calendar.getInstance();
         LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
@@ -168,6 +184,8 @@ public class DataAnalysis{
         }
         return chartData;
     }
+
+    //Типовая для величины, по которой НЕ выполнялся рассчет, для графика
     public static LinkedHashMap<String, Double> getTypicalSpecifiedsForChart(List<Integer> group, List<Phase> specifiedCharacters){
         Calendar date = Calendar.getInstance();
         LinkedHashMap<String, Double> chartData = new LinkedHashMap<>();
@@ -179,6 +197,8 @@ public class DataAnalysis{
         }
         return chartData;
     }
+
+    //Типовые амплитуды
     public static double[] getTypicalAmplitudes(List<Integer> group){
         return getTypicalForSpecified(group, ResolveForm.arrayAmplitude);
     }
@@ -208,7 +228,6 @@ public class DataAnalysis{
             CorrelationCalculation corrThread = new CorrelationCalculation(groupTypicals.get(i), i, groupTypicals);
             corrThreadTasks.add(corrThread);
         }
-        //выполняем все задачи. главный поток ждет
         List<List<Double>> arrayCorr = ResolveForm.FutureToPlaneObj(executorService.invokeAll(corrThreadTasks));
         List<Double> missingElements = new ArrayList<>();
         arrayCorr.get(0).add(0, 1.);
@@ -228,6 +247,8 @@ public class DataAnalysis{
         ResolveForm.minSystemCorr = minCorr;
         return arrayCorr;
     }
+
+    //СКО для станции
     public static double getStationSKO(double averageT, double[] temp){
         double sko_temp = 0;
         for (double v : temp) {
@@ -249,6 +270,7 @@ public class DataAnalysis{
         return SKO;
     }
 
+    //Класс частотного анализа
     private static class FrequencyAnalysis extends PhaseCalculationAbstract {
 
         public FrequencyAnalysis(double[] temp) {

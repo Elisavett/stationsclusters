@@ -11,6 +11,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+/*
+    Класс для рассчета окна и преобразование данных для отображения графика
+ */
+
 public class WindowChart {
     public static LinkedHashMap<String, Double> chartData;
     public static void getWindowsChartData(boolean assimetric) throws InterruptedException, ExecutionException {
@@ -23,13 +27,14 @@ public class WindowChart {
         List<Future<Integer>> arrayWindows;
 
         int wRight = (int)Math.ceil(ResolveForm.windowCenter*2)-1;
+        //Рассчет окна фильтрации для каждой фазы
         List<WindowCalculation> windowCalculationTasks = new ArrayList<>();
         for (int i = 0; i < stationCount; i++) {
             double[] temp = ResolveForm.TempData[i].clone();
             WindowCalculation phaseCalculation = new WindowCalculation(temp, assimetric, wLeft, wRight, (int)Math.ceil(ResolveForm.windowCenter));
             windowCalculationTasks.add(phaseCalculation);
         }
-        //выполняем все задачи. главный поток ждет
+        //Получаем рассчитаные для всех фаз окна фильтрации
         arrayWindows = executorService.invokeAll(windowCalculationTasks);
         ArrayList<Integer> windows = new ArrayList<>();
         for(int i = 0; i< stationCount; i++)
@@ -38,6 +43,7 @@ public class WindowChart {
             windows.add((int)Math.ceil(arrayWindows.get(i).get()));
 
         }
+        //Сортировка
         windows.sort(Comparator.comparingInt(o -> o));
         int count = 1;
         int j = 0;
@@ -45,13 +51,12 @@ public class WindowChart {
         int stationsNum = stationCount;
         int prevCount = 0;
         int bestWindow = windows.get(0);
+        //Находим лучшее окно для фильтрации
         for(int i = 1; i< stationCount; i++)
         {
-            //округляем в большую сторону
             if(!windows.get(i).equals(windows.get(i - 1))){
                 graphData.put(String.valueOf(windows.get(i-1)), stationsNum*1.0/stationCount*100);
                 stationsNum-=count;
-                //graphData.put(j + " (" + count + ")", windows.get(i-1));
 
                 if(count > prevCount)
                 {

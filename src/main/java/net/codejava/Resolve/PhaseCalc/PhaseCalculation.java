@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 
-/**
+/*
  * Класс служит расчета фазы
- *
- * @version 1.0
  */
 public class PhaseCalculation extends PhaseCalculationAbstract implements Callable<Phase> {
 
@@ -23,6 +21,7 @@ public class PhaseCalculation extends PhaseCalculationAbstract implements Callab
         this.N = temp.length;
     }
 
+    //Процесс рассчета фазы
     @Override
     public Phase call() {
         LoadFunction();
@@ -32,16 +31,21 @@ public class PhaseCalculation extends PhaseCalculationAbstract implements Callab
         PhaseCalculation();
         PhaseLinking();
 
+        //Проверка не рвется ли фаза
         if (isPhaseUnbroken()) {
+            //Если нужно дотягивать до нуля, выполняем дотяжку
             if (ResolveForm.phaseToZero) {
                 NormalizingToZero();
             }
             RemoveLinear();
             return saveFile();
         } else {
+            //Если фаза рвется, то обнуляем фазу
             return phaseToZero();
         }
     }
+
+    //Обнуление фазы
     private Phase phaseToZero(){
         finals = new ArrayList<>();
         for (int i = 0; i < N; i++) {

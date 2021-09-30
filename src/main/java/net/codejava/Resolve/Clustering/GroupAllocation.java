@@ -5,6 +5,9 @@ import net.codejava.Resolve.Model.Group;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    Класс для выделения групп
+ */
 public class GroupAllocation {
     double corrDOWN;
     double corrUP;
@@ -30,24 +33,18 @@ public class GroupAllocation {
     }
     public GroupAllocation(){}
 
+    //Группы для кластеризации
     public List<Group> clustersCalc() {
-        //loadCorrelationTable();
         allocateGroups();
         return saveGroups();
     }
+
+    //Группы для классификации
     public List<Group> classesCalc() {
-        //loadCorrelationTable();
         return saveGroups();
     }
 
-    /*private void loadCorrelationTable(){
-        corrTable = new ArrayList<>();
-        for (int i = 0; i < stationCount; i++) {
-            Corr corr = arrayCorr.get(i);
-            corrTable.add(corr.getCorrelationArray());
-        }
-    }*/
-
+    //Выделение групп
     private void allocateGroups() {
         groups = new ArrayList<>();
         groupsCorrs = new ArrayList<>();
@@ -79,13 +76,13 @@ public class GroupAllocation {
             System.out.println(e.toString());
         }
     }
+    //Проверка попадает ли корреляция в заданные границы
     private boolean CorrelationInLimits(int i, int j){
         return corrTable.get(i).get(Math.abs(j - i) - 1) >= corrDOWN && corrTable.get(i).get(Math.abs(j - i) - 1) <= corrUP;
     }
 
+    //Преобразование массива групп в класс групп
     private List<Group> saveGroups() {
-        //создаем лист задач
-
         List<Group> returnGroups = new ArrayList<>();
         for (int i = 0; i < groups.size(); i++) {
 

@@ -5,6 +5,10 @@ import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 
+/*
+    Класс для рассчета по средним
+ */
+
 public class resolveAverage {
     private static final Gson GSON = new GsonBuilder().create();
     public ArrayList<String> resolve(Double r, Double[] temps, String[][] coords){
