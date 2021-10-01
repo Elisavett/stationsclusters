@@ -217,6 +217,10 @@ public class MapAllocationController {
         return "fragments/additionalStationCharacter";
     }
 
-
+    //Станица разработчиков
+    @GetMapping("/developers")
+    public String getDevelopers() {
+        return "developers";
+    }
 
 }

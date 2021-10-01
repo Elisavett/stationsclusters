@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <div th:replace="fragments/scripts :: scripts"></div>
+    <title>Title</title>
+    <style>
+        li.dev{
+            font-size: x-large;
+        }
+    </style>
+</head>
+<body class="gradient">
+<header>
+    <div th:replace="fragments/navbar :: navbar (${'index'})"></div>
+</header>
+<div class="container mt-2" >
+    <h2>Разработчики: </h2>
+    <ul type="circle">
+        <li class="dev">Волков Ю. В.</li>
+        <li class="dev">Якоби Е. В.</li>
+        <li class="dev">...</li>
+    </ul>
+</div>
+
+</body>
+</html>
